@@ -69,8 +69,8 @@ fun ServerNapContainer(
                     Button(
                         onClick = it,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-                            contentColor = MaterialTheme.colorScheme.error,
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            contentColor = MaterialTheme.colorScheme.primary,
                         ),
                         shape = RoundedCornerShape(12.dp),
                     ) {
