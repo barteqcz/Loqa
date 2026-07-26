@@ -371,7 +371,8 @@ class RadioViewModel @Inject constructor(
         val streamUrl = station?.getStreamUrl(settings.value.useHqStream) ?: url
 
         if (_selectedStationUrl.value == streamUrl) {
-            if (playerState.isPlaying || playerState.isBuffering) radioPlayer.pause()
+            if (playerState.isBuffering) return
+            if (playerState.isPlaying) radioPlayer.pause()
             else {
                 playStation(station, stationName, streamUrl)
             }
