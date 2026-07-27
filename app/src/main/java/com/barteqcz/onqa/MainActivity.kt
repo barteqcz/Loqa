@@ -32,6 +32,7 @@ import com.barteqcz.onqa.ui.navigation.RadioRoute
 import com.barteqcz.onqa.ui.navigation.SettingsRoute
 import com.barteqcz.onqa.ui.components.MiniPlayer
 import com.barteqcz.onqa.ui.onboarding.BackgroundLocationDisclosure
+import com.barteqcz.onqa.ui.onboarding.DataDisclaimer
 import com.barteqcz.onqa.ui.onboarding.OnboardingScreen
 import com.barteqcz.onqa.ui.main.RadioScreen
 import com.barteqcz.onqa.ui.main.RadioUiState
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private var showBackgroundLocationDisclosure by mutableStateOf(value = false)
+    private var showDataDisclaimer by mutableStateOf(value = false)
 
     private val requestBackgroundPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -68,7 +70,7 @@ class MainActivity : ComponentActivity() {
 
     private fun checkPermissionsAndCompleteOnboarding() {
         if (hasAllPermissions()) {
-            viewModel.completeOnboarding()
+            showDataDisclaimer = true
         }
     }
 
@@ -124,6 +126,12 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = if (!viewState.settings.isOnboardingCompleted) false else viewState.settings.isMaterialYouEnabled,
                 accentColor = viewState.settings.accentColor,
             ) {
+                LaunchedEffect(viewState.settings.isOnboardingCompleted) {
+                    if (!viewState.settings.isOnboardingCompleted && hasAllPermissions()) {
+                        showDataDisclaimer = true
+                    }
+                }
+
                 Surface(color = MaterialTheme.colorScheme.background) {
                     if (showBackgroundLocationDisclosure) {
                         BackgroundLocationDisclosure(
@@ -143,7 +151,15 @@ class MainActivity : ComponentActivity() {
                     if (viewState.settings.isInitialValue) {
                         Box(modifier = Modifier.fillMaxSize())
                     } else if (!viewState.settings.isOnboardingCompleted) {
-                        OnboardingScreen(onGrantClick = { launchPermissionRequest() })
+                        if (showDataDisclaimer) {
+                            DataDisclaimer(
+                                onConfirm = {
+                                    viewModel.completeOnboarding()
+                                }
+                            )
+                        } else {
+                            OnboardingScreen(onGrantClick = { launchPermissionRequest() })
+                        }
                     } else {
                         val navController = rememberNavController()
                         Box(modifier = Modifier.fillMaxSize()) {

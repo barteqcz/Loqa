@@ -79,7 +79,7 @@ fun RadioScreen(
                 }
                 
                 LocationHeader(viewState.locationInfo)
-                
+
                 viewState.updateInfo?.let { updateInfo ->
                     UpdateBanner(
                         updateInfo = updateInfo,
@@ -131,7 +131,7 @@ fun RadioScreen(
 
                                 val favoritesCount = remember(state.stations) { state.stations.count { it.isFavorite } }
                                 var lastFavoritesCount by remember { mutableIntStateOf(favoritesCount) }
-                                
+
                                 LaunchedEffect(favoritesCount) {
                                     if (favoritesCount > lastFavoritesCount && listState.firstVisibleItemIndex <= 2) {
                                         listState.animateScrollToItem(0)
