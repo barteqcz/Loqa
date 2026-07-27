@@ -2,6 +2,7 @@ package com.barteqcz.onqa
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
+import android.os.Build
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -16,6 +17,7 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.File
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -63,18 +65,16 @@ class OnqaApplication : Application(), ImageLoaderFactory {
                 val cacheSize = 50L * 1024L * 1024L
                 val cache = Cache(cacheDirectory, cacheSize)
 
+                val userAgent = "Onqa/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.MODEL})"
+                val acceptLanguage = Locale.getDefault().toLanguageTag()
+
                 OkHttpClient.Builder()
                     .cache(cache)
                     .addInterceptor { chain ->
                         val request = chain.request().newBuilder()
-                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
-                            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
-                            .header("Accept-Language", "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7")
-                            .header("Cache-Control", "max-age=0")
-                            .header("Sec-Ch-Ua", "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\"")
-                            .header("Sec-Ch-Ua-Mobile", "?0")
-                            .header("Sec-Ch-Ua-Platform", "\"Windows\"")
-                            .header("Upgrade-Insecure-Requests", "1")
+                            .header("User-Agent", userAgent)
+                            .header("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8")
+                            .header("Accept-Language", acceptLanguage)
                             .build()
                         chain.proceed(request)
                     }
