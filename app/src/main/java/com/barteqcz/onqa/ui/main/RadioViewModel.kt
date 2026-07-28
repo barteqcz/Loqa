@@ -19,9 +19,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @Immutable
 data class RadioViewState(
@@ -47,7 +49,7 @@ data class RadioViewState(
     val isSearchActive: Boolean = false,
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class RadioViewModel @Inject constructor(
     private val repository: RadioRepository,
@@ -333,7 +335,7 @@ class RadioViewModel @Inject constructor(
             _uiState,
             radioPlayer.state,
             favoriteStations,
-            _searchQuery,
+            _searchQuery.debounce(100.milliseconds),
             _isSearchActive,
         ) { state, player, favorites, query, searchActive ->
             if (state is RadioUiState.Success) {

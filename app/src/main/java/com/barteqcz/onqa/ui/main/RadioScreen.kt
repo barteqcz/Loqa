@@ -332,32 +332,20 @@ fun RadioScreen(
 
                                         itemsIndexed(
                                             items = state.stations,
-                                            key = { _, it -> "${it.name}|${it.network}" }
+                                            key = { _, it -> "${it.streamUrl ?: it.name}|${it.network}" }
                                         ) { _, station ->
-                                            Box(
-                                                modifier = Modifier
-                                                    .animateItem(
-                                                        fadeInSpec = tween(durationMillis = 300),
-                                                        fadeOutSpec = tween(durationMillis = 300),
-                                                        placementSpec = spring(
-                                                            dampingRatio = Spring.DampingRatioNoBouncy,
-                                                            stiffness = Spring.StiffnessMedium
-                                                        )
-                                                    )
-                                            ) {
-                                                StationCard(
-                                                    station = station,
-                                                    isActive = station.matchesUrl(viewState.selectedUrl),
-                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                    showHqIcon = !station.streamUrlHq.isNullOrBlank(),
-                                                    onClick = {
-                                                        focusManager.clearFocus()
-                                                        val url = station.streamUrl ?: station.streamUrlHq
-                                                        url?.let { viewModel.toggleStation(it) }
-                                                    },
-                                                    onLongClick = { viewModel.toggleFavorite(station) }
-                                                )
-                                            }
+                                            StationCard(
+                                                station = station,
+                                                isActive = station.matchesUrl(viewState.selectedUrl),
+                                                isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                onClick = {
+                                                    focusManager.clearFocus()
+                                                    val url = station.streamUrl ?: station.streamUrlHq
+                                                    url?.let { viewModel.toggleStation(it) }
+                                                },
+                                                onLongClick = { viewModel.toggleFavorite(station) }
+                                            )
                                         }
                                     }
 
