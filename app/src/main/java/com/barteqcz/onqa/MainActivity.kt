@@ -162,6 +162,7 @@ class MainActivity : ComponentActivity() {
                         }
                     } else {
                         val navController = rememberNavController()
+                        val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
                         Box(modifier = Modifier.fillMaxSize()) {
                             NavHost(
                                 navController = navController,
@@ -202,9 +203,18 @@ class MainActivity : ComponentActivity() {
                                         metadata = viewState.metadata,
                                         showHqIcon = viewState.settings.useHqStream && !it.streamUrlHq.isNullOrBlank(),
                                         isScrollable = viewState.isScrollable,
-                                        onToggle = { viewModel.toggleStation(viewState.selectedUrl!!) },
-                                        onNext = { viewModel.nextStation() },
-                                        onPrevious = { viewModel.previousStation() }
+                                        onToggle = { 
+                                            focusManager.clearFocus()
+                                            viewModel.toggleStation(viewState.selectedUrl!!) 
+                                        },
+                                        onNext = { 
+                                            focusManager.clearFocus()
+                                            viewModel.nextStation() 
+                                        },
+                                        onPrevious = { 
+                                            focusManager.clearFocus()
+                                            viewModel.previousStation() 
+                                        }
                                     )
                                 }
                             }

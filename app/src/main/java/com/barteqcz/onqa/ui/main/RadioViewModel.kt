@@ -14,6 +14,7 @@ import com.barteqcz.onqa.data.util.NetworkResult
 import com.barteqcz.onqa.domain.GetSortedStationsUseCase
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import com.barteqcz.onqa.util.ConnectivityObserver
+import com.barteqcz.onqa.util.unaccent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,8 @@ data class RadioViewState(
     val isScrollable: Boolean = false,
     val metadata: String? = null,
     val updateInfo: UpdateInfo? = null,
+    val searchQuery: String = "",
+    val isSearchActive: Boolean = false,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -61,6 +64,8 @@ class RadioViewModel @Inject constructor(
     private val _selectedStationName = MutableStateFlow<String?>(null)
     private val _isScrollable = MutableStateFlow(value = false)
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
+    private val _searchQuery = MutableStateFlow("")
+    private val _isSearchActive = MutableStateFlow(false)
 
     private val connectivityStatus = connectivityObserver.observe()
         .stateIn(
@@ -118,6 +123,8 @@ class RadioViewModel @Inject constructor(
         connectivityStatus,
         _isScrollable,
         _updateInfo,
+        _searchQuery,
+        _isSearchActive,
     ) { args ->
         val state = args[0] as RadioUiState
         val selectedUrl = args[1] as String?
@@ -128,6 +135,8 @@ class RadioViewModel @Inject constructor(
         val status = args[6] as ConnectivityObserver.Status
         val scrollable = args[7] as Boolean
         val update = args[8] as UpdateInfo?
+        val query = args[9] as String
+        val searchActive = args[10] as Boolean
 
         RadioViewState(
             uiState = state,
@@ -142,6 +151,8 @@ class RadioViewModel @Inject constructor(
             isScrollable = scrollable,
             metadata = if (player.isPlaying || player.isBuffering) player.metadata else null,
             updateInfo = update,
+            searchQuery = query,
+            isSearchActive = searchActive,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
@@ -322,20 +333,33 @@ class RadioViewModel @Inject constructor(
             _uiState,
             radioPlayer.state,
             favoriteStations,
-        ) { state, player, favorites ->
+            _searchQuery,
+            _isSearchActive,
+        ) { state, player, favorites, query, searchActive ->
             if (state is RadioUiState.Success) {
                 val activeUrl = if (player.isPlaying || player.isBuffering) player.stationInfo.url else null
-                activeUrl to favorites
+                ((activeUrl to favorites) to query) to searchActive
             } else null
         }
         .filterNotNull()
         .distinctUntilChanged()
-        .onEach { (activeUrl, favorites) ->
+        .onEach { (data, searchActive) ->
+            val (subData, query) = data
+            val (activeUrl, favorites) = subData
             val state = _uiState.value
             if (state is RadioUiState.Success) {
-                val newStations = getSortedStations(state.allStations, activeUrl, favorites)
-                if (newStations != state.stations) {
-                    _uiState.value = state.copy(stations = newStations)
+                val processedStations = getSortedStations(state.allStations, activeUrl, favorites)
+                val filteredStations = if (query.isBlank() || !searchActive) {
+                    processedStations
+                } else {
+                    val normalizedQuery = query.unaccent().lowercase()
+                    processedStations.filter { 
+                        it.name.unaccent().lowercase().contains(normalizedQuery) 
+                    }.toImmutableList()
+                }
+
+                if (filteredStations != state.stations) {
+                    _uiState.value = state.copy(stations = filteredStations)
                 }
             }
         }
@@ -348,6 +372,11 @@ class RadioViewModel @Inject constructor(
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
     fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
+    fun setSearchQuery(query: String) { _searchQuery.value = query }
+    fun setSearchActive(active: Boolean, clearQuery: Boolean = true) { 
+        _isSearchActive.value = active 
+        if (!active && clearQuery) _searchQuery.value = ""
+    }
     fun completeOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = true) }
     fun resetOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = false) }
 
