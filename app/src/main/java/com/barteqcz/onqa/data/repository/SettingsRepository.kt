@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.barteqcz.onqa.data.model.AppSettings
 import com.barteqcz.onqa.data.model.ThemeMode
+import com.barteqcz.onqa.data.model.ViewMode
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.collections.immutable.toPersistentSet
@@ -32,6 +33,7 @@ class SettingsRepository @Inject constructor(
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FAVORITE_STATIONS = stringSetPreferencesKey("favorite_stations")
         val USE_HQ_STREAM = booleanPreferencesKey("use_hq_stream")
+        val VIEW_MODE = stringPreferencesKey("view_mode")
         val LAST_LATITUDE = doublePreferencesKey("last_latitude")
         val LAST_LONGITUDE = doublePreferencesKey("last_longitude")
     }
@@ -47,6 +49,7 @@ class SettingsRepository @Inject constructor(
                 isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
                 favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS]?.toPersistentSet() ?: kotlinx.collections.immutable.persistentSetOf(),
                 useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: true,
+                viewMode = ViewMode.valueOf(preferences[PreferencesKeys.VIEW_MODE] ?: ViewMode.LIST.name),
                 lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
                 lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
                 isInitialValue = false
@@ -56,6 +59,12 @@ class SettingsRepository @Inject constructor(
     suspend fun updateUseHqStream(useHq: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.USE_HQ_STREAM] = useHq
+        }
+    }
+
+    suspend fun updateViewMode(mode: ViewMode) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.VIEW_MODE] = mode.name
         }
     }
 

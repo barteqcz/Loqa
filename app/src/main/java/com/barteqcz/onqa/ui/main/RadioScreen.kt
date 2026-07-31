@@ -8,6 +8,10 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
@@ -265,14 +269,21 @@ fun RadioScreen(
                                 )
                             } else {
                                 val listState = rememberLazyListState()
+                                val gridState = rememberLazyGridState()
                                 val density = LocalDensity.current
 
                                 val favoritesCount = remember(state.stations) { state.stations.count { it.isFavorite } }
                                 var lastFavoritesCount by remember { mutableIntStateOf(favoritesCount) }
 
+                                val isTilesMode = viewState.settings.viewMode == com.barteqcz.onqa.data.model.ViewMode.TILES
+
                                 LaunchedEffect(favoritesCount) {
-                                    if (favoritesCount > lastFavoritesCount && listState.firstVisibleItemIndex <= 2) {
-                                        listState.animateScrollToItem(0)
+                                    if (favoritesCount > lastFavoritesCount) {
+                                        if (isTilesMode) {
+                                            if (gridState.firstVisibleItemIndex <= 4) gridState.animateScrollToItem(0)
+                                        } else {
+                                            if (listState.firstVisibleItemIndex <= 2) listState.animateScrollToItem(0)
+                                        }
                                     }
                                     lastFavoritesCount = favoritesCount
                                 }
@@ -281,22 +292,24 @@ fun RadioScreen(
                                 LaunchedEffect(viewState.selectedUrl, state.stations) {
                                     val selectedUrl = viewState.selectedUrl
                                     if (selectedUrl != null) {
-                                        val layoutInfo = listState.layoutInfo
-                                        val totalItems = layoutInfo.totalItemsCount
-                                        val visibleItems = layoutInfo.visibleItemsInfo
+                                        val isLastItemVisible = if (isTilesMode) {
+                                            val layoutInfo = gridState.layoutInfo
+                                            layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
+                                        } else {
+                                            val layoutInfo = listState.layoutInfo
+                                            layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
+                                        }
 
-                                        if (visibleItems.isNotEmpty()) {
-                                            val isLastItemVisible = visibleItems.any { it.index == (totalItems - 1) }
+                                        if (isLastItemVisible) {
                                             val selectedIndex = state.stations.indexOfFirst { it.matchesUrl(selectedUrl) }
-                                            val isLastItemSelected = selectedIndex == state.stations.size - 1
+                                            val isLastItemSelected = selectedIndex == (state.stations.size - 1)
+                                            val totalItemsCount = if (isTilesMode) gridState.layoutInfo.totalItemsCount else listState.layoutInfo.totalItemsCount
                                             
-                                            if (isLastItemVisible) {
-                                                if (!wasMiniPlayerVisible) {
-                                                    val scrollAmount = with(density) { 100.dp.toPx() }
-                                                    listState.animateScrollBy(scrollAmount)
-                                                } else if (isLastItemSelected) {
-                                                    listState.animateScrollToItem(totalItems - 1)
-                                                }
+                                            if (!wasMiniPlayerVisible) {
+                                                val scrollAmount = with(density) { 100.dp.toPx() }
+                                                if (isTilesMode) gridState.animateScrollBy(scrollAmount) else listState.animateScrollBy(scrollAmount)
+                                            } else if (isLastItemSelected) {
+                                                if (isTilesMode) gridState.animateScrollToItem(totalItemsCount - 1) else listState.animateScrollToItem(totalItemsCount - 1)
                                             }
                                         }
                                     }
@@ -310,53 +323,102 @@ fun RadioScreen(
                                     }
                                 }
 
-                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward) {
-                                    viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
+                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward, gridState.canScrollForward, gridState.canScrollBackward, isTilesMode) {
+                                    if (isTilesMode) {
+                                        viewModel.setScrollable(gridState.canScrollForward || gridState.canScrollBackward)
+                                    } else {
+                                        viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
+                                    }
                                 }
 
                                 Box(modifier = Modifier.fillMaxSize()) {
-                                    LazyColumn(
-                                        state = listState,
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentPadding = PaddingValues(
-                                            top = paddingValues.calculateTopPadding() + 8.dp,
-                                            bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
-                                            start = 20.dp,
-                                            end = 20.dp
-                                        ),
-                                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                                    ) {
-                                        item(key = "scroll_anchor") {
-                                            Spacer(modifier = Modifier.height(0.5.dp))
-                                        }
-
-                                        itemsIndexed(
-                                            items = state.stations,
-                                            key = { _, it -> "${it.streamUrl ?: it.name}|${it.network}" }
-                                        ) { _, station ->
-                                            Box(
-                                                modifier = Modifier
-                                                    .animateItem(
-                                                        fadeInSpec = tween(durationMillis = 300),
-                                                        fadeOutSpec = tween(durationMillis = 300),
-                                                        placementSpec = if (viewState.isSearchActive) null else spring(
-                                                            dampingRatio = Spring.DampingRatioNoBouncy,
-                                                            stiffness = Spring.StiffnessMedium
+                                    if (isTilesMode) {
+                                        LazyVerticalGrid(
+                                            columns = GridCells.Fixed(3),
+                                            state = gridState,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentPadding = PaddingValues(
+                                                top = paddingValues.calculateTopPadding() + 8.dp,
+                                                bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
+                                                start = 20.dp,
+                                                end = 20.dp
+                                            ),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            itemsIndexed(
+                                                items = state.stations,
+                                                key = { _, it -> "${it.streamUrl ?: it.name}|${it.network}" }
+                                            ) { _, station ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .animateItem(
+                                                            fadeInSpec = tween(durationMillis = 300),
+                                                            fadeOutSpec = tween(durationMillis = 300),
+                                                            placementSpec = if (viewState.isSearchActive) null else spring(
+                                                                dampingRatio = Spring.DampingRatioNoBouncy,
+                                                                stiffness = Spring.StiffnessMedium
+                                                            )
                                                         )
+                                                ) {
+                                                    StationTile(
+                                                        station = station,
+                                                        isActive = station.matchesUrl(viewState.selectedUrl),
+                                                        isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                        onClick = {
+                                                            focusManager.clearFocus()
+                                                            val url = station.streamUrl ?: station.streamUrlHq
+                                                            url?.let { viewModel.toggleStation(it) }
+                                                        },
+                                                        onLongClick = { viewModel.toggleFavorite(station) }
                                                     )
-                                            ) {
-                                                StationCard(
-                                                    station = station,
-                                                    isActive = station.matchesUrl(viewState.selectedUrl),
-                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                    showHqIcon = !station.streamUrlHq.isNullOrBlank(),
-                                                    onClick = {
-                                                        focusManager.clearFocus()
-                                                        val url = station.streamUrl ?: station.streamUrlHq
-                                                        url?.let { viewModel.toggleStation(it) }
-                                                    },
-                                                    onLongClick = { viewModel.toggleFavorite(station) }
-                                                )
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        LazyColumn(
+                                            state = listState,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentPadding = PaddingValues(
+                                                top = paddingValues.calculateTopPadding() + 8.dp,
+                                                bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
+                                                start = 20.dp,
+                                                end = 20.dp
+                                            ),
+                                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                                        ) {
+                                            item(key = "scroll_anchor") {
+                                                Spacer(modifier = Modifier.height(0.5.dp))
+                                            }
+
+                                            itemsIndexed(
+                                                items = state.stations,
+                                                key = { _, it -> "${it.streamUrl ?: it.name}|${it.network}" }
+                                            ) { _, station ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .animateItem(
+                                                            fadeInSpec = tween(durationMillis = 300),
+                                                            fadeOutSpec = tween(durationMillis = 300),
+                                                            placementSpec = if (viewState.isSearchActive) null else spring(
+                                                                dampingRatio = Spring.DampingRatioNoBouncy,
+                                                                stiffness = Spring.StiffnessMedium
+                                                            )
+                                                        )
+                                                ) {
+                                                    StationCard(
+                                                        station = station,
+                                                        isActive = station.matchesUrl(viewState.selectedUrl),
+                                                        isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                        showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                        onClick = {
+                                                            focusManager.clearFocus()
+                                                            val url = station.streamUrl ?: station.streamUrlHq
+                                                            url?.let { viewModel.toggleStation(it) }
+                                                        },
+                                                        onLongClick = { viewModel.toggleFavorite(station) }
+                                                    )
+                                                }
                                             }
                                         }
                                     }

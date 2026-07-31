@@ -1,26 +1,19 @@
 package com.barteqcz.onqa.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Radio
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,52 +30,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.RadioStation
 import kotlin.math.roundToInt
 
-@Composable
-fun FavoriteHeart(
-    visible: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = scaleIn() + fadeIn(),
-        exit = fadeOut(animationSpec = snap())
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.Favorite,
-            contentDescription = null,
-            modifier = modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.error,
-        )
-    }
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StationCard(
+fun StationTile(
     station: RadioStation,
     isActive: Boolean,
     isPlaying: Boolean,
-    showHqIcon: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.96f else 1f,
+        targetValue = if (isPressed) 0.94f else 1f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
-        label = "cardScale"
+        label = "tileScale"
     )
 
     val borderColor by animateColorAsState(
@@ -101,10 +76,9 @@ fun StationCard(
         label = "activeOverlayColor"
     )
 
-    val cardShape = RoundedCornerShape(12.dp)
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
+            .aspectRatio(1f)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
@@ -115,7 +89,7 @@ fun StationCard(
                 onClick = onClick,
                 onLongClick = onLongClick
             ),
-        shape = cardShape,
+        shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
@@ -125,18 +99,21 @@ fun StationCard(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(activeOverlayColor)
+                .padding(8.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier.padding(top = 6.dp)
             ) {
                 var isImageLoaded by remember(station.logo) { mutableStateOf(false) }
                 Box(
                     modifier = Modifier
-                        .size(52.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
                     contentAlignment = Alignment.Center
                 ) {
@@ -161,76 +138,72 @@ fun StationCard(
                     )
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                Column(modifier = Modifier.weight(1f)) {
-                    val infoColor by animateColorAsState(
-                        targetValue = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        label = "stationIconColor",
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = station.name,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            modifier = Modifier
-                                .weight(1f, fill = false)
-                                .basicMarquee(
-                                    iterations = Int.MAX_VALUE,
-                                    animationMode = MarqueeAnimationMode.Immediately,
-                                    initialDelayMillis = 1000
-                                ),
-                        )
-                        
-                        if (showHqIcon) {
-                            HqIcon(tint = infoColor)
-                        }
-                    }
-                    if ((station.transmitterName != null) || (station.distance != null)) {
-                        val infoText = buildString {
-                            station.transmitterName?.let { append(it) }
-                            station.distance?.let {
-                                val dist = it.roundToInt()
-                                if (isNotEmpty()) append(" ")
-                                if (dist == 0) {
-                                    append(stringResource(R.string.less_than_one_km_with_dot))
-                                } else {
-                                    append(stringResource(R.string.distance_with_dot, dist))
-                                }
-                            }
-                        }
-                        
-                        Surface(
-                            shape = RoundedCornerShape(4.dp),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f),
-                            modifier = Modifier.padding(top = 4.dp)
-                        ) {
-                            Text(
-                                text = infoText,
-                                color = infoColor,
-                                style = MaterialTheme.typography.labelSmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
+                Text(
+                    text = station.name,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = if ((station.transmitterName != null) || (station.distance != null)) 14.dp else 0.dp)
+                        .basicMarquee(iterations = Int.MAX_VALUE),
+                )
+            }
+
+            if ((station.transmitterName != null) || (station.distance != null)) {
+                val infoText = buildString {
+                    station.transmitterName?.let { append(it) }
+                    station.distance?.let {
+                        val dist = it.roundToInt()
+                        if (isNotEmpty()) append(" ")
+                        if (dist == 0) {
+                            append(stringResource(R.string.less_than_one_km_with_dot))
+                        } else {
+                            append(stringResource(R.string.distance_with_dot, dist))
                         }
                     }
                 }
 
-                Box(
-                    modifier = Modifier.padding(start = 8.dp).width(36.dp),
-                    contentAlignment = Alignment.Center
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 6.dp),
+                    shape = RoundedCornerShape(4.dp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
                 ) {
-                    if (isPlaying) {
-                        EqualizerAnimation(color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
-                    } else {
-                        FavoriteHeart(visible = station.isFavorite)
-                    }
+                    Text(
+                        text = infoText,
+                        color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                    )
+                }
+            }
+
+            if (isPlaying) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(4.dp)
+                        .size(16.dp)
+                ) {
+                    EqualizerAnimation(
+                        color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else if (station.isFavorite) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(4.dp)
+                ) {
+                    FavoriteHeart(visible = true, modifier = Modifier.size(16.dp))
                 }
             }
         }

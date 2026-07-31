@@ -372,6 +372,7 @@ class RadioViewModel @Inject constructor(
     fun updateMaterialYou(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateMaterialYou(enabled) }
     fun updateThemeMode(mode: ThemeMode) = viewModelScope.launch { settingsRepository.updateThemeMode(mode) }
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
+    fun updateViewMode(mode: ViewMode) = viewModelScope.launch { settingsRepository.updateViewMode(mode) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
     fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
     fun setSearchQuery(query: String) { _searchQuery.value = query }
