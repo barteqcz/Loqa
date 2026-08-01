@@ -9,10 +9,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -84,7 +85,7 @@ fun RadioScreen(
                     ) { 
                         if (viewState.isSearchActive) focusManager.clearFocus()
                     }
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = if (viewState.settings.showLocationHeader) 8.dp else 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(
@@ -210,7 +211,9 @@ fun RadioScreen(
                     }
                 }
                 
-                LocationHeader(viewState.locationInfo)
+                if (viewState.settings.showLocationHeader) {
+                    LocationHeader(viewState.locationInfo)
+                }
 
                 viewState.updateInfo?.let { updateInfo ->
                     UpdateBanner(
@@ -272,24 +275,20 @@ fun RadioScreen(
                                 val gridState = rememberLazyGridState()
                                 val density = LocalDensity.current
 
-                                val favoritesCount = remember(state.stations) { state.stations.count { it.isFavorite } }
-                                var lastFavoritesCount by remember { mutableIntStateOf(favoritesCount) }
-
                                 val isTilesMode = viewState.settings.viewMode == com.barteqcz.onqa.data.model.ViewMode.TILES
 
-                                LaunchedEffect(favoritesCount) {
-                                    if (favoritesCount > lastFavoritesCount) {
-                                        if (isTilesMode) {
-                                            if (gridState.firstVisibleItemIndex <= 4) gridState.animateScrollToItem(0)
-                                        } else {
-                                            if (listState.firstVisibleItemIndex <= 2) listState.animateScrollToItem(0)
+                                LaunchedEffect(isTilesMode) {
+                                    viewModel.events.collect { event ->
+                                        when (event) {
+                                            is RadioUiEvent.ScrollToTop -> {
+                                                // Auto-scroll disabled per user request
+                                            }
                                         }
                                     }
-                                    lastFavoritesCount = favoritesCount
                                 }
 
                                 var wasMiniPlayerVisible by remember { mutableStateOf(viewState.selectedUrl != null) }
-                                LaunchedEffect(viewState.selectedUrl, state.stations) {
+                                LaunchedEffect(viewState.selectedUrl) {
                                     val selectedUrl = viewState.selectedUrl
                                     if (selectedUrl != null) {
                                         val isLastItemVisible = if (isTilesMode) {
@@ -300,17 +299,9 @@ fun RadioScreen(
                                             layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
                                         }
 
-                                        if (isLastItemVisible) {
-                                            val selectedIndex = state.stations.indexOfFirst { it.matchesUrl(selectedUrl) }
-                                            val isLastItemSelected = selectedIndex == (state.stations.size - 1)
-                                            val totalItemsCount = if (isTilesMode) gridState.layoutInfo.totalItemsCount else listState.layoutInfo.totalItemsCount
-                                            
-                                            if (!wasMiniPlayerVisible) {
-                                                val scrollAmount = with(density) { 100.dp.toPx() }
-                                                if (isTilesMode) gridState.animateScrollBy(scrollAmount) else listState.animateScrollBy(scrollAmount)
-                                            } else if (isLastItemSelected) {
-                                                if (isTilesMode) gridState.animateScrollToItem(totalItemsCount - 1) else listState.animateScrollToItem(totalItemsCount - 1)
-                                            }
+                                        if (isLastItemVisible && !wasMiniPlayerVisible) {
+                                            val scrollAmount = with(density) { 100.dp.toPx() }
+                                            if (isTilesMode) gridState.animateScrollBy(scrollAmount) else listState.animateScrollBy(scrollAmount)
                                         }
                                     }
                                     wasMiniPlayerVisible = selectedUrl != null
@@ -334,7 +325,7 @@ fun RadioScreen(
                                 Box(modifier = Modifier.fillMaxSize()) {
                                     if (isTilesMode) {
                                         LazyVerticalGrid(
-                                            columns = GridCells.Fixed(3),
+                                            columns = GridCells.Adaptive(minSize = 128.dp),
                                             state = gridState,
                                             modifier = Modifier.fillMaxSize(),
                                             contentPadding = PaddingValues(
@@ -343,36 +334,33 @@ fun RadioScreen(
                                                 start = 20.dp,
                                                 end = 20.dp
                                             ),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                            verticalArrangement = Arrangement.spacedBy(16.dp)
                                         ) {
-                                            itemsIndexed(
+                                            item(key = "scroll_anchor", span = { GridItemSpan(maxLineSpan) }) {
+                                                Spacer(modifier = Modifier.height(0.5.dp))
+                                            }
+
+                                            items(
                                                 items = state.stations,
-                                                key = { _, it -> "${it.streamUrl ?: it.name}|${it.network}" }
-                                            ) { _, station ->
-                                                Box(
-                                                    modifier = Modifier
-                                                        .animateItem(
-                                                            fadeInSpec = tween(durationMillis = 300),
-                                                            fadeOutSpec = tween(durationMillis = 300),
-                                                            placementSpec = if (viewState.isSearchActive) null else spring(
-                                                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                                                stiffness = Spring.StiffnessMedium
-                                                            )
-                                                        )
-                                                ) {
-                                                    StationTile(
-                                                        station = station,
-                                                        isActive = station.matchesUrl(viewState.selectedUrl),
-                                                        isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                        onClick = {
-                                                            focusManager.clearFocus()
-                                                            val url = station.streamUrl ?: station.streamUrlHq
-                                                            url?.let { viewModel.toggleStation(it) }
-                                                        },
-                                                        onLongClick = { viewModel.toggleFavorite(station) }
-                                                    )
-                                                }
+                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
+                                            ) { station ->
+                                                StationTile(
+                                                    station = station,
+                                                    isActive = station.matchesUrl(viewState.selectedUrl),
+                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                    modifier = Modifier.animateItem(
+                                                        fadeInSpec = tween(durationMillis = 300),
+                                                        fadeOutSpec = tween(durationMillis = 300),
+                                                        placementSpec = if (viewState.isSearchActive) null else spring()
+                                                    ),
+                                                    onClick = {
+                                                        focusManager.clearFocus()
+                                                        val url = station.streamUrl ?: station.streamUrlHq
+                                                        url?.let { viewModel.toggleStation(it) }
+                                                    },
+                                                    onLongClick = { viewModel.toggleFavorite(station) }
+                                                )
                                             }
                                         }
                                     } else {
@@ -391,34 +379,27 @@ fun RadioScreen(
                                                 Spacer(modifier = Modifier.height(0.5.dp))
                                             }
 
-                                            itemsIndexed(
+                                            items(
                                                 items = state.stations,
-                                                key = { _, it -> "${it.streamUrl ?: it.name}|${it.network}" }
-                                            ) { _, station ->
-                                                Box(
-                                                    modifier = Modifier
-                                                        .animateItem(
-                                                            fadeInSpec = tween(durationMillis = 300),
-                                                            fadeOutSpec = tween(durationMillis = 300),
-                                                            placementSpec = if (viewState.isSearchActive) null else spring(
-                                                                dampingRatio = Spring.DampingRatioNoBouncy,
-                                                                stiffness = Spring.StiffnessMedium
-                                                            )
-                                                        )
-                                                ) {
-                                                    StationCard(
-                                                        station = station,
-                                                        isActive = station.matchesUrl(viewState.selectedUrl),
-                                                        isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                        showHqIcon = !station.streamUrlHq.isNullOrBlank(),
-                                                        onClick = {
-                                                            focusManager.clearFocus()
-                                                            val url = station.streamUrl ?: station.streamUrlHq
-                                                            url?.let { viewModel.toggleStation(it) }
-                                                        },
-                                                        onLongClick = { viewModel.toggleFavorite(station) }
-                                                    )
-                                                }
+                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
+                                            ) { station ->
+                                                StationCard(
+                                                    station = station,
+                                                    isActive = station.matchesUrl(viewState.selectedUrl),
+                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                    showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                    modifier = Modifier.animateItem(
+                                                        fadeInSpec = tween(durationMillis = 300),
+                                                        fadeOutSpec = tween(durationMillis = 300),
+                                                        placementSpec = if (viewState.isSearchActive) null else spring()
+                                                    ),
+                                                    onClick = {
+                                                        focusManager.clearFocus()
+                                                        val url = station.streamUrl ?: station.streamUrlHq
+                                                        url?.let { viewModel.toggleStation(it) }
+                                                    },
+                                                    onLongClick = { viewModel.toggleFavorite(station) }
+                                                )
                                             }
                                         }
                                     }

@@ -53,6 +53,8 @@
     <string name="view_mode_desc">Choose how to display the station list</string>
     <string name="view_mode_list">List</string>
     <string name="view_mode_tiles">Tiles</string>
+    <string name="show_location_header_title">Show current location</string>
+    <string name="show_location_header_desc">Display location info in the top bar</string>
     <string name="unknown_location">&#129517; We got no clue where you are</string>
     <string name="update_available_title">Update available</string>
     <string name="update_available_message_simple">A new version is available</string>

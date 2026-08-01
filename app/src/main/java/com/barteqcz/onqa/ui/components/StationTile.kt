@@ -49,6 +49,7 @@ fun StationTile(
     station: RadioStation,
     isActive: Boolean,
     isPlaying: Boolean,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
 ) {
@@ -77,7 +78,7 @@ fun StationTile(
     )
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(1f)
             .graphicsLayer {
                 scaleX = scale
@@ -97,113 +98,131 @@ fun StationTile(
         ),
         tonalElevation = 1.dp
     ) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .background(activeOverlayColor)
-                .padding(8.dp),
-            contentAlignment = Alignment.TopCenter
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top,
-                modifier = Modifier.padding(top = 6.dp)
-            ) {
-                var isImageLoaded by remember(station.logo) { mutableStateOf(false) }
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
-                    contentAlignment = Alignment.Center
+            val isSmall = maxWidth < 170.dp
+            val isUltraSmall = maxWidth < 130.dp
+            val outerPadding = if (isSmall) 4.dp else 12.dp
+            val bottomPadding = if (isSmall) 10.dp else 16.dp
+            val logoSize = if (isUltraSmall) 36.dp else if (isSmall) 48.dp else 64.dp
+            val logoGap = if (isSmall) 4.dp else 12.dp
+            val topPadding = if (isSmall) 10.dp else 12.dp
+            val nameStyle = if (isUltraSmall) MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp) 
+                           else if (isSmall) MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp) 
+                           else MaterialTheme.typography.titleMedium
+            val infoFontSize = if (isUltraSmall) 7.sp else if (isSmall) 9.sp else 12.sp
+            val infoLineHeight = if (isSmall) 11.sp else 16.sp
+
+            Box(modifier = Modifier.fillMaxSize().padding(top = topPadding, start = outerPadding, end = outerPadding, bottom = bottomPadding)) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    if (!isImageLoaded) {
-                        Icon(
-                            imageVector = Icons.Rounded.Radio,
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top,
+                    ) {
+                        var isImageLoaded by remember(station.logo) { mutableStateOf(false) }
+                        Box(
+                            modifier = Modifier
+                                .size(logoSize)
+                                .clip(RoundedCornerShape(if (isSmall) 8.dp else 12.dp))
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (!isImageLoaded) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Radio,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(if (isUltraSmall) 20.dp else if (isSmall) 28.dp else 40.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
+                            }
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(station.logo)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit,
+                                onSuccess = { isImageLoaded = true },
+                                onError = { isImageLoaded = false }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(logoGap))
+
+                        Text(
+                            text = station.name,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = nameStyle,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = if (isSmall) 1 else 2,
+                            textAlign = TextAlign.Center,
+                            modifier = if (isSmall) {
+                                Modifier.fillMaxWidth().basicMarquee(iterations = Int.MAX_VALUE)
+                            } else {
+                                Modifier.fillMaxWidth()
+                            },
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(station.logo)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit,
-                        onSuccess = { isImageLoaded = true },
-                        onError = { isImageLoaded = false }
-                    )
-                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.weight(1f))
 
-                Text(
-                    text = station.name,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = if ((station.transmitterName != null) || (station.distance != null)) 14.dp else 0.dp)
-                        .basicMarquee(iterations = Int.MAX_VALUE),
-                )
-            }
+                    if ((station.transmitterName != null) || (station.distance != null)) {
+                        val infoText = buildString {
+                            station.transmitterName?.let { append(it) }
+                            station.distance?.let {
+                                val dist = it.roundToInt()
+                                if (isNotEmpty()) append(" ")
+                                if (dist == 0) {
+                                    append(stringResource(R.string.less_than_one_km_with_dot))
+                                } else {
+                                    append(stringResource(R.string.distance_with_dot, dist))
+                                }
+                            }
+                        }
 
-            if ((station.transmitterName != null) || (station.distance != null)) {
-                val infoText = buildString {
-                    station.transmitterName?.let { append(it) }
-                    station.distance?.let {
-                        val dist = it.roundToInt()
-                        if (isNotEmpty()) append(" ")
-                        if (dist == 0) {
-                            append(stringResource(R.string.less_than_one_km_with_dot))
-                        } else {
-                            append(stringResource(R.string.distance_with_dot, dist))
+                        Surface(
+                            shape = RoundedCornerShape(if (isSmall) 2.dp else 4.dp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+                        ) {
+                            Text(
+                                text = infoText,
+                                color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = infoFontSize, lineHeight = infoLineHeight),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = if (isUltraSmall) 0.dp else 1.dp)
+                            )
                         }
                     }
                 }
 
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 6.dp),
-                    shape = RoundedCornerShape(4.dp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
-                ) {
-                    Text(
-                        text = infoText,
-                        color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
-                    )
-                }
-            }
-
-            if (isPlaying) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp)
-                        .size(16.dp)
-                ) {
-                    EqualizerAnimation(
-                        color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                    )
-                }
-            } else if (station.isFavorite) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp)
-                ) {
-                    FavoriteHeart(visible = true, modifier = Modifier.size(16.dp))
+                if (isPlaying) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(if (isSmall) (-2).dp else 4.dp)
+                            .size(if (isSmall) 12.dp else 16.dp)
+                    ) {
+                        EqualizerAnimation(
+                            color = if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        )
+                    }
+                } else if (station.isFavorite) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(if (isSmall) (-2).dp else 4.dp)
+                    ) {
+                        FavoriteHeart(visible = true, modifier = Modifier.size(if (isSmall) 12.dp else 16.dp))
+                    }
                 }
             }
         }

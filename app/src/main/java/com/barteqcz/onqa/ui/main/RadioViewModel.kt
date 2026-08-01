@@ -49,6 +49,11 @@ data class RadioViewState(
     val isSearchActive: Boolean = false,
 )
 
+@Immutable
+sealed interface RadioUiEvent {
+    data object ScrollToTop : RadioUiEvent
+}
+
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class RadioViewModel @Inject constructor(
@@ -68,6 +73,8 @@ class RadioViewModel @Inject constructor(
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(false)
+    private val _events = MutableSharedFlow<RadioUiEvent>()
+    val events = _events.asSharedFlow()
 
     private val connectivityStatus = connectivityObserver.observe()
         .stateIn(
@@ -372,6 +379,7 @@ class RadioViewModel @Inject constructor(
     fun updateMaterialYou(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateMaterialYou(enabled) }
     fun updateThemeMode(mode: ThemeMode) = viewModelScope.launch { settingsRepository.updateThemeMode(mode) }
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
+    fun updateShowLocationHeader(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowLocationHeader(enabled) }
     fun updateViewMode(mode: ViewMode) = viewModelScope.launch { settingsRepository.updateViewMode(mode) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
     fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
@@ -392,7 +400,13 @@ class RadioViewModel @Inject constructor(
     }
 
     fun toggleFavorite(station: RadioStation) {
-        viewModelScope.launch { settingsRepository.toggleFavorite(station.name) }
+        viewModelScope.launch {
+            val isCurrentlyFavorite = settings.value.favoriteStations.contains(station.name)
+            settingsRepository.toggleFavorite(station.name)
+            if (!isCurrentlyFavorite) {
+                _events.emit(RadioUiEvent.ScrollToTop)
+            }
+        }
     }
 
     fun toggleStation(url: String, stationName: String? = null) {

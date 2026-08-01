@@ -33,6 +33,7 @@ class SettingsRepository @Inject constructor(
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val FAVORITE_STATIONS = stringSetPreferencesKey("favorite_stations")
         val USE_HQ_STREAM = booleanPreferencesKey("use_hq_stream")
+        val SHOW_LOCATION_HEADER = booleanPreferencesKey("show_location_header")
         val VIEW_MODE = stringPreferencesKey("view_mode")
         val LAST_LATITUDE = doublePreferencesKey("last_latitude")
         val LAST_LONGITUDE = doublePreferencesKey("last_longitude")
@@ -49,6 +50,7 @@ class SettingsRepository @Inject constructor(
                 isOnboardingCompleted = preferences[PreferencesKeys.ONBOARDING_COMPLETED] ?: false,
                 favoriteStations = preferences[PreferencesKeys.FAVORITE_STATIONS]?.toPersistentSet() ?: kotlinx.collections.immutable.persistentSetOf(),
                 useHqStream = preferences[PreferencesKeys.USE_HQ_STREAM] ?: true,
+                showLocationHeader = preferences[PreferencesKeys.SHOW_LOCATION_HEADER] ?: true,
                 viewMode = ViewMode.valueOf(preferences[PreferencesKeys.VIEW_MODE] ?: ViewMode.LIST.name),
                 lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
                 lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
@@ -59,6 +61,12 @@ class SettingsRepository @Inject constructor(
     suspend fun updateUseHqStream(useHq: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.USE_HQ_STREAM] = useHq
+        }
+    }
+
+    suspend fun updateShowLocationHeader(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.SHOW_LOCATION_HEADER] = enabled
         }
     }
 
