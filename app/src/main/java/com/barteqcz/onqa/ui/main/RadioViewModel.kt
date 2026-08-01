@@ -5,7 +5,12 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.barteqcz.onqa.data.model.*
+import com.barteqcz.onqa.data.model.AppSettings
+import com.barteqcz.onqa.data.model.LocationInfo
+import com.barteqcz.onqa.data.model.RadioStation
+import com.barteqcz.onqa.data.model.StableLocation
+import com.barteqcz.onqa.data.model.ThemeMode
+import com.barteqcz.onqa.data.model.UpdateInfo
 import com.barteqcz.onqa.player.RadioPlayer
 import com.barteqcz.onqa.data.repository.RadioRepository
 import com.barteqcz.onqa.data.repository.SettingsRepository
@@ -20,7 +25,20 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -72,7 +90,7 @@ class RadioViewModel @Inject constructor(
     private val _isScrollable = MutableStateFlow(value = false)
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     private val _searchQuery = MutableStateFlow("")
-    private val _isSearchActive = MutableStateFlow(false)
+    private val _isSearchActive = MutableStateFlow(value = false)
     private val _events = MutableSharedFlow<RadioUiEvent>()
     val events = _events.asSharedFlow()
 
@@ -347,21 +365,19 @@ class RadioViewModel @Inject constructor(
         ) { state, player, favorites, query, searchActive ->
             if (state is RadioUiState.Success) {
                 val activeUrl = if (player.isPlaying || player.isBuffering) player.stationInfo.url else null
-                ((activeUrl to favorites) to query) to searchActive
+                StationListParams(activeUrl, favorites, query, searchActive)
             } else null
         }
         .filterNotNull()
         .distinctUntilChanged()
-        .onEach { (data, searchActive) ->
-            val (subData, query) = data
-            val (activeUrl, favorites) = subData
+        .onEach { params ->
             val state = _uiState.value
             if (state is RadioUiState.Success) {
-                val processedStations = getSortedStations(state.allStations, activeUrl, favorites)
-                val filteredStations = if (query.isBlank() || !searchActive) {
+                val processedStations = getSortedStations(state.allStations, params.activeUrl, params.favorites)
+                val filteredStations = if (params.query.isBlank() || !params.isSearchActive) {
                     processedStations
                 } else {
-                    val normalizedQuery = query.unaccent().lowercase()
+                    val normalizedQuery = params.query.unaccent().lowercase()
                     processedStations.filter { 
                         it.name.unaccent().lowercase().contains(normalizedQuery) 
                     }.toImmutableList()
@@ -376,11 +392,17 @@ class RadioViewModel @Inject constructor(
         .launchIn(viewModelScope)
     }
 
+    private data class StationListParams(
+        val activeUrl: String?,
+        val favorites: Set<String>,
+        val query: String,
+        val isSearchActive: Boolean,
+    )
+
     fun updateMaterialYou(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateMaterialYou(enabled) }
     fun updateThemeMode(mode: ThemeMode) = viewModelScope.launch { settingsRepository.updateThemeMode(mode) }
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
     fun updateShowLocationHeader(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowLocationHeader(enabled) }
-    fun updateViewMode(mode: ViewMode) = viewModelScope.launch { settingsRepository.updateViewMode(mode) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
     fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
     fun setSearchQuery(query: String) { _searchQuery.value = query }

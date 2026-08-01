@@ -19,7 +19,7 @@ import com.barteqcz.onqa.R
 
 @Composable
 fun OnboardingScreen(
-    onGrantClick: () -> Unit
+    onGrantClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),

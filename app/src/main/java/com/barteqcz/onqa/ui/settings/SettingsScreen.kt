@@ -32,7 +32,6 @@ import androidx.core.graphics.toColorInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.ThemeMode
-import com.barteqcz.onqa.data.model.ViewMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
 import com.barteqcz.onqa.ui.theme.OnqaBlue
 import com.barteqcz.onqa.ui.theme.OnqaCyan
@@ -40,8 +39,6 @@ import com.barteqcz.onqa.ui.theme.OnqaGreen
 import com.barteqcz.onqa.ui.theme.OnqaOrange
 import com.barteqcz.onqa.ui.theme.OnqaPurple
 import com.barteqcz.onqa.ui.theme.applyLightVariant
-import androidx.compose.material.icons.automirrored.rounded.ViewList
-import androidx.compose.material.icons.rounded.GridView
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -161,16 +158,6 @@ fun SettingsScreen(
                 ThemeSwitcher(
                     currentMode = settings.themeMode,
                     onModeSelect = { viewModel.updateThemeMode(it) }
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(stringResource(R.string.view_mode_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(stringResource(R.string.view_mode_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
-
-                ViewModeSwitcher(
-                    currentMode = settings.viewMode,
-                    onModeSelect = { viewModel.updateViewMode(it) }
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -360,53 +347,6 @@ private fun ThemeOption(
         ThemeMode.SYSTEM -> stringResource(R.string.theme_mode_system)
         ThemeMode.LIGHT -> stringResource(R.string.theme_mode_light)
         ThemeMode.DARK -> stringResource(R.string.theme_mode_dark)
-    }
-
-    SelectableOption(
-        icon = icon,
-        label = label,
-        isSelected = isSelected,
-        onClick = onClick,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun ViewModeSwitcher(
-    currentMode: ViewMode,
-    onModeSelect: (ViewMode) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        ViewMode.entries.forEach { mode ->
-            ViewModeOption(
-                mode = mode,
-                isSelected = currentMode == mode,
-                onClick = { onModeSelect(mode) },
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun ViewModeOption(
-    mode: ViewMode,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val icon = when (mode) {
-        ViewMode.LIST -> Icons.AutoMirrored.Rounded.ViewList
-        ViewMode.TILES -> Icons.Rounded.GridView
-    }
-    val label = when (mode) {
-        ViewMode.LIST -> stringResource(R.string.view_mode_list)
-        ViewMode.TILES -> stringResource(R.string.view_mode_tiles)
     }
 
     SelectableOption(

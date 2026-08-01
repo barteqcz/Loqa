@@ -17,7 +17,6 @@ data class AppSettings(
     val favoriteStations: PersistentSet<String> = persistentSetOf(),
     val useHqStream: Boolean = true,
     val showLocationHeader: Boolean = true,
-    val viewMode: ViewMode = ViewMode.LIST,
     val lastLatitude: Double? = null,
     val lastLongitude: Double? = null,
     val isInitialValue: Boolean = true
@@ -25,8 +24,4 @@ data class AppSettings(
 
 enum class ThemeMode {
     SYSTEM, LIGHT, DARK
-}
-
-enum class ViewMode {
-    LIST, TILES
 }

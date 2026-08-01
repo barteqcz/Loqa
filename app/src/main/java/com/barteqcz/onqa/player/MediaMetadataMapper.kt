@@ -35,11 +35,21 @@ object MediaMetadataMapper {
     fun getEffectiveMetadata(
         streamTitle: String?,
         streamArtist: String?,
-        stationName: String?
+        stationName: String?,
+        allStations: List<com.barteqcz.onqa.data.model.RadioStation>? = null
     ): Pair<String?, String?> {
         val sName = stationName?.trim() ?: ""
         val sTitle = streamTitle?.trim() ?: ""
         val sArtist = streamArtist?.trim() ?: ""
+
+        // Check if RDS info accidentally matches another station's name (common in network switches)
+        val otherStation = allStations?.find { 
+            it.name.equals(sTitle, ignoreCase = true) && it.name != sName 
+        }
+        
+        if (otherStation != null) {
+            return sName to ""
+        }
 
         val effectiveArtist = if (sArtist.equals(sName, ignoreCase = true) || sArtist.isEmpty()) null else sArtist
         val effectiveTitle = if (sTitle.equals(sName, ignoreCase = true) || sTitle.isEmpty()) null else sTitle

@@ -8,11 +8,6 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
@@ -53,7 +48,7 @@ fun RadioScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = LocalFocusManager.current
     val searchFocusRequester = remember { FocusRequester() }
-    var isSearchFocused by remember { mutableStateOf(false) }
+    var isSearchFocused by remember { mutableStateOf(value = false) }
 
     BackHandler(viewState.isSearchActive) {
         if (isSearchFocused) {
@@ -105,7 +100,7 @@ fun RadioScreen(
                             }
                         },
                         modifier = Modifier.weight(1f),
-                        label = "TopBarSearchTransition"
+                        label = "TopBarSearchTransition",
                     ) { isSearchActive ->
                         if (isSearchActive) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -219,8 +214,7 @@ fun RadioScreen(
                     UpdateBanner(
                         updateInfo = updateInfo,
                         accentColor = viewState.settings.accentColor,
-                        onDownloadClick = { viewModel.startUpdateDownload(context, it) }
-                    )
+                    ) { viewModel.startUpdateDownload(context, it) }
                 }
             }
         }
@@ -272,12 +266,9 @@ fun RadioScreen(
                                 )
                             } else {
                                 val listState = rememberLazyListState()
-                                val gridState = rememberLazyGridState()
                                 val density = LocalDensity.current
 
-                                val isTilesMode = viewState.settings.viewMode == com.barteqcz.onqa.data.model.ViewMode.TILES
-
-                                LaunchedEffect(isTilesMode) {
+                                LaunchedEffect(Unit) {
                                     viewModel.events.collect { event ->
                                         when (event) {
                                             is RadioUiEvent.ScrollToTop -> {
@@ -291,17 +282,12 @@ fun RadioScreen(
                                 LaunchedEffect(viewState.selectedUrl) {
                                     val selectedUrl = viewState.selectedUrl
                                     if (selectedUrl != null) {
-                                        val isLastItemVisible = if (isTilesMode) {
-                                            val layoutInfo = gridState.layoutInfo
-                                            layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
-                                        } else {
-                                            val layoutInfo = listState.layoutInfo
-                                            layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
-                                        }
+                                        val layoutInfo = listState.layoutInfo
+                                        val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
 
                                         if (isLastItemVisible && !wasMiniPlayerVisible) {
                                             val scrollAmount = with(density) { 100.dp.toPx() }
-                                            if (isTilesMode) gridState.animateScrollBy(scrollAmount) else listState.animateScrollBy(scrollAmount)
+                                            listState.animateScrollBy(scrollAmount)
                                         }
                                     }
                                     wasMiniPlayerVisible = selectedUrl != null
@@ -314,93 +300,47 @@ fun RadioScreen(
                                     }
                                 }
 
-                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward, gridState.canScrollForward, gridState.canScrollBackward, isTilesMode) {
-                                    if (isTilesMode) {
-                                        viewModel.setScrollable(gridState.canScrollForward || gridState.canScrollBackward)
-                                    } else {
-                                        viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
-                                    }
+                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward) {
+                                    viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
                                 }
 
                                 Box(modifier = Modifier.fillMaxSize()) {
-                                    if (isTilesMode) {
-                                        LazyVerticalGrid(
-                                            columns = GridCells.Adaptive(minSize = 128.dp),
-                                            state = gridState,
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentPadding = PaddingValues(
-                                                top = paddingValues.calculateTopPadding() + 8.dp,
-                                                bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
-                                                start = 20.dp,
-                                                end = 20.dp
-                                            ),
-                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                                        ) {
-                                            item(key = "scroll_anchor", span = { GridItemSpan(maxLineSpan) }) {
-                                                Spacer(modifier = Modifier.height(0.5.dp))
-                                            }
-
-                                            items(
-                                                items = state.stations,
-                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
-                                            ) { station ->
-                                                StationTile(
-                                                    station = station,
-                                                    isActive = station.matchesUrl(viewState.selectedUrl),
-                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                    modifier = Modifier.animateItem(
-                                                        fadeInSpec = tween(durationMillis = 300),
-                                                        fadeOutSpec = tween(durationMillis = 300),
-                                                        placementSpec = if (viewState.isSearchActive) null else spring()
-                                                    ),
-                                                    onClick = {
-                                                        focusManager.clearFocus()
-                                                        val url = station.streamUrl ?: station.streamUrlHq
-                                                        url?.let { viewModel.toggleStation(it) }
-                                                    },
-                                                    onLongClick = { viewModel.toggleFavorite(station) }
-                                                )
-                                            }
+                                    LazyColumn(
+                                        state = listState,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentPadding = PaddingValues(
+                                            top = paddingValues.calculateTopPadding() + 8.dp,
+                                            bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
+                                            start = 20.dp,
+                                            end = 20.dp
+                                        ),
+                                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        item(key = "scroll_anchor") {
+                                            Spacer(modifier = Modifier.height(0.5.dp))
                                         }
-                                    } else {
-                                        LazyColumn(
-                                            state = listState,
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentPadding = PaddingValues(
-                                                top = paddingValues.calculateTopPadding() + 8.dp,
-                                                bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
-                                                start = 20.dp,
-                                                end = 20.dp
-                                            ),
-                                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                                        ) {
-                                            item(key = "scroll_anchor") {
-                                                Spacer(modifier = Modifier.height(0.5.dp))
-                                            }
 
-                                            items(
-                                                items = state.stations,
-                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
-                                            ) { station ->
-                                                StationCard(
-                                                    station = station,
-                                                    isActive = station.matchesUrl(viewState.selectedUrl),
-                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                    showHqIcon = !station.streamUrlHq.isNullOrBlank(),
-                                                    modifier = Modifier.animateItem(
-                                                        fadeInSpec = tween(durationMillis = 300),
-                                                        fadeOutSpec = tween(durationMillis = 300),
-                                                        placementSpec = if (viewState.isSearchActive) null else spring()
-                                                    ),
-                                                    onClick = {
-                                                        focusManager.clearFocus()
-                                                        val url = station.streamUrl ?: station.streamUrlHq
-                                                        url?.let { viewModel.toggleStation(it) }
-                                                    },
-                                                    onLongClick = { viewModel.toggleFavorite(station) }
-                                                )
-                                            }
+                                        items(
+                                            items = state.stations,
+                                            key = { "${it.streamUrl ?: it.name}|${it.network}" }
+                                        ) { station ->
+                                            StationCard(
+                                                station = station,
+                                                isActive = station.matchesUrl(viewState.selectedUrl),
+                                                isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                modifier = Modifier.animateItem(
+                                                    fadeInSpec = tween(durationMillis = 300),
+                                                    fadeOutSpec = tween(durationMillis = 300),
+                                                    placementSpec = if (viewState.isSearchActive) null else spring()
+                                                ),
+                                                onClick = {
+                                                    focusManager.clearFocus()
+                                                    val url = station.streamUrl ?: station.streamUrlHq
+                                                    url?.let { viewModel.toggleStation(it) }
+                                                },
+                                                onLongClick = { viewModel.toggleFavorite(station) }
+                                            )
                                         }
                                     }
 

@@ -9,12 +9,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import androidx.core.graphics.drawable.toBitmap
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -36,28 +36,27 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.barteqcz.onqa.MainActivity
 import com.barteqcz.onqa.R
+import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.repository.RadioRepository
 import com.barteqcz.onqa.data.repository.SettingsRepository
-import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.util.NetworkResult
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import kotlin.time.Duration.Companion.milliseconds
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
 class PlaybackService : MediaSessionService() {
@@ -70,6 +69,9 @@ class PlaybackService : MediaSessionService() {
 
     @Inject
     lateinit var settingsRepository: SettingsRepository
+
+    @Inject
+    lateinit var coverageManager: StationCoverageManager
 
     private var mediaSession: MediaSession? = null
     private var exoPlayer: ExoPlayer? = null
@@ -153,72 +155,23 @@ class PlaybackService : MediaSessionService() {
     }
 
     private suspend fun checkCoverageAndSwitch(stations: List<RadioStation>) {
-        val currentUrl = currentStationUrl ?: return
-        val currentName = currentStationName ?: return
-        
-        val normalizedCurrent = currentUrl.trimEnd('/')
-        
-        val settings = settingsRepository.settingsFlow.first()
-        val updatedStation = stations.find { it.name == currentName }
-        
-        if (updatedStation != null) {
-            val targetUrl = if (settings.useHqStream && !updatedStation.streamUrlHq.isNullOrBlank()) {
-                updatedStation.streamUrlHq
-            } else {
-                updatedStation.streamUrl
+        val result = coverageManager.checkCoverage(
+            stations = stations,
+            currentUrl = currentStationUrl,
+            currentName = currentStationName,
+            currentNetwork = currentStationNetwork,
+            isPlayerActive = exoPlayer?.playWhenReady == true,
+        )
+
+        when (result) {
+            is StationCoverageManager.CoverageResult.SwitchTo -> {
+                playInternal(result.name, result.url, result.logo, result.network, forceReload = result.forceReload)
             }
-            
-            if (targetUrl != null && targetUrl.trimEnd('/') != normalizedCurrent) {
-                playInternal(updatedStation.name, targetUrl, updatedStation.logo, updatedStation.network, forceReload = true)
-                return
-            }
-        }
-
-        val playingStation = updatedStation ?: stations.find { 
-            it.streamUrl?.trimEnd('/') == normalizedCurrent || it.streamUrlHq?.trimEnd('/') == normalizedCurrent 
-        }
-        
-        val isOutOfCoverage = playingStation == null || 
-                             (playingStation.coverageKm != null && playingStation.coverageKm <= 0.0) ||
-                             (playingStation.distance != null && playingStation.coverageKm != null && playingStation.distance > playingStation.coverageKm)
-        
-        if (isOutOfCoverage && (exoPlayer?.playWhenReady == true)) {
-            val favorites = settings.favoriteStations
-
-            val nextStation = if (currentStationNetwork != null) {
-                stations.asSequence()
-                    .filter { it.network == currentStationNetwork }
-                    .sortedWith(
-                        compareBy<RadioStation> {
-                            val inCoverage = it.distance != null && it.coverageKm != null && it.distance <= it.coverageKm
-                            val notZeroCoverage = it.coverageKm == null || it.coverageKm > 0.0
-                            !(inCoverage && notZeroCoverage)
-                        }.thenBy { it.distance ?: Double.MAX_VALUE }
-                    )
-                    .firstOrNull()
-            } else null
-            
-            val fallbackStation = nextStation ?: stations.asSequence()
-                .sortedWith(
-                    compareByDescending<RadioStation> { it.name in favorites }
-                        .thenBy {
-                            val inCoverage = it.distance != null && it.coverageKm != null && it.distance <= it.coverageKm
-                            val notZeroCoverage = it.coverageKm == null || it.coverageKm > 0.0
-                            !(inCoverage && notZeroCoverage)
-                        }
-                        .thenBy { it.distance ?: Double.MAX_VALUE }
-                )
-                .firstOrNull()
-
-            if ((fallbackStation != null) && (fallbackStation.streamUrl != currentUrl)) {
-                val url = if (settings.useHqStream && !fallbackStation.streamUrlHq.isNullOrBlank()) {
-                    fallbackStation.streamUrlHq
-                } else {
-                    fallbackStation.streamUrl
-                }
-                url?.let { playInternal(fallbackStation.name, it, fallbackStation.logo, fallbackStation.network) }
-            } else {
+            StationCoverageManager.CoverageResult.StopPlayback -> {
                 stopInternal()
+            }
+            StationCoverageManager.CoverageResult.KeepCurrent -> {
+                // Do nothing
             }
         }
     }
@@ -556,24 +509,13 @@ class PlaybackService : MediaSessionService() {
         val isActuallyPlaying = player.playWhenReady || player.playbackState == Player.STATE_BUFFERING
         val titleToProcess = if (isActuallyPlaying) (lastRdsTitle ?: info) else null
         
-        val (displayTitle, displaySubtitle) = if (titleToProcess != null) {
-            // Check if RDS info accidentally matches another station's name (common in network switches)
-            val otherStation = (repository.stations.value as? NetworkResult.Success)?.data?.find { 
-                it.name.equals(titleToProcess, ignoreCase = true) && it.name != stationName 
-            }
-            
-            if (otherStation != null) {
-                stationName to ""
-            } else {
-                MediaMetadataMapper.getEffectiveMetadata(
-                    streamTitle = titleToProcess,
-                    streamArtist = null,
-                    stationName = stationName
-                )
-            }
-        } else {
-            stationName to ""
-        }
+        val allStations = (repository.stations.value as? NetworkResult.Success)?.data
+        val (displayTitle, displaySubtitle) = MediaMetadataMapper.getEffectiveMetadata(
+            streamTitle = titleToProcess,
+            streamArtist = null,
+            stationName = stationName,
+            allStations = allStations,
+        )
         
         mediaSession?.let { session ->
             val player = session.player
@@ -729,7 +671,6 @@ class PlaybackService : MediaSessionService() {
                     val outputStream = ByteArrayOutputStream()
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
                     currentArtworkData = outputStream.toByteArray()
-                    Timber.d("Artwork loaded successfully, size: ${currentArtworkData?.size} bytes")
                     updateRdsAndNotification(null)
                 } else if (result is coil.request.ErrorResult) {
                     Timber.e(result.throwable, "Failed to load artwork from $url")

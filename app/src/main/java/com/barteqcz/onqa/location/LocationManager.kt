@@ -109,7 +109,6 @@ class LocationManager @Inject constructor(
     fun setAppForeground(foreground: Boolean) {
         if (isAppInForeground != foreground) {
             isAppInForeground = foreground
-            Timber.d("App foreground state changed: $foreground")
             if (foreground) {
                 _currentLocation.value?.let { handleGeocoding(it) }
             }
@@ -118,12 +117,10 @@ class LocationManager @Inject constructor(
 
     private fun handleGeocoding(location: Location) {
         if (!isAppInForeground) {
-            Timber.d("App is in background, skipping geocoding for UI.")
             return
         }
         geocodingJob?.cancel()
         geocodingJob = scope.launch {
-            Timber.d("Starting geocoding for location: ${location.latitude}, ${location.longitude}")
             val result = locationRepository.getAddressesFromLocation(location)
 
             if (result is NetworkResult.Error) {
