@@ -19,9 +19,18 @@ data class AppSettings(
     val showLocationHeader: Boolean = true,
     val lastLatitude: Double? = null,
     val lastLongitude: Double? = null,
+    val language: AppLanguage = AppLanguage.SYSTEM,
+    val isAmoledModeEnabled: Boolean = false,
     val isInitialValue: Boolean = true
 )
 
 enum class ThemeMode {
     SYSTEM, LIGHT, DARK
+}
+
+enum class AppLanguage(val code: String) {
+    SYSTEM(""),
+    ENGLISH("en"),
+    POLISH("pl"),
+    CZECH("cs")
 }

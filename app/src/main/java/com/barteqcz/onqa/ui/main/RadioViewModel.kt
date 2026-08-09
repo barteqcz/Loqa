@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.AppSettings
 import com.barteqcz.onqa.data.model.LocationInfo
 import com.barteqcz.onqa.data.model.RadioStation
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -58,6 +58,7 @@ data class RadioViewState(
         accentColor = OnqaGreen,
         useHqStream = true,
         favoriteStations = kotlinx.collections.immutable.persistentSetOf(),
+        language = AppLanguage.SYSTEM,
     ),
     val isNetworkAvailable: Boolean = true,
     val isScrollable: Boolean = false,
@@ -84,7 +85,6 @@ class RadioViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var lastNetworkId: String? = null
-    private val _uiState = MutableStateFlow<RadioUiState>(RadioUiState.Loading)
     private val _selectedStationUrl = MutableStateFlow<String?>(null)
     private val _selectedStationName = MutableStateFlow<String?>(null)
     private val _isScrollable = MutableStateFlow(value = false)
@@ -111,23 +111,84 @@ class RadioViewModel @Inject constructor(
                 accentColor = OnqaGreen,
                 useHqStream = true,
                 favoriteStations = kotlinx.collections.immutable.persistentSetOf(),
+                language = AppLanguage.SYSTEM,
             ),
         )
 
     private val favoriteStations = settings.map { it.favoriteStations }.distinctUntilChanged()
 
+    private val stationsResult = repository.stations
+        .combine(repository.currentLocation) { stations, location -> 
+            stations to location?.let { StableLocation(it.latitude, it.longitude) }
+        }
+        .flowOn(Dispatchers.Default)
+
+    private val processedStations = combine(
+        stationsResult,
+        favoriteStations,
+        _searchQuery.debounce(100.milliseconds),
+        _isSearchActive,
+        radioPlayer.state.map { it.stationInfo.url }.distinctUntilChanged(),
+        repository.locationInfo,
+    ) { args ->
+        @Suppress("UNCHECKED_CAST")
+        val (res, loc) = args[0] as Pair<NetworkResult<List<RadioStation>>, StableLocation?>
+        @Suppress("UNCHECKED_CAST")
+        val favorites = args[1] as Set<String>
+        val query = args[2] as String
+        val searchActive = args[3] as Boolean
+        val activeUrl = args[4] as String?
+        val locInfo = args[5] as LocationInfo
+
+        if (loc == null) return@combine RadioUiState.Loading
+
+        when (res) {
+            is NetworkResult.Loading -> RadioUiState.Loading
+            is NetworkResult.Success -> {
+                val allStations = res.data
+                val groupedStations = getSortedStations(allStations, activeUrl, favorites)
+                
+                val filteredStations = if (query.isBlank() || !searchActive) {
+                    groupedStations
+                } else {
+                    val normalizedQuery = query.unaccent().lowercase()
+                    groupedStations.filter { 
+                        it.name.unaccent().lowercase().contains(normalizedQuery) 
+                    }.toImmutableList()
+                }
+
+                RadioUiState.Success(
+                    stations = filteredStations,
+                    allStations = allStations.toImmutableList(),
+                    currentLocation = loc,
+                    cityName = locInfo.city,
+                    countryName = locInfo.country,
+                    countryCode = locInfo.countryCode,
+                )
+            }
+            is NetworkResult.Error -> RadioUiState.Error(res.message, isServerError = res.isServerError)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioUiState.Loading)
+
     val currentStation: StateFlow<RadioStation?> = combine(
         radioPlayer.state,
-        _uiState,
+        processedStations,
         favoriteStations,
         _selectedStationUrl,
         _selectedStationName,
-    ) { player, state, favorites, selectedUrl, selectedName ->
+    ) { args ->
+        val player = args[0] as com.barteqcz.onqa.player.PlayerState
+        val state = args[1] as RadioUiState
+        @Suppress("UNCHECKED_CAST")
+        val favorites = args[2] as Set<String>
+        val selectedUrl = args[3] as String?
+        val selectedName = args[4] as String?
+
         val info = player.stationInfo
         val url = info.url ?: selectedUrl ?: return@combine null
         val name = info.name ?: selectedName
 
-        val stations = (state as? RadioUiState.Success)?.stations ?: emptyList()
+        val stations = (state as? RadioUiState.Success)?.allStations ?: emptyList()
         
         val station = stations.find { it.matches(name, url) }
             ?: RadioStation(
@@ -141,7 +202,7 @@ class RadioViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), null)
 
     val viewState: StateFlow<RadioViewState> = combine(
-        _uiState,
+        processedStations,
         _selectedStationUrl,
         currentStation,
         radioPlayer.state,
@@ -153,44 +214,32 @@ class RadioViewModel @Inject constructor(
         _searchQuery,
         _isSearchActive,
     ) { args ->
-        val state = args[0] as RadioUiState
-        val selectedUrl = args[1] as String?
-        val current = args[2] as RadioStation?
+        @Suppress("UNCHECKED_CAST")
         val player = args[3] as com.barteqcz.onqa.player.PlayerState
-        val locInfo = args[4] as LocationInfo
-        val sett = args[5] as AppSettings
-        val status = args[6] as ConnectivityObserver.Status
-        val scrollable = args[7] as Boolean
-        val update = args[8] as UpdateInfo?
-        val query = args[9] as String
-        val searchActive = args[10] as Boolean
-
         RadioViewState(
-            uiState = state,
-            selectedUrl = selectedUrl,
-            currentStation = current,
+            uiState = args[0] as RadioUiState,
+            selectedUrl = args[1] as String?,
+            currentStation = args[2] as RadioStation?,
             isPlaying = player.isPlaying,
             isBuffering = player.isBuffering,
             playbackError = player.playbackError,
-            locationInfo = locInfo,
-            settings = sett,
-            isNetworkAvailable = status is ConnectivityObserver.Status.Available,
-            isScrollable = scrollable,
+            locationInfo = args[4] as LocationInfo,
+            settings = args[5] as AppSettings,
+            isNetworkAvailable = args[6] is ConnectivityObserver.Status.Available,
+            isScrollable = args[7] as Boolean,
             metadata = if (player.isPlaying || player.isBuffering) player.metadata else null,
-            updateInfo = update,
-            searchQuery = query,
-            isSearchActive = searchActive,
+            updateInfo = args[8] as UpdateInfo?,
+            searchQuery = args[9] as String,
+            isSearchActive = args[10] as Boolean,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
     init {
         checkForUpdates()
-        observeStations()
         observeSettings()
         observeConnectivity()
         setupLocationTracking()
         setupPlayerListeners()
-        setupStationListUpdates()
     }
 
     private fun checkForUpdates() {
@@ -200,69 +249,6 @@ class RadioViewModel @Inject constructor(
                 _updateInfo.value = info
             }
         }
-    }
-
-    private fun observeStations() {
-        repository.stations
-            .combine(repository.currentLocation) { stations, location -> 
-                stations to location?.let { StableLocation(it.latitude, it.longitude) }
-            }
-            .flowOn(Dispatchers.Default)
-            .onEach { (result, location) ->
-                if (location == null) {
-                    _uiState.value = RadioUiState.Loading
-                    return@onEach
-                }
-
-                when (result) {
-                    is NetworkResult.Loading -> {
-                        if ((_uiState.value !is RadioUiState.Success) && (_uiState.value !is RadioUiState.Error)) {
-                            _uiState.value = RadioUiState.Loading
-                        }
-                    }
-                    is NetworkResult.Success -> {
-                        val allStations = result.data
-
-                        val playerState = radioPlayer.state.value
-                        val currentPlaying = playerState.stationInfo
-                        if ((currentPlaying.url != null) && (playerState.isPlaying || playerState.isBuffering)) {
-                            val updatedStation = allStations.find { it.name == currentPlaying.name }
-                            val targetUrl = updatedStation?.getStreamUrl(settings.value.useHqStream)
-                            
-                            if ((targetUrl != null) && (targetUrl != currentPlaying.url)) {
-                                radioPlayer.play(updatedStation.name, targetUrl, updatedStation.logo, updatedStation.network, forceReload = true)
-                            }
-                        }
-
-                        val activeUrl = if (playerState.isPlaying || playerState.isBuffering) playerState.stationInfo.url else null
-                        
-                        val groupedStations = getSortedStations(allStations, activeUrl, settings.value.favoriteStations)
-                        val currentState = _uiState.value
-                        
-                        if (currentState is RadioUiState.Success) {
-                            _uiState.value = currentState.copy(
-                                stations = groupedStations,
-                                allStations = allStations.toImmutableList(),
-                                currentLocation = location,
-                            )
-                        } else {
-                            val locInfo = repository.locationInfo.value
-                            _uiState.value = RadioUiState.Success(
-                                stations = groupedStations,
-                                allStations = allStations.toImmutableList(),
-                                currentLocation = location,
-                                cityName = locInfo.city,
-                                countryName = locInfo.country,
-                                countryCode = locInfo.countryCode,
-                            )
-                        }
-                    }
-                    is NetworkResult.Error -> {
-                        _uiState.value = RadioUiState.Error(result.message, isServerError = result.isServerError)
-                    }
-                }
-            }
-            .launchIn(viewModelScope)
     }
 
     private fun observeSettings() {
@@ -290,8 +276,11 @@ class RadioViewModel @Inject constructor(
                     val networkChanged = lastNetworkId != status.networkId
                     lastNetworkId = status.networkId
 
-                    if ((_uiState.value is RadioUiState.Error) || (_uiState.value is RadioUiState.Success)) {
-                        repository.currentLocation.value?.let { viewModelScope.launch { repository.updateNearbyStations(it) } }
+                    val currentState = processedStations.value
+                    if (currentState is RadioUiState.Error || currentState is RadioUiState.Success) {
+                        repository.currentLocation.value?.let { 
+                            viewModelScope.launch { repository.updateNearbyStations(it) } 
+                        }
                     }
 
                     val playerState = radioPlayer.state.value
@@ -320,18 +309,6 @@ class RadioViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
-
-        repository.locationInfo
-            .onEach { info ->
-                (_uiState.value as? RadioUiState.Success)?.let { currentState ->
-                    _uiState.value = currentState.copy(
-                        cityName = info.city,
-                        countryName = info.country,
-                        countryCode = info.countryCode,
-                    )
-                }
-            }
-            .launchIn(viewModelScope)
     }
 
     private fun setupPlayerListeners() {
@@ -355,55 +332,13 @@ class RadioViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun setupStationListUpdates() {
-        combine(
-            _uiState,
-            radioPlayer.state,
-            favoriteStations,
-            _searchQuery.debounce(100.milliseconds),
-            _isSearchActive,
-        ) { state, player, favorites, query, searchActive ->
-            if (state is RadioUiState.Success) {
-                val activeUrl = if (player.isPlaying || player.isBuffering) player.stationInfo.url else null
-                StationListParams(activeUrl, favorites, query, searchActive)
-            } else null
-        }
-        .filterNotNull()
-        .distinctUntilChanged()
-        .onEach { params ->
-            val state = _uiState.value
-            if (state is RadioUiState.Success) {
-                val processedStations = getSortedStations(state.allStations, params.activeUrl, params.favorites)
-                val filteredStations = if (params.query.isBlank() || !params.isSearchActive) {
-                    processedStations
-                } else {
-                    val normalizedQuery = params.query.unaccent().lowercase()
-                    processedStations.filter { 
-                        it.name.unaccent().lowercase().contains(normalizedQuery) 
-                    }.toImmutableList()
-                }
-
-                if (filteredStations != state.stations) {
-                    _uiState.value = state.copy(stations = filteredStations)
-                }
-            }
-        }
-        .flowOn(Dispatchers.Default)
-        .launchIn(viewModelScope)
-    }
-
-    private data class StationListParams(
-        val activeUrl: String?,
-        val favorites: Set<String>,
-        val query: String,
-        val isSearchActive: Boolean,
-    )
-
     fun updateMaterialYou(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateMaterialYou(enabled) }
     fun updateThemeMode(mode: ThemeMode) = viewModelScope.launch { settingsRepository.updateThemeMode(mode) }
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
     fun updateShowLocationHeader(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowLocationHeader(enabled) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
+    fun updateLanguage(language: AppLanguage) = viewModelScope.launch { settingsRepository.updateLanguage(language) }
+    fun updateAmoledMode(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateAmoledMode(enabled) }
     fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
     fun setSearchQuery(query: String) { _searchQuery.value = query }
     fun setSearchActive(active: Boolean, clearQuery: Boolean = true) { 
@@ -433,7 +368,7 @@ class RadioViewModel @Inject constructor(
 
     fun toggleStation(url: String, stationName: String? = null) {
         val playerState = radioPlayer.state.value
-        val stations = (_uiState.value as? RadioUiState.Success)?.stations ?: emptyList()
+        val stations = (processedStations.value as? RadioUiState.Success)?.stations ?: emptyList()
         val station = stations.find { it.matchesUrl(url) }
 
         val streamUrl = station?.getStreamUrl(settings.value.useHqStream) ?: url
@@ -460,7 +395,7 @@ class RadioViewModel @Inject constructor(
     fun previousStation() = navigateStation(-1)
 
     private fun navigateStation(delta: Int) {
-        val stations = (_uiState.value as? RadioUiState.Success)?.stations ?: return
+        val stations = (processedStations.value as? RadioUiState.Success)?.stations ?: return
         if (stations.isEmpty()) return
         
         val currentIndex = currentIndex()
@@ -478,7 +413,7 @@ class RadioViewModel @Inject constructor(
     }
 
     private fun currentIndex(): Int {
-        val stations = (_uiState.value as? RadioUiState.Success)?.stations ?: return -1
+        val stations = (processedStations.value as? RadioUiState.Success)?.stations ?: return -1
         return stations.indexOfFirst { it.matches(_selectedStationName.value, _selectedStationUrl.value) }
     }
 

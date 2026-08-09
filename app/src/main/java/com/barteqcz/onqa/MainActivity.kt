@@ -1,14 +1,18 @@
 package com.barteqcz.onqa
 
 import android.Manifest
+import android.app.LocaleManager
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.os.LocaleList
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,9 +29,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.os.LocaleListCompat
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -40,12 +45,14 @@ import com.barteqcz.onqa.ui.onboarding.OnboardingScreen
 import com.barteqcz.onqa.ui.main.RadioScreen
 import com.barteqcz.onqa.ui.main.RadioUiState
 import com.barteqcz.onqa.ui.main.RadioViewModel
+import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.ui.settings.SettingsScreen
 import com.barteqcz.onqa.ui.theme.OnqaTheme
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val viewModel: RadioViewModel by viewModels()
 
@@ -55,7 +62,7 @@ class MainActivity : ComponentActivity() {
         val locationGranted = (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) ||
                 (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true)
 
-        if (locationGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (locationGranted && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)) {
             showBackgroundLocationDisclosure = true
         } else {
             checkPermissionsAndCompleteOnboarding()
@@ -128,7 +135,37 @@ class MainActivity : ComponentActivity() {
                 themeMode = viewState.settings.themeMode,
                 dynamicColor = if (!viewState.settings.isOnboardingCompleted) false else viewState.settings.isMaterialYouEnabled,
                 accentColor = viewState.settings.accentColor,
+                isAmoledMode = viewState.settings.isAmoledModeEnabled,
             ) {
+                LaunchedEffect(viewState.settings.language, viewState.settings.isInitialValue) {
+                    if (viewState.settings.isInitialValue) return@LaunchedEffect
+                    
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        val localeManager = getSystemService(LocaleManager::class.java)
+                        val targetLocaleList = if (viewState.settings.language == AppLanguage.SYSTEM) {
+                            LocaleList.getEmptyLocaleList()
+                        } else {
+                            LocaleList.forLanguageTags(viewState.settings.language.code)
+                        }
+                        if (localeManager.applicationLocales.toLanguageTags() != targetLocaleList.toLanguageTags()) {
+                            Timber.d("Setting system locales to: ${viewState.settings.language.code}")
+                            localeManager.applicationLocales = targetLocaleList
+                        }
+                    } else {
+                        val currentLocales = AppCompatDelegate.getApplicationLocales()
+                        val targetLocale = if (viewState.settings.language == AppLanguage.SYSTEM) {
+                            LocaleListCompat.getEmptyLocaleList()
+                        } else {
+                            LocaleListCompat.forLanguageTags(viewState.settings.language.code)
+                        }
+                        
+                        if (currentLocales.toLanguageTags() != targetLocale.toLanguageTags()) {
+                            Timber.d("Setting appcompat locales to: ${viewState.settings.language.code}")
+                            AppCompatDelegate.setApplicationLocales(targetLocale)
+                        }
+                    }
+                }
+
                 LaunchedEffect(viewState.settings.isOnboardingCompleted) {
                     if (!viewState.settings.isOnboardingCompleted && hasAllPermissions()) {
                         showDataDisclaimer = true
@@ -147,7 +184,7 @@ class MainActivity : ComponentActivity() {
                             onDismiss = {
                                 showBackgroundLocationDisclosure = false
                                 checkPermissionsAndCompleteOnboarding()
-                            },
+                            }
                         )
                     }
 
@@ -180,7 +217,11 @@ class MainActivity : ComponentActivity() {
                                 composable<SettingsRoute> {
                                     SettingsScreen(
                                         viewModel = viewModel,
-                                        onBack = { navController.popBackStack() }
+                                        onBack = { 
+                                            if (navController.currentDestination?.hasRoute<SettingsRoute>() == true) {
+                                                navController.popBackStack(RadioRoute, inclusive = false)
+                                            }
+                                        }
                                     )
                                 }
                             }

@@ -107,6 +107,7 @@ fun OnqaTheme(
     themeMode: ThemeMode = ThemeMode.SYSTEM,
     dynamicColor: Boolean = false,
     accentColor: Color = OnqaGreen,
+    isAmoledMode: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val darkTheme = when (themeMode) {
@@ -120,14 +121,25 @@ fun OnqaTheme(
             val context = LocalContext.current
             val base = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
             base.copy(
-                background = if (darkTheme) DarkBackground else LightBackground,
-                surface = if (darkTheme) DarkBackground else LightBackground,
-                surfaceVariant = if (darkTheme) CardBackground else LightCardBackground,
+                background = if (darkTheme) {
+                    if (isAmoledMode) Color.Black else DarkBackground
+                } else LightBackground,
+                surface = if (darkTheme) {
+                    if (isAmoledMode) Color.Black else DarkBackground
+                } else LightBackground,
+                surfaceVariant = if (darkTheme) {
+                    if (isAmoledMode) Color(0xFF0A0A0A) else CardBackground
+                } else LightCardBackground,
                 onSurface = if (darkTheme) TextWhite else TextBlack,
                 onSurfaceVariant = if (darkTheme) TextGrey else TextGreyLight,
             )
         }
-        darkTheme -> DarkColorScheme.copy(primary = accentColor)
+        darkTheme -> DarkColorScheme.copy(
+            primary = accentColor,
+            background = if (isAmoledMode) Color.Black else DarkBackground,
+            surface = if (isAmoledMode) Color.Black else DarkBackground,
+            surfaceVariant = if (isAmoledMode) Color(0xFF0A0A0A) else CardBackground,
+        )
         else -> LightColorScheme.copy(primary = accentColor.applyLightVariant())
     }
 

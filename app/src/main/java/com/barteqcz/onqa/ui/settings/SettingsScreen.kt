@@ -5,14 +5,17 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,13 +27,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
+import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
 import com.barteqcz.onqa.ui.theme.OnqaBlue
@@ -51,20 +55,9 @@ fun SettingsScreen(
     val settings = viewState.settings
     val selectedUrl = viewState.selectedUrl
 
-    val isLightMode = MaterialTheme.colorScheme.surface.luminance() > 0.5f
-    
-    val activeAccentColor = MaterialTheme.colorScheme.primary
+    val focusManager = LocalFocusManager.current
 
-    var customHex by remember { 
-        mutableStateOf(String.format("%06X", (activeAccentColor.toArgb() and 0x00FFFFFF))) 
-    }
-    
-    LaunchedEffect(activeAccentColor) {
-        val hex = String.format("%06X", (activeAccentColor.toArgb() and 0x00FFFFFF))
-        if (customHex.uppercase() != hex) {
-            customHex = hex
-        }
-    }
+    val isLightMode = MaterialTheme.colorScheme.surface.luminance() > 0.5f
 
     val scrollState = rememberScrollState()
 
@@ -93,6 +86,12 @@ fun SettingsScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        modifier = Modifier.clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+        ) {
+            focusManager.clearFocus()
+        },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold) },
@@ -104,7 +103,7 @@ fun SettingsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
                 ),
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -125,6 +124,39 @@ fun SettingsScreen(
                     )
                     .animateContentSize(),
             ) {
+                SettingCategory(title = stringResource(R.string.category_general))
+
+                LanguageSettings(
+                    currentLanguage = settings.language
+                ) { viewModel.updateLanguage(it) }
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                SettingCategory(title = stringResource(R.string.category_ui_elements))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.show_location_header_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.show_location_header_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Switch(
+                        checked = settings.showLocationHeader,
+                        onCheckedChange = { viewModel.updateShowLocationHeader(it) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(48.dp))
+
                 SettingCategory(title = stringResource(R.string.category_audio))
                 
                 Row(
@@ -155,12 +187,13 @@ fun SettingsScreen(
                 Text(stringResource(R.string.theme_mode_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text(stringResource(R.string.theme_mode_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
 
+                Spacer(modifier = Modifier.height(16.dp))
+
                 ThemeSwitcher(
-                    currentMode = settings.themeMode,
-                    onModeSelect = { viewModel.updateThemeMode(it) }
-                )
+                    currentMode = settings.themeMode
+                ) { viewModel.updateThemeMode(it) }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -168,12 +201,12 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.show_location_header_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        Text(stringResource(R.string.show_location_header_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                        Text(stringResource(R.string.amoled_mode_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.amoled_mode_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                     }
                     Switch(
-                        checked = settings.showLocationHeader,
-                        onCheckedChange = { viewModel.updateShowLocationHeader(it) },
+                        checked = settings.isAmoledModeEnabled,
+                        onCheckedChange = { viewModel.updateAmoledMode(it) },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
                             checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
@@ -183,100 +216,79 @@ fun SettingsScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.material_you_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                        Text(stringResource(R.string.material_you_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
-                    }
-                    Switch(
-                        checked = settings.isMaterialYouEnabled,
-                        onCheckedChange = { viewModel.updateMaterialYou(it) },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = MaterialTheme.colorScheme.primary,
-                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                        )
-                    )
-                }
-
-                AnimatedVisibility(
-                    visible = !settings.isMaterialYouEnabled,
-                    enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(animationSpec = tween(300)),
-                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(animationSpec = tween(300))
-                ) {
-                    Column(
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        
-                        FlowRow(
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(stringResource(R.string.material_you_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.material_you_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+                        }
+                        Switch(
+                            checked = settings.isMaterialYouEnabled,
+                            onCheckedChange = { viewModel.updateMaterialYou(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            )
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = !settings.isMaterialYouEnabled,
+                        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(animationSpec = tween(300)),
+                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(animationSpec = tween(300))
+                    ) {
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 3.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                .padding(top = 12.dp)
                         ) {
-                            displayAccentColors.forEachIndexed { index, color ->
-                                val baseColor = accentColors[index]
-                                val isSelected = (!settings.isMaterialYouEnabled) && 
-                                                 (settings.accentColor.toArgb() == baseColor.toArgb())
-                                
-                                val scale by animateFloatAsState(if (isSelected) 1.15f else 1f, label = "scale")
-                                
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .graphicsLayer { 
-                                            scaleX = scale
-                                            scaleY = scale 
+                            FlowRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 4.dp)
+                                    .padding(bottom = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                displayAccentColors.forEachIndexed { index, color ->
+                                    val baseColor = accentColors[index]
+                                    val isSelected = (!settings.isMaterialYouEnabled) && 
+                                                     (settings.accentColor.toArgb() == baseColor.toArgb())
+                                    
+                                    val scale by animateFloatAsState(if (isSelected) 1.15f else 1f, label = "scale")
+                                    
+                                    Box(
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .graphicsLayer { 
+                                                scaleX = scale
+                                                scaleY = scale 
+                                            }
+                                            .clip(CircleShape)
+                                            .background(color)
+                                            .clickable { viewModel.updateAccentColor(baseColor) },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (isSelected) {
+                                            Icon(
+                                                Icons.Rounded.Check,
+                                                contentDescription = null, 
+                                                tint = if (isLightMode) Color.White else Color.Black.copy(alpha = 0.7f),
+                                                modifier = Modifier.size(18.dp),
+                                            )
                                         }
-                                        .clip(CircleShape)
-                                        .background(color)
-                                        .clickable { viewModel.updateAccentColor(baseColor) },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    if (isSelected) {
-                                        Icon(
-                                            Icons.Rounded.Check,
-                                            contentDescription = null, 
-                                            tint = if (isLightMode) Color.White else Color.Black.copy(alpha = 0.7f),
-                                            modifier = Modifier.size(18.dp),
-                                        )
                                     }
                                 }
                             }
                         }
-
-                        OutlinedTextField(
-                            value = customHex,
-                            onValueChange = { 
-                                customHex = it
-                                if (it.length == 6) {
-                                    try {
-                                        val color = Color("#$it".toColorInt())
-                                        viewModel.updateAccentColor(color)
-                                    } catch (_: Exception) {}
-                                }
-                            },
-                            label = { Text(stringResource(R.string.custom_hex_label), color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            prefix = { Text(stringResource(R.string.hex_prefix), color = MaterialTheme.colorScheme.onSurface) },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                            )
-                        )
                     }
                 }
             }
@@ -310,14 +322,169 @@ fun SettingsScreen(
 }
 
 @Composable
+private fun LanguageSettings(
+    currentLanguage: AppLanguage,
+    onLanguageSelect: (AppLanguage) -> Unit
+) {
+    val isSystem = currentLanguage == AppLanguage.SYSTEM
+    val focusManager = LocalFocusManager.current
+
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.language_system),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(R.string.language_system_desc),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+            Switch(
+                checked = isSystem,
+                onCheckedChange = {
+                    focusManager.clearFocus()
+                    if (it) onLanguageSelect(AppLanguage.SYSTEM)
+                    else onLanguageSelect(AppLanguage.ENGLISH)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                )
+            )
+        }
+
+        AnimatedVisibility(
+            visible = !isSystem,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(24.dp))
+                LanguageDropdown(
+                    currentLanguage = currentLanguage,
+                    onLanguageSelect = {
+                        focusManager.clearFocus()
+                        onLanguageSelect(it)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LanguageDropdown(
+    currentLanguage: AppLanguage,
+    onLanguageSelect: (AppLanguage) -> Unit
+) {
+    var expanded by remember { mutableStateOf(value = false) }
+    val focusManager = LocalFocusManager.current
+    
+    val label = when (currentLanguage) {
+        AppLanguage.SYSTEM -> ""
+        AppLanguage.ENGLISH -> stringResource(R.string.language_english)
+        AppLanguage.POLISH -> stringResource(R.string.language_polish)
+        AppLanguage.CZECH -> stringResource(R.string.language_czech)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    ) {
+        Surface(
+            onClick = { expanded = !expanded },
+            shape = RoundedCornerShape(12.dp),
+            color = Color.Transparent,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    Icons.Rounded.Language,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f)
+                )
+
+                // Chevron icon
+                val rotation by animateFloatAsState(if (expanded) 180f else 0f, label = "rotation")
+                Icon(
+                    imageVector = Icons.Rounded.ArrowDropDown,
+                    contentDescription = null,
+                    modifier = Modifier.graphicsLayer { rotationZ = rotation }
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { 
+                expanded = false 
+                focusManager.clearFocus()
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.85f)
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            AppLanguage.entries.filter { it != AppLanguage.SYSTEM }.forEach { language ->
+                val itemLabel = when (language) {
+                    AppLanguage.SYSTEM -> ""
+                    AppLanguage.ENGLISH -> stringResource(R.string.language_english)
+                    AppLanguage.POLISH -> stringResource(R.string.language_polish)
+                    AppLanguage.CZECH -> stringResource(R.string.language_czech)
+                }
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = itemLabel,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = if (currentLanguage == language) FontWeight.Bold else FontWeight.Normal,
+                            color = if (currentLanguage == language) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    onClick = {
+                        onLanguageSelect(language)
+                        expanded = false
+                        focusManager.clearFocus()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ThemeSwitcher(
     currentMode: ThemeMode,
     onModeSelect: (ThemeMode) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         ThemeMode.entries.forEach { mode ->
