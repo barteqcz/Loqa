@@ -13,6 +13,9 @@ import com.barteqcz.onqa.location.LocationManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -84,6 +87,8 @@ class RadioRepository @Inject constructor(
 
     private suspend fun safeApiCall(
         actionName: String,
+        maxRetries: Int = 3,
+        initialDelay: Long = 1000,
         call: suspend () -> List<RadioStation>,
     ) {
         if (isFetching.getAndSet(true)) {
@@ -91,20 +96,45 @@ class RadioRepository @Inject constructor(
             return
         }
 
+        var currentDelay = initialDelay
         try {
-            val result = call()
-            _stations.value = NetworkResult.Success(result)
-            Timber.i("Successfully completed $actionName with ${result.size} stations.")
+            repeat(maxRetries) { attempt ->
+                try {
+                    val result = call()
+                    _stations.value = NetworkResult.Success(result)
+                    Timber.i("Successfully completed $actionName with ${result.size} stations on attempt ${attempt + 1}.")
+                    return // Success
+                } catch (e: Exception) {
+                    if (e is CancellationException) throw e
+                    
+                    val shouldRetry = when (e) {
+                        is IOException -> e !is UnknownHostException
+                        is HttpException -> e.code() in 500..599
+                        else -> false
+                    }
+
+                    if (attempt < maxRetries - 1 && shouldRetry) {
+                        Timber.w(e, "Attempt ${attempt + 1} failed for $actionName. Retrying in ${currentDelay}ms...")
+                        delay(currentDelay.milliseconds)
+                        currentDelay *= 2
+                    } else {
+                        throw e
+                    }
+                }
+            }
         } catch (e: IOException) {
-            Timber.e(e, "IO error in $actionName")
+            Timber.e(e, "IO error in $actionName after retries")
             val isServerError = e !is UnknownHostException
             val message = e.message ?: context.getString(R.string.error_io)
             _stations.value = NetworkResult.Error(message, e, isServerError = isServerError)
         } catch (e: HttpException) {
-            Timber.e(e, "HTTP error in $actionName (code: ${e.code()})")
+            Timber.e(e, "HTTP error in $actionName (code: ${e.code()}) after retries")
             _stations.value = NetworkResult.Error(context.getString(R.string.error_server_with_code, e.code()), e, isServerError = true)
+        } catch (e: CancellationException) {
+            Timber.d("Action $actionName was cancelled.")
+            throw e
         } catch (e: Exception) {
-            Timber.e(e, "Unexpected error in $actionName")
+            Timber.e(e, "Unexpected error in $actionName after retries")
             val message = e.message ?: context.getString(R.string.error_unknown)
             _stations.value = NetworkResult.Error(message, e, isServerError = true)
         } finally {

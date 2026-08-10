@@ -6,7 +6,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
-import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.AppSettings
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.theme.OnqaGreen
@@ -36,7 +35,6 @@ class SettingsRepository @Inject constructor(
         val SHOW_LOCATION_HEADER = booleanPreferencesKey("show_location_header")
         val LAST_LATITUDE = doublePreferencesKey("last_latitude")
         val LAST_LONGITUDE = doublePreferencesKey("last_longitude")
-        val LANGUAGE = stringPreferencesKey("language")
         val AMOLED_MODE = booleanPreferencesKey("amoled_mode")
     }
 
@@ -54,7 +52,6 @@ class SettingsRepository @Inject constructor(
                 showLocationHeader = preferences[PreferencesKeys.SHOW_LOCATION_HEADER] ?: true,
                 lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
                 lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
-                language = AppLanguage.valueOf(preferences[PreferencesKeys.LANGUAGE] ?: AppLanguage.SYSTEM.name),
                 isAmoledModeEnabled = preferences[PreferencesKeys.AMOLED_MODE] ?: false,
                 isInitialValue = false
             )
@@ -93,12 +90,6 @@ class SettingsRepository @Inject constructor(
     suspend fun updateAccentColor(color: Color) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.ACCENT_COLOR] = color.toArgb()
-        }
-    }
-
-    suspend fun updateLanguage(language: AppLanguage) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.LANGUAGE] = language.name
         }
     }
 

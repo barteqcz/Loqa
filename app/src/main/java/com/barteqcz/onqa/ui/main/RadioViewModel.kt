@@ -1,7 +1,9 @@
 package com.barteqcz.onqa.ui.main
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Immutable
+import androidx.core.os.LocaleListCompat
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -91,6 +93,7 @@ class RadioViewModel @Inject constructor(
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(value = false)
+    private val _currentLanguage = MutableStateFlow(getCurrentAppLanguage())
     private val _events = MutableSharedFlow<RadioUiEvent>()
     val events = _events.asSharedFlow()
 
@@ -213,9 +216,12 @@ class RadioViewModel @Inject constructor(
         _updateInfo,
         _searchQuery,
         _isSearchActive,
+        _currentLanguage,
     ) { args ->
         @Suppress("UNCHECKED_CAST")
         val player = args[3] as com.barteqcz.onqa.player.PlayerState
+        val settings = args[5] as AppSettings
+        val lang = args[11] as AppLanguage
         RadioViewState(
             uiState = args[0] as RadioUiState,
             selectedUrl = args[1] as String?,
@@ -224,7 +230,7 @@ class RadioViewModel @Inject constructor(
             isBuffering = player.isBuffering,
             playbackError = player.playbackError,
             locationInfo = args[4] as LocationInfo,
-            settings = args[5] as AppSettings,
+            settings = settings.copy(language = lang),
             isNetworkAvailable = args[6] is ConnectivityObserver.Status.Available,
             isScrollable = args[7] as Boolean,
             metadata = if (player.isPlaying || player.isBuffering) player.metadata else null,
@@ -337,7 +343,27 @@ class RadioViewModel @Inject constructor(
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
     fun updateShowLocationHeader(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowLocationHeader(enabled) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
-    fun updateLanguage(language: AppLanguage) = viewModelScope.launch { settingsRepository.updateLanguage(language) }
+    fun updateLanguage(language: AppLanguage) {
+        val locales = if (language == AppLanguage.SYSTEM) {
+            LocaleListCompat.getEmptyLocaleList()
+        } else {
+            LocaleListCompat.forLanguageTags(language.code)
+        }
+        AppCompatDelegate.setApplicationLocales(locales)
+        _currentLanguage.value = language
+    }
+
+    fun syncLanguage() {
+        _currentLanguage.value = getCurrentAppLanguage()
+    }
+
+    private fun getCurrentAppLanguage(): AppLanguage {
+        val currentLocales = AppCompatDelegate.getApplicationLocales()
+        if (currentLocales.isEmpty) return AppLanguage.SYSTEM
+        
+        val tag = currentLocales.get(0)?.language ?: return AppLanguage.SYSTEM
+        return AppLanguage.entries.find { it.code.equals(tag, ignoreCase = true) } ?: AppLanguage.SYSTEM
+    }
     fun updateAmoledMode(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateAmoledMode(enabled) }
     fun setScrollable(scrollable: Boolean) { _isScrollable.value = scrollable }
     fun setSearchQuery(query: String) { _searchQuery.value = query }
