@@ -64,7 +64,43 @@
     <string name="language_desc">Choose your preferred language</string>
     <string name="language_system">System language</string>
     <string name="language_system_desc">Use language from device settings</string>
-    <string name="language_english">English</string>
-    <string name="language_polish">Polish</string>
-    <string name="language_czech">Czech</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_polish" translatable="false">Polski</string>
+    <string name="language_czech" translatable="false">Čeština</string>
+    <string name="language_ukrainian" translatable="false">Українська</string>
+    <string name="language_french" translatable="false">Français</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_spanish" translatable="false">Español</string>
+    <string name="language_italian" translatable="false">Italiano</string>
+    <string name="language_slovak" translatable="false">Slovenčina</string>
+    <string name="language_slovenian" translatable="false">Slovenščina</string>
+    <string name="language_croatian" translatable="false">Hrvatski</string>
+    <string name="language_hungarian" translatable="false">Magyar</string>
+    <string name="language_dutch" translatable="false">Nederlands</string>
+    <string name="language_portuguese" translatable="false">Português</string>
+    <string name="language_romanian" translatable="false">Română</string>
+    <string name="language_bulgarian" translatable="false">Български</string>
+    <string name="language_greek" translatable="false">Ελληνικά</string>
+    <string name="language_danish" translatable="false">Dansk</string>
+    <string name="language_swedish" translatable="false">Svenska</string>
+    <string name="language_finnish" translatable="false">Suomi</string>
+    <string name="language_norwegian" translatable="false">Norsk Bokmål</string>
+    <string name="language_estonian" translatable="false">Eesti</string>
+    <string name="language_latvian" translatable="false">Latviešu</string>
+    <string name="language_lithuanian" translatable="false">Lietuvių</string>
+    <string name="language_maltese" translatable="false">Malti</string>
+    <string name="language_irish" translatable="false">Gaeilge</string>
+    <string name="language_icelandic" translatable="false">Íslenska</string>
+    <string name="language_albanian" translatable="false">Shqip</string>
+    <string name="language_serbian" translatable="false">Srpski</string>
+    <string name="language_bosnian" translatable="false">Bosanski</string>
+    <string name="language_macedonian" translatable="false">Македонски</string>
+    <string name="language_belarussian" translatable="false">Беларуская</string>
+    <string name="language_turkish" translatable="false">Türkçe</string>
+    <string name="language_luxembourgish" translatable="false">Lëtzebuergesch</string>
+    <string name="language_romansh" translatable="false">Rumantsch</string>
+    <string name="language_basque" translatable="false">Euskara</string>
+    <string name="language_catalan" translatable="false">Català</string>
+    <string name="language_galician" translatable="false">Galego</string>
+    <string name="language_norwegian_nynorsk" translatable="false">Norsk Nynorsk</string>
 </resources>

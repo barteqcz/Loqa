@@ -64,7 +64,4 @@
     <string name="language_desc">Wybierz preferowany język</string>
     <string name="language_system">Język systemowy</string>
     <string name="language_system_desc">Użyj języka z ustawień urządzenia</string>
-    <string name="language_english">Angielski</string>
-    <string name="language_polish">Polski</string>
-    <string name="language_czech">Czeski</string>
 </resources>

@@ -64,7 +64,4 @@
     <string name="language_desc">Vyberte preferovaný jazyk</string>
     <string name="language_system">Systémový jazyk</string>
     <string name="language_system_desc">Použít jazyk z nastavení zařízení</string>
-    <string name="language_english">Angličtina</string>
-    <string name="language_polish">Polština</string>
-    <string name="language_czech">Čeština</string>
 </resources>

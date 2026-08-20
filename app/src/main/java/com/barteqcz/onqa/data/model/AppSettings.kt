@@ -1,7 +1,9 @@
 package com.barteqcz.onqa.data.model
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import com.barteqcz.onqa.R
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
@@ -28,9 +30,45 @@ enum class ThemeMode {
     SYSTEM, LIGHT, DARK
 }
 
-enum class AppLanguage(val code: String) {
-    SYSTEM(""),
-    ENGLISH("en"),
-    POLISH("pl"),
-    CZECH("cs")
+enum class AppLanguage(val code: String, @StringRes val labelRes: Int) {
+    SYSTEM("", R.string.language_system),
+    BELARUSIAN("be", R.string.language_belarussian),
+    BOSNIAN("bs", R.string.language_bosnian),
+    BULGARIAN("bg", R.string.language_bulgarian),
+    CATALAN("ca", R.string.language_catalan),
+    CZECH("cs", R.string.language_czech),
+    DANISH("da", R.string.language_danish),
+    GERMAN("de", R.string.language_german),
+    ESTONIAN("et", R.string.language_estonian),
+    ENGLISH("en", R.string.language_english),
+    SPANISH("es", R.string.language_spanish),
+    BASQUE("eu", R.string.language_basque),
+    GREEK("el", R.string.language_greek),
+    FRENCH("fr", R.string.language_french),
+    IRISH("ga", R.string.language_irish),
+    GALICIAN("gl", R.string.language_galician),
+    CROATIAN("hr", R.string.language_croatian),
+    ICELANDIC("is", R.string.language_icelandic),
+    ITALIAN("it", R.string.language_italian),
+    LATVIAN("lv", R.string.language_latvian),
+    LUXEMBOURGISH("lb", R.string.language_luxembourgish),
+    LITHUANIAN("lt", R.string.language_lithuanian),
+    HUNGARIAN("hu", R.string.language_hungarian),
+    MACEDONIAN("mk", R.string.language_macedonian),
+    MALTESE("mt", R.string.language_maltese),
+    DUTCH("nl", R.string.language_dutch),
+    NORWEGIAN("nb", R.string.language_norwegian),
+    NORWEGIAN_NYNORSK("nn", R.string.language_norwegian_nynorsk),
+    POLISH("pl", R.string.language_polish),
+    PORTUGUESE("pt", R.string.language_portuguese),
+    ROMANIAN("ro", R.string.language_romanian),
+    ROMANSH("rm", R.string.language_romansh),
+    ALBANIAN("sq", R.string.language_albanian),
+    SLOVAK("sk", R.string.language_slovak),
+    SLOVENIAN("sl", R.string.language_slovenian),
+    SERBIAN("sr", R.string.language_serbian),
+    FINNISH("fi", R.string.language_finnish),
+    SWEDISH("sv", R.string.language_swedish),
+    TURKISH("tr", R.string.language_turkish),
+    UKRAINIAN("uk", R.string.language_ukrainian)
 }

@@ -391,12 +391,7 @@ private fun LanguageDropdown(
     var expanded by remember { mutableStateOf(value = false) }
     val focusManager = LocalFocusManager.current
     
-    val label = when (currentLanguage) {
-        AppLanguage.SYSTEM -> ""
-        AppLanguage.ENGLISH -> stringResource(R.string.language_english)
-        AppLanguage.POLISH -> stringResource(R.string.language_polish)
-        AppLanguage.CZECH -> stringResource(R.string.language_czech)
-    }
+    val label = stringResource(currentLanguage.labelRes)
 
     Box(
         modifier = Modifier
@@ -452,12 +447,7 @@ private fun LanguageDropdown(
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             AppLanguage.entries.filter { it != AppLanguage.SYSTEM }.forEach { language ->
-                val itemLabel = when (language) {
-                    AppLanguage.SYSTEM -> ""
-                    AppLanguage.ENGLISH -> stringResource(R.string.language_english)
-                    AppLanguage.POLISH -> stringResource(R.string.language_polish)
-                    AppLanguage.CZECH -> stringResource(R.string.language_czech)
-                }
+                val itemLabel = stringResource(language.labelRes)
                 DropdownMenuItem(
                     text = {
                         Text(
