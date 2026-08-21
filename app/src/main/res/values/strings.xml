@@ -84,7 +84,7 @@
     <string name="language_danish" translatable="false">Dansk</string>
     <string name="language_swedish" translatable="false">Svenska</string>
     <string name="language_finnish" translatable="false">Suomi</string>
-    <string name="language_norwegian" translatable="false">Norsk Bokmål</string>
+    <string name="language_norwegian" translatable="false">Norsk</string>
     <string name="language_estonian" translatable="false">Eesti</string>
     <string name="language_latvian" translatable="false">Latviešu</string>
     <string name="language_lithuanian" translatable="false">Lietuvių</string>
@@ -99,8 +99,4 @@
     <string name="language_turkish" translatable="false">Türkçe</string>
     <string name="language_luxembourgish" translatable="false">Lëtzebuergesch</string>
     <string name="language_romansh" translatable="false">Rumantsch</string>
-    <string name="language_basque" translatable="false">Euskara</string>
-    <string name="language_catalan" translatable="false">Català</string>
-    <string name="language_galician" translatable="false">Galego</string>
-    <string name="language_norwegian_nynorsk" translatable="false">Norsk Nynorsk</string>
 </resources>
