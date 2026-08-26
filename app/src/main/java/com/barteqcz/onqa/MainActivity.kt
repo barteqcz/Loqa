@@ -144,6 +144,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 Surface(color = MaterialTheme.colorScheme.background) {
+                    val navController = rememberNavController()
+                    
                     if (showBackgroundLocationDisclosure) {
                         BackgroundLocationDisclosure(
                             onConfirm = {
@@ -159,9 +161,12 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
 
-                    if (viewState.settings.isInitialValue) {
+                    val isInitial = viewState.settings.isInitialValue
+                    val isOnboardingCompleted = viewState.settings.isOnboardingCompleted
+                    
+                    if (isInitial && !isOnboardingCompleted) {
                         Box(modifier = Modifier.fillMaxSize())
-                    } else if (!viewState.settings.isOnboardingCompleted) {
+                    } else if (!isOnboardingCompleted) {
                         if (showDataDisclaimer) {
                             DataDisclaimer(
                                 onConfirm = {
@@ -172,7 +177,6 @@ class MainActivity : AppCompatActivity() {
                             OnboardingScreen(onGrantClick = { launchPermissionRequest() })
                         }
                     } else {
-                        val navController = rememberNavController()
                         val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
@@ -187,7 +191,11 @@ class MainActivity : AppCompatActivity() {
                                 composable<RadioRoute> {
                                     RadioScreen(
                                         viewModel = viewModel,
-                                        onSettingsClick = { navController.navigate(SettingsRoute) }
+                                        onSettingsClick = { 
+                                            if (navController.currentDestination?.hasRoute<RadioRoute>() == true) {
+                                                navController.navigate(SettingsRoute)
+                                            }
+                                        }
                                     )
                                 }
                                 composable<SettingsRoute> {
@@ -199,7 +207,9 @@ class MainActivity : AppCompatActivity() {
                                             }
                                         },
                                         onNavigateToMapPicker = {
-                                            navController.navigate(MapPickerRoute)
+                                            if (navController.currentDestination?.hasRoute<SettingsRoute>() == true) {
+                                                navController.navigate(MapPickerRoute)
+                                            }
                                         }
                                     )
                                 }
@@ -208,7 +218,11 @@ class MainActivity : AppCompatActivity() {
                                     MapPickerScreen(
                                         radioViewModel = viewModel,
                                         mapViewModel = mapViewModel,
-                                        onBack = { navController.popBackStack() }
+                                        onBack = { 
+                                            if (navController.currentDestination?.hasRoute<MapPickerRoute>() == true) {
+                                                navController.popBackStack()
+                                            }
+                                        }
                                     )
                                 }
                             }

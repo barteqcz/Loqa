@@ -79,8 +79,9 @@ fun RadioScreen(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
+                        enabled = viewState.isSearchActive,
                     ) { 
-                        if (viewState.isSearchActive) focusManager.clearFocus()
+                        focusManager.clearFocus()
                     }
                     .padding(bottom = if (viewState.settings.showLocationHeader) 8.dp else 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -195,7 +196,11 @@ fun RadioScreen(
                         }
 
                         IconButton(
-                            onClick = onSettingsClick,
+                            onClick = {
+                                if (!viewState.isSearchActive) {
+                                    onSettingsClick()
+                                }
+                            },
                             modifier = Modifier.size(32.dp),
                         ) {
                             Icon(

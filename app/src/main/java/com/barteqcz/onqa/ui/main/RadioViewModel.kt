@@ -178,7 +178,9 @@ class RadioViewModel @Inject constructor(
             }
             is NetworkResult.Error -> RadioUiState.Error(res.message, isServerError = res.isServerError)
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioUiState.Loading)
+    }
+    .flowOn(Dispatchers.Default)
+    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioUiState.Loading)
 
     val currentStation: StateFlow<RadioStation?> = combine(
         radioPlayer.state,
