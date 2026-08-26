@@ -10,13 +10,19 @@ object AddressRefiner {
 
         val countryNames = addresses.mapNotNull { it.countryName?.lowercase() }.toSet()
         val roadNames = addresses.mapNotNull { it.thoroughfare?.lowercase() }.toSet()
-        val allSubAdmins = addresses.mapNotNull { it.subAdminArea }.toSet()
-        if (allSubAdmins.isNotEmpty()) {
+
+        // 1. Look for a "Major City" match across all results.
+        // A major city match occurs when a locality or subLocality in the results list 
+        // matches any administrative area (district, province, or region) found in the results.
+        val allAdmins = addresses.flatMap { listOfNotNull(it.subAdminArea, it.adminArea) }.toSet()
+        
+        if (allAdmins.isNotEmpty()) {
+            // Priority 1: Strong Matches (e.g., "Ostrava" in "Okres Ostrava-město")
             val strongCity = addresses.firstNotNullOfOrNull { addr ->
                 val candidates = listOfNotNull(addr.locality, addr.subLocality)
                 candidates.firstOrNull { candidate ->
-                    allSubAdmins.any { subAdmin ->
-                        isStrongMajorCityMatch(candidate, subAdmin)
+                    allAdmins.any { admin ->
+                        isStrongMajorCityMatch(candidate, admin)
                     } && candidate.lowercase() !in countryNames && candidate.lowercase() !in roadNames
                 }
             }
@@ -26,8 +32,8 @@ object AddressRefiner {
                 addresses.firstNotNullOfOrNull { addr ->
                     val candidates = listOfNotNull(addr.locality, addr.subLocality)
                     candidates.firstOrNull { candidate ->
-                        allSubAdmins.any { subAdmin ->
-                            isMajorCityMatch(candidate, subAdmin)
+                        allAdmins.any { admin ->
+                            isMajorCityMatch(candidate, admin)
                         } && candidate.lowercase() !in countryNames && candidate.lowercase() !in roadNames
                     }
                 }
@@ -45,27 +51,21 @@ object AddressRefiner {
             }
         }
 
+        // 2. Fallback to most specific city name detection
         val baseInfo = run {
             var city = addresses.firstNotNullOfOrNull { addr ->
                 val loc = addr.locality ?: return@firstNotNullOfOrNull null
-                val admin = addr.adminArea
-                val subAdmin = addr.subAdminArea
                 
+                // Avoid using country names or road names as the city name
                 if (loc.lowercase() in countryNames || loc.lowercase() in roadNames) return@firstNotNullOfOrNull null
-                
-                if (loc.equals(admin, ignoreCase = true)) return@firstNotNullOfOrNull loc
-                
-                if (loc.equals(subAdmin, ignoreCase = true)) {
-                    val subLoc = addr.subLocality
-                    if (subLoc != null && subLoc.lowercase() !in roadNames) return@firstNotNullOfOrNull subLoc
-                    return@firstNotNullOfOrNull null
-                }
                 
                 loc
             }
 
             if (city == null) {
-                city = firstAddress.locality ?: firstAddress.subAdminArea ?: firstAddress.adminArea
+                // Hierarchical fallback: Prefer locality, then subLocality (neighborhood/town), 
+                // then subAdminArea (district), then adminArea (region).
+                city = firstAddress.locality ?: firstAddress.subLocality ?: firstAddress.subAdminArea ?: firstAddress.adminArea
             }
 
             val finalCity = city?.substringBefore(",")?.trim()
