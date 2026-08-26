@@ -31,6 +31,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.barteqcz.onqa.ui.navigation.MapPickerRoute
 import com.barteqcz.onqa.ui.navigation.RadioRoute
@@ -173,6 +174,11 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         val navController = rememberNavController()
                         val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentDestination = navBackStackEntry?.destination
+                        
+                        val isMapPickerVisible = currentDestination?.hasRoute<MapPickerRoute>() == true
+
                         Box(modifier = Modifier.fillMaxSize()) {
                             NavHost(
                                 navController = navController,
@@ -207,8 +213,11 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
 
+                            val allStations = (viewState.uiState as? RadioUiState.Success)?.allStations ?: emptyList()
+                            val isNoStationsSuccess = viewState.uiState is RadioUiState.Success && allStations.isEmpty()
+
                             AnimatedVisibility(
-                                visible = viewState.selectedUrl != null,
+                                visible = viewState.selectedUrl != null && !isMapPickerVisible && !isNoStationsSuccess,
                                 enter = slideInVertically { it } + fadeIn(),
                                 exit = slideOutVertically { it } + fadeOut(),
                                 modifier = Modifier.align(Alignment.BottomCenter),

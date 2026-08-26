@@ -10,26 +10,23 @@ object AddressRefiner {
         val baseInfo = if (firstAddress == null) {
             LocationInfo()
         } else {
-            // Collect structural identifiers from all results to use for non-hardcoded filtering
-            val adminNames = addresses.flatMap { 
-                listOfNotNull(it.subAdminArea, it.adminArea, it.countryName) 
+            // Structural identifiers from all results
+            // We exclude subAdminArea (District) from blacklist to allow cities like Gliwice or Břeclav
+            val broadAdminNames = addresses.flatMap { 
+                listOfNotNull(it.adminArea, it.countryName) 
             }.map { it.lowercase() }.toSet()
             
             val roadNames = addresses.mapNotNull { it.thoroughfare?.lowercase() }.toSet()
 
-            // Heuristic: Find a name that isn't a broad administrative region or a specific street.
-            // Priority: Locality (City) -> SubLocality (Neighborhood/Town) -> Feature (Village/Building)
+            // Priority: Locality (City) -> SubLocality (Neighborhood/Town)
+            // We strictly avoid featureName as it is often too detailed (street names, train stations, POIs).
             var city = addresses.firstNotNullOfOrNull { addr ->
-                addr.locality?.takeIf { it.lowercase() !in adminNames && it.lowercase() !in roadNames }
+                addr.locality?.takeIf { it.lowercase() !in broadAdminNames && it.lowercase() !in roadNames }
             } ?: addresses.firstNotNullOfOrNull { addr ->
-                addr.subLocality?.takeIf { it.lowercase() !in adminNames && it.lowercase() !in roadNames }
-            } ?: addresses.firstNotNullOfOrNull { addr ->
-                addr.featureName?.takeIf { 
-                    !it.matches(Regex("\\d+.*")) && it.lowercase() !in adminNames && it.lowercase() !in roadNames 
-                }
+                addr.subLocality?.takeIf { it.lowercase() !in broadAdminNames && it.lowercase() !in roadNames }
             }
 
-            // Fallback: If everything was filtered out, just use the first available locality or admin area
+            // Fallback: Use locality or administrative area from the primary address
             if (city == null) {
                 city = firstAddress.locality ?: firstAddress.subAdminArea ?: firstAddress.adminArea
             }
