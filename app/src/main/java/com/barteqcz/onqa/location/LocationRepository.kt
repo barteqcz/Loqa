@@ -26,7 +26,7 @@ class LocationRepository @Inject constructor(
 
     suspend fun getAddressesFromLocation(
         location: Location,
-        maxResults: Int = 10
+        maxResults: Int = 25
     ): NetworkResult<List<Address>> = withContext(ioDispatcher) {
         suspendCancellableCoroutine { continuation ->
             val geocoder = Geocoder(context, Locale.getDefault())

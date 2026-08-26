@@ -5,16 +5,47 @@ import com.barteqcz.onqa.data.model.LocationInfo
 
 object AddressRefiner {
 
-    private val COUNTRIES_PREFERRING_LOCALITY = setOf("ES")
-
     fun refineLocation(addresses: List<Address>?, lat: Double? = null, lon: Double? = null): LocationInfo {
-        val firstAddress = addresses?.firstOrNull()
-        val baseInfo = if (firstAddress == null) {
-            LocationInfo()
-        } else {
-            val countryNames = addresses.mapNotNull { it.countryName?.lowercase() }.toSet()
-            val roadNames = addresses.mapNotNull { it.thoroughfare?.lowercase() }.toSet()
+        val firstAddress = addresses?.firstOrNull() ?: return LocationInfo()
 
+        val countryNames = addresses.mapNotNull { it.countryName?.lowercase() }.toSet()
+        val roadNames = addresses.mapNotNull { it.thoroughfare?.lowercase() }.toSet()
+        val allSubAdmins = addresses.mapNotNull { it.subAdminArea }.toSet()
+        if (allSubAdmins.isNotEmpty()) {
+            val strongCity = addresses.firstNotNullOfOrNull { addr ->
+                val candidates = listOfNotNull(addr.locality, addr.subLocality)
+                candidates.firstOrNull { candidate ->
+                    allSubAdmins.any { subAdmin ->
+                        isStrongMajorCityMatch(candidate, subAdmin)
+                    } && candidate.lowercase() !in countryNames && candidate.lowercase() !in roadNames
+                }
+            }
+            
+            // Priority 2: Weak Matches (significant word overlap)
+            val weakCity = if (strongCity == null) {
+                addresses.firstNotNullOfOrNull { addr ->
+                    val candidates = listOfNotNull(addr.locality, addr.subLocality)
+                    candidates.firstOrNull { candidate ->
+                        allSubAdmins.any { subAdmin ->
+                            isMajorCityMatch(candidate, subAdmin)
+                        } && candidate.lowercase() !in countryNames && candidate.lowercase() !in roadNames
+                    }
+                }
+            } else null
+
+            val majorCity = strongCity ?: weakCity
+            
+            if (majorCity != null) {
+                val baseInfo = LocationInfo(
+                    city = majorCity.substringBefore(",").trim(),
+                    country = firstAddress.countryName,
+                    countryCode = firstAddress.countryCode
+                )
+                return applySpecialRegionOverrides(baseInfo, lat, lon, addresses)
+            }
+        }
+
+        val baseInfo = run {
             var city = addresses.firstNotNullOfOrNull { addr ->
                 val loc = addr.locality ?: return@firstNotNullOfOrNull null
                 val admin = addr.adminArea
@@ -26,14 +57,7 @@ object AddressRefiner {
                 
                 if (loc.equals(subAdmin, ignoreCase = true)) {
                     val subLoc = addr.subLocality
-
-                    // Special case for countries where major cities share names with provinces (like Spain).
-                    // We prefer the city name (locality) over neighborhood names (subLocality).
-                    if (addr.countryCode in COUNTRIES_PREFERRING_LOCALITY) return@firstNotNullOfOrNull loc
-
                     if (subLoc != null && subLoc.lowercase() !in roadNames) return@firstNotNullOfOrNull subLoc
-
-                    // If no subLocality, we'll keep looking in other address results.
                     return@firstNotNullOfOrNull null
                 }
                 
@@ -54,6 +78,31 @@ object AddressRefiner {
         }
 
         return applySpecialRegionOverrides(baseInfo, lat, lon, addresses)
+    }
+
+    private fun isStrongMajorCityMatch(name: String, adminArea: String): Boolean {
+        val n = name.lowercase()
+        val a = adminArea.lowercase()
+        if (n == a) return true
+
+        val nameWords = n.split(Regex("[\\s\\-\\u00A0]+")).filter { it.length > 3 }
+        if (nameWords.isEmpty()) return false
+        
+        val adminWords = a.split(Regex("[\\s\\-\\u00A0]+")).filter { it.length > 3 }.toSet()
+
+        return nameWords.all { it in adminWords }
+    }
+
+    private fun isMajorCityMatch(name: String, adminArea: String): Boolean {
+        val n = name.lowercase()
+        val a = adminArea.lowercase()
+        if (n == a) return true
+
+        // Split by space, hyphen, or non-breaking space
+        val nameWords = n.split(Regex("[\\s\\-\\u00A0]+")).filter { it.length > 3 }
+        val adminWords = a.split(Regex("[\\s\\-\\u00A0]+")).filter { it.length > 3 }
+
+        return nameWords.any { nw -> adminWords.any { aw -> nw == aw } }
     }
 
     private fun applySpecialRegionOverrides(
