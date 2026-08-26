@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.AppSettings
 import com.barteqcz.onqa.data.model.LocationInfo
+import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.model.StableLocation
 import com.barteqcz.onqa.data.model.ThemeMode
@@ -343,6 +344,15 @@ class RadioViewModel @Inject constructor(
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
     fun updateShowLocationHeader(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowLocationHeader(enabled) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
+    
+    fun updateLocationSource(source: LocationSource) = viewModelScope.launch { 
+        settingsRepository.updateLocationSource(source) 
+    }
+    
+    fun updateManualLocation(city: String?, code: String?, latitude: Double, longitude: Double) = viewModelScope.launch {
+        settingsRepository.updateManualLocation(city, code, latitude, longitude)
+    }
+
     fun updateLanguage(language: AppLanguage) {
         val locales = if (language == AppLanguage.SYSTEM) {
             LocaleListCompat.getEmptyLocaleList()

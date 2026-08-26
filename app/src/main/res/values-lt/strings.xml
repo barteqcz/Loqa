@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Stočių aprėpties duomenis teikia fmscan.org ir jie turėtų būti laikomi apytiksliais.\n\nProgramėlė atspindi FM arba DAB+ aprėptį, priklausomai nuo to, kaip stotis transliuoja. Jei stotis naudoja abi, jų aprėptis sujungiama.\n\nPatikrinkite aprėpties tinklą onqa.barteq.cz</string>
     <string name="search_stations_hint">Ieškoti stočių…</string>
     <string name="category_general">Bendra</string>
+    <string name="category_location">Vietovė</string>
+    <string name="location_source_title">Vietovės šaltinis</string>
+    <string name="location_source_desc">Pasirinkite, kaip programėlė nustato jūsų vietą</string>
+    <string name="location_source_gps">GPS (Dinaminis)</string>
+    <string name="location_source_manual">Rankinis (Statinis)</string>
+    <string name="pick_location_button">Pasirinkti vietą žemėlapyje</string>
+    <string name="pick_location_button_picked">Pasirinkta vietovė</string>
+    <string name="map_picker_title">Pasirinkti vietą</string>
+    <string name="confirm">Patvirtinti</string>
     <string name="category_ui_elements">UI elementai</string>
     <string name="language_title">Kalba</string>
     <string name="language_desc">Pasirinkite norimą kalbą</string>

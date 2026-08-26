@@ -25,8 +25,8 @@ android {
         applicationId = "com.barteqcz.onqa"
         minSdk = 24
         targetSdk = 37
-        versionCode = 20403
-        versionName = "2.4.3"
+        versionCode = 30000
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.coil.svg)
     implementation(libs.androidx.datastore.preferences)
 
+    implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
     implementation(libs.okhttp)
     implementation(libs.retrofit)

@@ -1,8 +1,9 @@
 package com.barteqcz.onqa.location
 
 import android.location.Location
-import com.barteqcz.onqa.data.repository.SettingsRepository
 import com.barteqcz.onqa.data.model.LocationInfo
+import com.barteqcz.onqa.data.model.LocationSource
+import com.barteqcz.onqa.data.repository.SettingsRepository
 import com.barteqcz.onqa.data.util.NetworkResult
 import com.barteqcz.onqa.di.ApplicationScope
 import com.google.android.gms.location.Priority
@@ -25,9 +26,52 @@ class LocationManager @Inject constructor(
     private val _locationInfo = MutableStateFlow(LocationInfo())
     val locationInfo: StateFlow<LocationInfo> = _locationInfo.asStateFlow()
 
+    private val _settings = settingsRepository.settingsFlow
+        .stateIn(scope, SharingStarted.Eagerly, null)
+
+    private var currentLocationSource: LocationSource = LocationSource.GPS
+
     init {
         scope.launch {
-            loadSavedLocation()
+            _settings.filterNotNull().collect { settings ->
+                val oldSource = currentLocationSource
+                currentLocationSource = settings.locationSource
+                
+                if (settings.locationSource == LocationSource.MANUAL) {
+                    stopTracking()
+                    if (settings.manualLatitude != null && settings.manualLongitude != null) {
+                        val manualLoc = Location("manual").apply {
+                            latitude = settings.manualLatitude
+                            longitude = settings.manualLongitude
+                        }
+                        _currentLocation.value = manualLoc
+                        _locationInfo.value = LocationInfo(
+                            city = settings.manualCity,
+                            countryCode = settings.manualCountryCode
+                        )
+                        Timber.d("Using manual location: ${settings.manualCity} (${settings.manualLatitude}, ${settings.manualLongitude})")
+                    }
+                } else {
+                    // GPS Mode
+                    if (_currentLocation.value == null || oldSource == LocationSource.MANUAL) {
+                        if (settings.lastLatitude != null && settings.lastLongitude != null) {
+                            val savedLoc = Location("saved").apply {
+                                latitude = settings.lastLatitude
+                                longitude = settings.lastLongitude
+                            }
+                            _currentLocation.value = savedLoc
+                            _locationInfo.value = LocationInfo(
+                                city = settings.lastCity,
+                                countryCode = settings.lastCountryCode
+                            )
+                        }
+                    }
+                    
+                    if (oldSource == LocationSource.MANUAL) {
+                        startTracking()
+                    }
+                }
+            }
         }
     }
 
@@ -41,23 +85,33 @@ class LocationManager @Inject constructor(
     }
 
     fun startTracking() {
-        if (trackingJob != null) {
-            Timber.d("Tracking already in progress, skipping start.")
-            return
-        }
-
-        Timber.i("Starting location tracking...")
-        trackingJob = scope.launch {
-            locationClient.getLastLocation()?.let { location ->
-                updateLocation(location)
+        scope.launch {
+            // Wait for settings to be loaded to know which source to use
+            val settings = _settings.filterNotNull().first()
+            
+            if (settings.locationSource == LocationSource.MANUAL) {
+                Timber.d("Manual location source enabled, skipping startTracking.")
+                return@launch
+            }
+            
+            if (trackingJob != null) {
+                Timber.d("Tracking already in progress, skipping start.")
+                return@launch
             }
 
-            locationClient.getLocationUpdates(
-                interval = UPDATE_INTERVAL,
-                minDistance = MIN_DISTANCE,
-                priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-            ).collect { location ->
-                updateLocation(location)
+            Timber.i("Starting location tracking...")
+            trackingJob = launch {
+                locationClient.getLastLocation()?.let { location ->
+                    updateLocation(location)
+                }
+
+                locationClient.getLocationUpdates(
+                    interval = UPDATE_INTERVAL,
+                    minDistance = MIN_DISTANCE,
+                    priority = Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                ).collect { location ->
+                    updateLocation(location)
+                }
             }
         }
     }
@@ -70,30 +124,9 @@ class LocationManager @Inject constructor(
         geocodingJob = null
     }
 
-    private suspend fun loadSavedLocation() {
-        try {
-            val settings = settingsRepository.settingsFlow.first()
-            if (settings.lastLatitude != null && settings.lastLongitude != null) {
-                val savedLoc = Location("saved").apply {
-                    latitude = settings.lastLatitude
-                    longitude = settings.lastLongitude
-                }
-                _currentLocation.value = savedLoc
-
-                settings.lastCity?.let { lastCity ->
-                    _locationInfo.value = LocationInfo(
-                        city = lastCity,
-                        countryCode = settings.lastCountryCode
-                    )
-                }
-                Timber.d("Loaded saved location: ${settings.lastCity} (${settings.lastLatitude}, ${settings.lastLongitude})")
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to load saved location from settings")
-        }
-    }
-
     private fun updateLocation(location: Location) {
+        if (currentLocationSource == LocationSource.MANUAL) return
+        
         _currentLocation.value = location
         scope.launch {
             settingsRepository.updateLastLocation(
@@ -116,7 +149,7 @@ class LocationManager @Inject constructor(
     }
 
     private fun handleGeocoding(location: Location) {
-        if (!isAppInForeground) {
+        if (!isAppInForeground || currentLocationSource == LocationSource.MANUAL) {
             return
         }
         geocodingJob?.cancel()

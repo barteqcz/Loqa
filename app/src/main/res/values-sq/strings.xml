@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Të dhënat e mbulimit të stacioneve ofrohen nga fmscan.org dhe duhet të konsiderohen të përafërta.\n\nAplikacioni pasqyron mbulimin FM ose DAB+, varësisht se si transmeton stacioni. Nëse një stacion përdor të dyja, mbulimi i tyre kombinohet.\n\nKontrolloni rrjetin e mbulimit në onqa.barteq.cz</string>
     <string name="search_stations_hint">Kërko stacione…</string>
     <string name="category_general">Të përgjithshme</string>
+    <string name="category_location">Vendndodhja</string>
+    <string name="location_source_title">Burimi i vendndodhjes</string>
+    <string name="location_source_desc">Zgjidhni se si e merr pozicionin tuaj aplikacioni</string>
+    <string name="location_source_gps">GPS (Dinamik)</string>
+    <string name="location_source_manual">Manual (Statik)</string>
+    <string name="pick_location_button">Zgjidh vendndodhjen në hartë</string>
+    <string name="pick_location_button_picked">Vendndodhja e zgjedhur</string>
+    <string name="map_picker_title">Zgjidh vendndodhjen</string>
+    <string name="confirm">Konfirmo</string>
     <string name="category_ui_elements">Elementet e UI</string>
     <string name="language_title">Gjuha</string>
     <string name="language_desc">Zgjidhni gjuhën tuaj të preferuar</string>

@@ -15,6 +15,7 @@ import com.barteqcz.onqa.location.LocationManager
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import org.osmdroid.config.Configuration
 import timber.log.Timber
 import java.io.File
 import java.util.Locale
@@ -28,6 +29,9 @@ class OnqaApplication : Application(), ImageLoaderFactory {
 
     override fun onCreate() {
         super.onCreate()
+        
+        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
+
         val isDebuggable = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         if (isDebuggable) {
             Timber.plant(Timber.DebugTree())

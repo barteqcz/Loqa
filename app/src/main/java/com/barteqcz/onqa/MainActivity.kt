@@ -32,6 +32,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.barteqcz.onqa.ui.navigation.MapPickerRoute
 import com.barteqcz.onqa.ui.navigation.RadioRoute
 import com.barteqcz.onqa.ui.navigation.SettingsRoute
 import com.barteqcz.onqa.ui.components.MiniPlayer
@@ -41,9 +42,12 @@ import com.barteqcz.onqa.ui.onboarding.OnboardingScreen
 import com.barteqcz.onqa.ui.main.RadioScreen
 import com.barteqcz.onqa.ui.main.RadioUiState
 import com.barteqcz.onqa.ui.main.RadioViewModel
+import com.barteqcz.onqa.ui.settings.MapPickerScreen
+import com.barteqcz.onqa.ui.settings.MapViewModel
 import com.barteqcz.onqa.ui.settings.SettingsScreen
 import com.barteqcz.onqa.ui.theme.OnqaTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -187,7 +191,18 @@ class MainActivity : AppCompatActivity() {
                                             if (navController.currentDestination?.hasRoute<SettingsRoute>() == true) {
                                                 navController.popBackStack(RadioRoute, inclusive = false)
                                             }
+                                        },
+                                        onNavigateToMapPicker = {
+                                            navController.navigate(MapPickerRoute)
                                         }
+                                    )
+                                }
+                                composable<MapPickerRoute> {
+                                    val mapViewModel: MapViewModel = hiltViewModel()
+                                    MapPickerScreen(
+                                        radioViewModel = viewModel,
+                                        mapViewModel = mapViewModel,
+                                        onBack = { navController.popBackStack() }
                                     )
                                 }
                             }

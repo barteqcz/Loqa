@@ -59,6 +59,15 @@
     <string name="disclaimer_message">I dati sulla copertura delle stazioni sono forniti da fmscan.org e devono essere considerati approssimativi.\n\nL\'app riflette la copertura FM o DAB+, a seconda di come trasmette la stazione. Se una stazione usa entrambi, la loro copertura viene combinata.\n\nControlla la rete di copertura su onqa.barteq.cz</string>
     <string name="search_stations_hint">Cerca stazioni…</string>
     <string name="category_general">Generale</string>
+    <string name="category_location">Posizione</string>
+    <string name="location_source_title">Origine posizione</string>
+    <string name="location_source_desc">Scegli come l\'app ottiene la tua posizione</string>
+    <string name="location_source_gps">GPS (Dinamico)</string>
+    <string name="location_source_manual">Manuale (Statico)</string>
+    <string name="pick_location_button">Scegli posizione sulla mappa</string>
+    <string name="pick_location_button_picked">Posizione scelta</string>
+    <string name="map_picker_title">Scegli posizione</string>
+    <string name="confirm">Conferma</string>
     <string name="category_ui_elements">Elementi UI</string>
     <string name="language_title">Lingua</string>
     <string name="language_desc">Scegli la tua lingua preferita</string>

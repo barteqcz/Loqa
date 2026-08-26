@@ -7,6 +7,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.barteqcz.onqa.data.model.AppSettings
+import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -36,6 +37,11 @@ class SettingsRepository @Inject constructor(
         val LAST_LATITUDE = doublePreferencesKey("last_latitude")
         val LAST_LONGITUDE = doublePreferencesKey("last_longitude")
         val AMOLED_MODE = booleanPreferencesKey("amoled_mode")
+        val LOCATION_SOURCE = stringPreferencesKey("location_source")
+        val MANUAL_LATITUDE = doublePreferencesKey("manual_latitude")
+        val MANUAL_LONGITUDE = doublePreferencesKey("manual_longitude")
+        val MANUAL_CITY = stringPreferencesKey("manual_city")
+        val MANUAL_COUNTRY_CODE = stringPreferencesKey("manual_country_code")
     }
 
     val settingsFlow: Flow<AppSettings> = context.dataStore.data
@@ -53,6 +59,11 @@ class SettingsRepository @Inject constructor(
                 lastLatitude = preferences[PreferencesKeys.LAST_LATITUDE],
                 lastLongitude = preferences[PreferencesKeys.LAST_LONGITUDE],
                 isAmoledModeEnabled = preferences[PreferencesKeys.AMOLED_MODE] ?: false,
+                locationSource = LocationSource.valueOf(preferences[PreferencesKeys.LOCATION_SOURCE] ?: LocationSource.GPS.name),
+                manualLatitude = preferences[PreferencesKeys.MANUAL_LATITUDE],
+                manualLongitude = preferences[PreferencesKeys.MANUAL_LONGITUDE],
+                manualCity = preferences[PreferencesKeys.MANUAL_CITY],
+                manualCountryCode = preferences[PreferencesKeys.MANUAL_COUNTRY_CODE],
                 isInitialValue = false
             )
         }
@@ -96,6 +107,21 @@ class SettingsRepository @Inject constructor(
     suspend fun updateAmoledMode(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.AMOLED_MODE] = enabled
+        }
+    }
+
+    suspend fun updateLocationSource(source: LocationSource) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.LOCATION_SOURCE] = source.name
+        }
+    }
+
+    suspend fun updateManualLocation(city: String?, code: String?, latitude: Double, longitude: Double) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.MANUAL_CITY] = city ?: ""
+            preferences[PreferencesKeys.MANUAL_COUNTRY_CODE] = code ?: ""
+            preferences[PreferencesKeys.MANUAL_LATITUDE] = latitude
+            preferences[PreferencesKeys.MANUAL_LONGITUDE] = longitude
         }
     }
 

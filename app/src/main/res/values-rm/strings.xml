@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Las datas da cuvridira da las emischuns vegnan furnidas da fmscan.org e duessan vegnir consideradas sco datas approximativas.\n\nL\'applicaziun visualisescha u la cuvridira FM u DAB+, tut tenor co che l\'emischun emetta. Sche l\'emischun utilisescha ombdus, vegn lur cuvridira combinada.\n\nControllai la rait da cuvridira sin onqa.barteq.cz</string>
     <string name="search_stations_hint">Tscherchar emischuns…</string>
     <string name="category_general">General</string>
+    <string name="category_location">Posiziun</string>
+    <string name="location_source_title">Funtauna da posiziun</string>
+    <string name="location_source_desc">Tscherna co l\'app survegn tia posiziun</string>
+    <string name="location_source_gps">GPS (dinamic)</string>
+    <string name="location_source_manual">Manual (static)</string>
+    <string name="pick_location_button">Tschernair la posiziun sin la carta</string>
+    <string name="pick_location_button_picked">Posiziun tschernida</string>
+    <string name="map_picker_title">Tschernair la posiziun</string>
+    <string name="confirm">Confermar</string>
     <string name="category_ui_elements">Elements UI</string>
     <string name="language_title">Lingua</string>
     <string name="language_desc">Tscherni vossa lingua preferida</string>

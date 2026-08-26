@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Данните за покритието на станциите се предоставят от fmscan.org и трябва да се считат за приблизителни.\n\nПриложението отразява или FM, или DAB+ покритие, в зависимост от това как предава станцията. Ако станцията използва и двете, тяхното покритие се комбинира.\n\nПроверете мрежата за покритие на onqa.barteq.cz</string>
     <string name="search_stations_hint">Търсене на станции…</string>
     <string name="category_general">Общи</string>
+    <string name="category_location">Местоположение</string>
+    <string name="location_source_title">Източник на местоположение</string>
+    <string name="location_source_desc">Изберете как приложението да получава позицията ви</string>
+    <string name="location_source_gps">GPS (Динамично)</string>
+    <string name="location_source_manual">Ръчно (Статично)</string>
+    <string name="pick_location_button">Избор на местоположение на картата</string>
+    <string name="pick_location_button_picked">Избрано местоположение</string>
+    <string name="map_picker_title">Избери местоположение</string>
+    <string name="confirm">Потвърди</string>
     <string name="category_ui_elements">Елементи на потребителския интерфейс</string>
     <string name="language_title">Език</string>
     <string name="language_desc">Изберете предпочитания от вас език</string>

@@ -16,6 +16,8 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.Map
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.rounded.LightMode
@@ -39,6 +41,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.AppLanguage
+import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
 import com.barteqcz.onqa.ui.theme.OnqaBlue
@@ -53,6 +56,7 @@ import com.barteqcz.onqa.ui.theme.applyLightVariant
 fun SettingsScreen(
     viewModel: RadioViewModel,
     onBack: () -> Unit,
+    onNavigateToMapPicker: () -> Unit,
 ) {
     BackHandler(onBack = onBack)
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
@@ -133,6 +137,80 @@ fun SettingsScreen(
                 LanguageSettings(
                     currentLanguage = settings.language
                 ) { viewModel.updateLanguage(it) }
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                SettingCategory(title = stringResource(R.string.category_location))
+                
+                Text(stringResource(R.string.location_source_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.location_source_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LocationSourceSwitcher(
+                    currentSource = settings.locationSource
+                ) { viewModel.updateLocationSource(it) }
+
+                AnimatedVisibility(
+                    visible = settings.locationSource == LocationSource.MANUAL,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Surface(
+                            onClick = onNavigateToMapPicker,
+                            shape = RoundedCornerShape(16.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Map,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                
+                                Column(modifier = Modifier.weight(1f)) {
+                                    val buttonText = if (settings.manualLatitude != null) {
+                                        stringResource(R.string.pick_location_button_picked)
+                                    } else {
+                                        stringResource(R.string.pick_location_button)
+                                    }
+                                    Text(
+                                        text = buttonText,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    settings.manualCity?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.graphicsLayer { rotationZ = 180f }
+                                )
+                            }
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(48.dp))
 
@@ -548,6 +626,51 @@ private fun LanguageDropdown(
             }
         }
     }
+}
+
+@Composable
+private fun LocationSourceSwitcher(
+    currentSource: LocationSource,
+    onSourceSelect: (LocationSource) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        LocationSource.entries.forEach { source ->
+            LocationSourceOption(
+                source = source,
+                isSelected = currentSource == source,
+                onClick = { onSourceSelect(source) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun LocationSourceOption(
+    source: LocationSource,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val icon = when (source) {
+        LocationSource.GPS -> Icons.Rounded.LocationOn
+        LocationSource.MANUAL -> Icons.Rounded.Map
+    }
+    val label = when (source) {
+        LocationSource.GPS -> stringResource(R.string.location_source_gps)
+        LocationSource.MANUAL -> stringResource(R.string.location_source_manual)
+    }
+
+    SelectableOption(
+        icon = icon,
+        label = label,
+        isSelected = isSelected,
+        onClick = onClick,
+        modifier = modifier
+    )
 }
 
 @Composable

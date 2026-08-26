@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Az állomások lefedettségi adatait az fmscan.org szolgáltatja, és hozzávetőlegesnek kell tekinteni.\n\nAz alkalmazás az FM vagy a DAB+ lefedettséget tükrözi, attól függően, hogyan sugároz az állomás. Ha egy állomás mindkettőt használja, a lefedettségük összeadódik.\n\nEllenőrizze a lefedettségi hálózatot az onqa.barteq.cz oldalon</string>
     <string name="search_stations_hint">Állomások keresése…</string>
     <string name="category_general">Általános</string>
+    <string name="category_location">Helyszín</string>
+    <string name="location_source_title">Helymeghatározás forrása</string>
+    <string name="location_source_desc">Válassza ki, hogyan határozza meg a helyzetét az app</string>
+    <string name="location_source_gps">GPS (Dinamikus)</string>
+    <string name="location_source_manual">Kézi (Statikus)</string>
+    <string name="pick_location_button">Hely kiválasztása a térképen</string>
+    <string name="pick_location_button_picked">Kiválasztott helyszín</string>
+    <string name="map_picker_title">Hely kiválasztása</string>
+    <string name="confirm">Megerősítés</string>
     <string name="category_ui_elements">UI elemek</string>
     <string name="language_title">Nyelv</string>
     <string name="language_desc">Válassza ki a kívánt nyelvet</string>

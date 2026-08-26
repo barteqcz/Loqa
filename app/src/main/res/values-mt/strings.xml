@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Id-data tal-kopertura tal-istazzjonijiet hija pprovduta minn fmscan.org u għandha titqies bħala approssimattiva.\n\nL-app tirrifletti jew kopertura FM u DAB+, skont kif ixandar l-stazzjon. Jekk stazzjon juża t-tnejn, il-kopertura tagħhom hija kkombinata.\n\nIċċekkja n-netwerk tal-kopertura fuq onqa.barteq.cz</string>
     <string name="search_stations_hint">Fittex stazzjonijiet…</string>
     <string name="category_general">Ġenerali</string>
+    <string name="category_location">Post</string>
+    <string name="location_source_title">Sors tal-lokazzjoni</string>
+    <string name="location_source_desc">Agħżel kif l-app tikseb il-pożizzjoni tiegħek</string>
+    <string name="location_source_gps">GPS (Dinamiku)</string>
+    <string name="location_source_manual">Manwali (Statiku)</string>
+    <string name="pick_location_button">Agħżel post fuq il-mappa</string>
+    <string name="pick_location_button_picked">Post magħżul</string>
+    <string name="map_picker_title">Agħżel post</string>
+    <string name="confirm">Ikkonferma</string>
     <string name="category_ui_elements">Elementi tal-UI</string>
     <string name="language_title">Lingwa</string>
     <string name="language_desc">Agħżel il-lingwa preferuta tiegħek</string>

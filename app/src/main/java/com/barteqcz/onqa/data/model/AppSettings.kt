@@ -23,11 +23,20 @@ data class AppSettings(
     val lastLongitude: Double? = null,
     val language: AppLanguage = AppLanguage.SYSTEM,
     val isAmoledModeEnabled: Boolean = false,
+    val locationSource: LocationSource = LocationSource.GPS,
+    val manualLatitude: Double? = null,
+    val manualLongitude: Double? = null,
+    val manualCity: String? = null,
+    val manualCountryCode: String? = null,
     val isInitialValue: Boolean = true
 )
 
 enum class ThemeMode {
     SYSTEM, LIGHT, DARK
+}
+
+enum class LocationSource {
+    GPS, MANUAL
 }
 
 enum class AppLanguage(val code: String, @StringRes val labelRes: Int) {

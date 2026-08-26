@@ -59,6 +59,15 @@
     <string name="disclaimer_message">İstasyon kapsama verileri fmscan.org tarafından sağlanır ve yaklaşık olarak kabul edilmelidir.\n\nUygulama, istasyonun nasıl yayın yaptığına bağlı olarak FM veya DAB+ kapsamını yansıtır. Bir istasyon her ikisini de kullanıyorsa, kapsamları birleştirilir.\n\nonqa.barteq.cz adresindeki kapsama ağını kontrol edin</string>
     <string name="search_stations_hint">İstasyon ara…</string>
     <string name="category_general">Genel</string>
+    <string name="category_location">Konum</string>
+    <string name="location_source_title">Konum kaynağı</string>
+    <string name="location_source_desc">Uygulamanın konumunuzu nasıl alacağını seçin</string>
+    <string name="location_source_gps">GPS (Dinamik)</string>
+    <string name="location_source_manual">Manuel (Statik)</string>
+    <string name="pick_location_button">Haritada konum seç</string>
+    <string name="pick_location_button_picked">Seçilen konum</string>
+    <string name="map_picker_title">Konum seç</string>
+    <string name="confirm">Onayla</string>
     <string name="category_ui_elements">UI öğeleri</string>
     <string name="language_title">Dil</string>
     <string name="language_desc">Tercih ettiğiniz dili seçin</string>

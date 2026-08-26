@@ -6,37 +6,45 @@ import com.barteqcz.onqa.data.model.LocationInfo
 object AddressRefiner {
 
     fun refineLocation(addresses: List<Address>?, lat: Double? = null, lon: Double? = null): LocationInfo {
-        val baseInfo = if (addresses.isNullOrEmpty()) {
+        val firstAddress = addresses?.firstOrNull()
+        val baseInfo = if (firstAddress == null) {
             LocationInfo()
         } else {
-            val cityCandidate = findBestCityCandidate(addresses)
-            val city = cleanCityName(cityCandidate)
-            val firstAddress = addresses.first()
+            // Collect structural identifiers from all results to use for non-hardcoded filtering
+            val adminNames = addresses.flatMap { 
+                listOfNotNull(it.subAdminArea, it.adminArea, it.countryName) 
+            }.map { it.lowercase() }.toSet()
+            
+            val roadNames = addresses.mapNotNull { it.thoroughfare?.lowercase() }.toSet()
+
+            // Heuristic: Find a name that isn't a broad administrative region or a specific street.
+            // Priority: Locality (City) -> SubLocality (Neighborhood/Town) -> Feature (Village/Building)
+            var city = addresses.firstNotNullOfOrNull { addr ->
+                addr.locality?.takeIf { it.lowercase() !in adminNames && it.lowercase() !in roadNames }
+            } ?: addresses.firstNotNullOfOrNull { addr ->
+                addr.subLocality?.takeIf { it.lowercase() !in adminNames && it.lowercase() !in roadNames }
+            } ?: addresses.firstNotNullOfOrNull { addr ->
+                addr.featureName?.takeIf { 
+                    !it.matches(Regex("\\d+.*")) && it.lowercase() !in adminNames && it.lowercase() !in roadNames 
+                }
+            }
+
+            // Fallback: If everything was filtered out, just use the first available locality or admin area
+            if (city == null) {
+                city = firstAddress.locality ?: firstAddress.subAdminArea ?: firstAddress.adminArea
+            }
+
+            // Cut anything after the first comma
+            val finalCity = city?.substringBefore(",")?.trim()
+            
             LocationInfo(
-                city = city,
+                city = finalCity,
                 country = firstAddress.countryName,
                 countryCode = firstAddress.countryCode
             )
         }
 
         return applySpecialRegionOverrides(baseInfo, lat, lon, addresses)
-    }
-
-    private fun findBestCityCandidate(addresses: List<Address>): String? {
-        val locality = addresses.firstNotNullOfOrNull { it.locality }
-        if (locality != null) return locality
-
-        val first = addresses.first()
-        return first.subAdminArea ?: first.adminArea ?: first.countryName
-    }
-
-    fun cleanCityName(name: String?): String? {
-        if (name.isNullOrBlank()) return null
-
-        return name.replace(Regex("\\d+"), "")
-            .replace(Regex("-(?=[a-z])\\w+"), "")
-            .trim()
-            .takeIf { it.length > 2 }
     }
 
     private fun applySpecialRegionOverrides(

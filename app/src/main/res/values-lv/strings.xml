@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Staciju pārklājuma datus nodrošina fmscan.org, un tie jāuzskata par aptuveniem.\n\nLietotne atspoguļo vai nu FM, vai DAB+ pārklājumu atkarībā no tā, kā stacija pārraida. Ja stacija izmanto abus, to pārklājums tiek apvienots.\n\nPārbaudiet pārklājuma tīklu vietnē onqa.barteq.cz</string>
     <string name="search_stations_hint">Meklēt stacijas…</string>
     <string name="category_general">Vispārīgi</string>
+    <string name="category_location">Atrašanās vieta</string>
+    <string name="location_source_title">Atrašanās vietas avots</string>
+    <string name="location_source_desc">Izvēlieties, kā lietotne nosaka jūsu pozīciju</string>
+    <string name="location_source_gps">GPS (Dinamiski)</string>
+    <string name="location_source_manual">Manuāli (Statiski)</string>
+    <string name="pick_location_button">Izvēlēties vietu kartē</string>
+    <string name="pick_location_button_picked">Izvēlētā atrašanās vieta</string>
+    <string name="map_picker_title">Izvēlēties vietu</string>
+    <string name="confirm">Apstiprināt</string>
     <string name="category_ui_elements">UI elementi</string>
     <string name="language_title">Valoda</string>
     <string name="language_desc">Izvēlieties vēlamo valodu</string>

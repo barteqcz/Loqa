@@ -59,6 +59,15 @@
     <string name="disclaimer_message">Dekkingsgegevens van stations worden verstrekt door fmscan.org en moeten als bij benadering worden beschouwd.\n\nDe app geeft FM- of DAB+-dekking weer, afhankelijk van hoe het station uitzendt. Als een station beide gebruikt, wordt hun dekking gecombineerd.\n\nBekijk het dekkingsnetwerk op onqa.barteq.cz</string>
     <string name="search_stations_hint">Stations zoeken…</string>
     <string name="category_general">Algemeen</string>
+    <string name="category_location">Locatie</string>
+    <string name="location_source_title">Locatiebron</string>
+    <string name="location_source_desc">Kies hoe de app je positie ophaalt</string>
+    <string name="location_source_gps">GPS (Dynamisch)</string>
+    <string name="location_source_manual">Handmatig (Statisch)</string>
+    <string name="pick_location_button">Kies locatie op kaart</string>
+    <string name="pick_location_button_picked">Gekozen locatie</string>
+    <string name="map_picker_title">Kies locatie</string>
+    <string name="confirm">Bevestigen</string>
     <string name="category_ui_elements">UI-elementen</string>
     <string name="language_title">Taal</string>
     <string name="language_desc">Kies uw voorkeurstaal</string>
