@@ -2,6 +2,7 @@ package com.barteqcz.onqa.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,8 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,6 +49,8 @@ fun MapPickerScreen(
     val state by mapViewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val density = LocalDensity.current.density
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
     val mapView = remember {
@@ -112,6 +117,8 @@ fun MapPickerScreen(
                 actions = {
                     Button(
                         onClick = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
                             mapViewModel.confirmLocation(radioViewModel, onBack)
                         },
                         enabled = state.selectedLocation != null && !state.isGeocoding,
@@ -128,7 +135,18 @@ fun MapPickerScreen(
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                }
+        ) {
             AndroidView(
                 factory = { 
                     mapView.apply {
@@ -143,6 +161,8 @@ fun MapPickerScreen(
                         
                         val eventsReceiver = object : MapEventsReceiver {
                             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
                                 mapViewModel.onLocationSelected(p)
                                 return true
                             }
@@ -175,7 +195,14 @@ fun MapPickerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .align(Alignment.TopCenter),
+                    .align(Alignment.TopCenter)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    },
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.surfaceVariant,
             ) {
@@ -215,7 +242,11 @@ fun MapPickerScreen(
                         imeAction = androidx.compose.ui.text.input.ImeAction.Search
                     ),
                     keyboardActions = androidx.compose.foundation.text.KeyboardActions(
-                        onSearch = { mapViewModel.searchLocation() }
+                        onSearch = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                            mapViewModel.searchLocation()
+                        }
                     )
                 )
 
@@ -242,6 +273,8 @@ fun MapPickerScreen(
                             ListItem(
                                 headlineContent = { Text(fullAddress) },
                                 modifier = Modifier.clickable {
+                                    focusManager.clearFocus()
+                                    keyboardController?.hide()
                                     mapViewModel.onSearchResultSelected(address)
                                 }
                             )
