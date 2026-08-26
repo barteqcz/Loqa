@@ -10,28 +10,33 @@ object AddressRefiner {
         val baseInfo = if (firstAddress == null) {
             LocationInfo()
         } else {
-            // Structural identifiers from all results
-            // We exclude subAdminArea (District) from blacklist to allow cities like Gliwice or Břeclav
-            val broadAdminNames = addresses.flatMap { 
-                listOfNotNull(it.adminArea, it.countryName) 
-            }.map { it.lowercase() }.toSet()
-            
+            val countryNames = addresses.mapNotNull { it.countryName?.lowercase() }.toSet()
             val roadNames = addresses.mapNotNull { it.thoroughfare?.lowercase() }.toSet()
 
-            // Priority: Locality (City) -> SubLocality (Neighborhood/Town)
-            // We strictly avoid featureName as it is often too detailed (street names, train stations, POIs).
             var city = addresses.firstNotNullOfOrNull { addr ->
-                addr.locality?.takeIf { it.lowercase() !in broadAdminNames && it.lowercase() !in roadNames }
-            } ?: addresses.firstNotNullOfOrNull { addr ->
-                addr.subLocality?.takeIf { it.lowercase() !in broadAdminNames && it.lowercase() !in roadNames }
+                val loc = addr.locality ?: return@firstNotNullOfOrNull null
+                val admin = addr.adminArea
+                val subAdmin = addr.subAdminArea
+                
+                if (loc.lowercase() in countryNames || loc.lowercase() in roadNames) return@firstNotNullOfOrNull null
+                
+                if (loc.equals(admin, ignoreCase = true)) return@firstNotNullOfOrNull loc
+                
+                if (loc.equals(subAdmin, ignoreCase = true)) {
+                    val subLoc = addr.subLocality
+                    if (subLoc != null && subLoc.lowercase() !in roadNames) return@firstNotNullOfOrNull subLoc
+                    
+                    // If no subLocality, we'll keep looking in other address results.
+                    return@firstNotNullOfOrNull null
+                }
+                
+                loc
             }
 
-            // Fallback: Use locality or administrative area from the primary address
             if (city == null) {
                 city = firstAddress.locality ?: firstAddress.subAdminArea ?: firstAddress.adminArea
             }
 
-            // Cut anything after the first comma
             val finalCity = city?.substringBefore(",")?.trim()
             
             LocationInfo(
