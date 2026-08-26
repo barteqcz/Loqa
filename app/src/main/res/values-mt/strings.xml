@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Data tal-kopertura</string>
     <string name="disclaimer_message">Id-data tal-kopertura tal-istazzjonijiet hija pprovduta minn fmscan.org u għandha titqies bħala approssimattiva.\n\nL-app tirrifletti jew kopertura FM u DAB+, skont kif ixandar l-stazzjon. Jekk stazzjon juża t-tnejn, il-kopertura tagħhom hija kkombinata.\n\nIċċekkja n-netwerk tal-kopertura fuq onqa.barteq.cz</string>
     <string name="search_stations_hint">Fittex stazzjonijiet…</string>
+    <string name="search_location_placeholder">Fittex post…</string>
     <string name="category_general">Ġenerali</string>
     <string name="category_location">Post</string>
     <string name="location_source_title">Sors tal-lokazzjoni</string>

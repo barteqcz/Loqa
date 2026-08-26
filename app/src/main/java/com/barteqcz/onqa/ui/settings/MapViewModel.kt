@@ -2,6 +2,7 @@ package com.barteqcz.onqa.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.location.Address
 import com.barteqcz.onqa.data.util.NetworkResult
 import com.barteqcz.onqa.location.AddressRefiner
 import com.barteqcz.onqa.location.LocationRepository
@@ -20,7 +21,10 @@ data class MapPickerState(
     val isGeocoding: Boolean = false,
     val city: String? = null,
     val countryCode: String? = null,
-    val error: String? = null
+    val error: String? = null,
+    val searchQuery: String = "",
+    val searchResults: List<Address> = emptyList(),
+    val mapCenterTrigger: Long = 0L
 )
 
 @HiltViewModel
@@ -35,6 +39,7 @@ class MapViewModel @Inject constructor(
         _state.value = _state.value.copy(
             selectedLocation = point,
             isGeocoding = true,
+            searchResults = emptyList(),
             error = null
         )
         
@@ -71,6 +76,61 @@ class MapViewModel @Inject constructor(
         }
     }
     
+    fun onSearchQueryChanged(query: String) {
+        _state.value = _state.value.copy(searchQuery = query)
+    }
+
+    fun searchLocation() {
+        val query = _state.value.searchQuery
+        if (query.isBlank()) return
+
+        _state.value = _state.value.copy(isGeocoding = true, error = null, searchResults = emptyList())
+
+        viewModelScope.launch {
+            val result = locationRepository.searchCities(query)
+            when (result) {
+                is NetworkResult.Success -> {
+                    val addresses = result.data
+                    if (addresses.isNotEmpty()) {
+                        if (addresses.size == 1) {
+                            onSearchResultSelected(addresses.first())
+                        } else {
+                            _state.value = _state.value.copy(
+                                isGeocoding = false,
+                                searchResults = addresses
+                            )
+                        }
+                    } else {
+                        _state.value = _state.value.copy(
+                            isGeocoding = false,
+                            error = "Location not found"
+                        )
+                    }
+                }
+                is NetworkResult.Error -> {
+                    _state.value = _state.value.copy(
+                        isGeocoding = false,
+                        error = result.message
+                    )
+                }
+                else -> {
+                    _state.value = _state.value.copy(isGeocoding = false)
+                }
+            }
+        }
+    }
+
+    fun onSearchResultSelected(address: Address) {
+        val point = GeoPoint(address.latitude, address.longitude)
+        _state.value = _state.value.copy(
+            selectedLocation = point,
+            searchResults = emptyList(),
+            mapCenterTrigger = System.currentTimeMillis()
+        )
+        // Trigger reverse geocoding to get city name
+        onLocationSelected(point)
+    }
+
     fun confirmLocation(radioViewModel: RadioViewModel, onConfirmed: () -> Unit) {
         val currentState = _state.value
         val loc = currentState.selectedLocation ?: return

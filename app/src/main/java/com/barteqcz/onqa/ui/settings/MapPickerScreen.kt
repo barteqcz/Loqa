@@ -1,9 +1,14 @@
 package com.barteqcz.onqa.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -87,6 +92,14 @@ fun MapPickerScreen(
         mapView.controller.setCenter(initialLocation)
     }
 
+    LaunchedEffect(state.mapCenterTrigger) {
+        if (state.mapCenterTrigger > 0L) {
+            state.selectedLocation?.let {
+                mapView.controller.animateTo(it)
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -128,18 +141,8 @@ fun MapPickerScreen(
                         }
                         marker.icon = pinDrawable
                         
-                        state.selectedLocation?.let {
-                            marker.position = it
-                            overlays.add(marker)
-                        }
-
                         val eventsReceiver = object : MapEventsReceiver {
                             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
-                                marker.position = p
-                                if (!overlays.contains(marker)) {
-                                    overlays.add(marker)
-                                }
-                                invalidate()
                                 mapViewModel.onLocationSelected(p)
                                 return true
                             }
@@ -150,12 +153,104 @@ fun MapPickerScreen(
                         }
                         
                         overlays.add(MapEventsOverlay(eventsReceiver))
+                        overlays.add(marker)
+                    }
+                },
+                update = { view ->
+                    val marker = view.overlays.filterIsInstance<Marker>().firstOrNull()
+                    marker?.let { m ->
+                        val loc = state.selectedLocation
+                        m.isEnabled = loc != null
+                        if (loc != null && m.position != loc) {
+                            m.position = loc
+                            view.invalidate()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize()
             )
+
+            // Search Bar
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .align(Alignment.TopCenter),
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+            ) {
+                TextField(
+                    value = state.searchQuery,
+                    onValueChange = { mapViewModel.onSearchQueryChanged(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text(stringResource(R.string.search_location_placeholder)) },
+                    leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
+                    ),
+                    trailingIcon = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (state.searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { mapViewModel.onSearchQueryChanged("") }) {
+                                    Icon(Icons.Rounded.Close, contentDescription = null)
+                                }
+                            }
+                            if (state.isGeocoding) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp).padding(end = 8.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            }
+                        }
+                    },
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        imeAction = androidx.compose.ui.text.input.ImeAction.Search
+                    ),
+                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                        onSearch = { mapViewModel.searchLocation() }
+                    )
+                )
+
+                if (state.searchResults.isNotEmpty()) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 300.dp)
+                    ) {
+                        items(state.searchResults) { address ->
+                            val fullAddress = remember(address) {
+                                val parts = mutableListOf<String>()
+                                address.locality?.let { parts.add(it) }
+                                address.adminArea?.let { parts.add(it) }
+                                address.countryName?.let { parts.add(it) }
+                                if (parts.isEmpty()) {
+                                    address.getAddressLine(0) ?: ""
+                                } else {
+                                    parts.joinToString(", ")
+                                }
+                            }
+                            
+                            ListItem(
+                                headlineContent = { Text(fullAddress) },
+                                modifier = Modifier.clickable {
+                                    mapViewModel.onSearchResultSelected(address)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
             
-            if (state.isGeocoding) {
+            if (state.isGeocoding && state.selectedLocation == null) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

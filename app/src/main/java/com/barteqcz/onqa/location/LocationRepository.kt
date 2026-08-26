@@ -54,66 +54,28 @@ class LocationRepository @Inject constructor(
         }
     }
 
-    suspend fun getCityLocation(
+    suspend fun searchCities(
         cityName: String,
-        proximity: Location? = null
-    ): NetworkResult<Location?> = withContext(ioDispatcher) {
+        maxResults: Int = 5
+    ): NetworkResult<List<Address>> = withContext(ioDispatcher) {
         suspendCancellableCoroutine { continuation ->
             val geocoder = Geocoder(context, Locale.getDefault())
             try {
-                val maxResults = 1
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    val listener = Geocoder.GeocodeListener { addresses ->
+                    geocoder.getFromLocationName(cityName, maxResults) { addresses ->
                         if (continuation.isActive) {
-                            val address = addresses.firstOrNull()
-                            if (address != null) {
-                                val loc = Location("geocoder").apply {
-                                    latitude = address.latitude
-                                    longitude = address.longitude
-                                }
-                                continuation.resume(NetworkResult.Success(loc))
-                            } else {
-                                continuation.resume(NetworkResult.Success(null))
-                            }
+                            continuation.resume(NetworkResult.Success(addresses))
                         }
-                    }
-                    if (proximity != null) {
-                        geocoder.getFromLocationName(
-                            cityName, maxResults,
-                            proximity.latitude - 0.5, proximity.longitude - 0.5,
-                            proximity.latitude + 0.5, proximity.longitude + 0.5,
-                            listener
-                        )
-                    } else {
-                        geocoder.getFromLocationName(cityName, maxResults, listener)
                     }
                 } else {
                     @Suppress("DEPRECATION")
-                    val addresses = if (proximity != null) {
-                        geocoder.getFromLocationName(
-                            cityName, maxResults,
-                            proximity.latitude - 0.5, proximity.longitude - 0.5,
-                            proximity.latitude + 0.5, proximity.longitude + 0.5
-                        )
-                    } else {
-                        geocoder.getFromLocationName(cityName, maxResults)
-                    }
-
+                    val addresses = geocoder.getFromLocationName(cityName, maxResults)
                     if (continuation.isActive) {
-                        val address = addresses?.firstOrNull()
-                        if (address != null) {
-                            val loc = Location("geocoder").apply {
-                                latitude = address.latitude
-                                longitude = address.longitude
-                            }
-                            continuation.resume(NetworkResult.Success(loc))
-                        } else {
-                            continuation.resume(NetworkResult.Success(null))
-                        }
+                        continuation.resume(NetworkResult.Success(addresses ?: emptyList()))
                     }
                 }
             } catch (e: Exception) {
-                Timber.e(e, "Failed to get city location for $cityName")
+                Timber.e(e, "Failed to search cities for $cityName")
                 if (continuation.isActive) {
                     continuation.resume(NetworkResult.Error(context.getString(R.string.error_find_coordinates), e))
                 }

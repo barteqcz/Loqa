@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Ofdeckungsinformatiounen</string>
     <string name="disclaimer_message">D\'Ofdeckungsinformatioune vun de Sende gi vu fmscan.org zur Verfügung gestallt a sollten als ongeféier ugesi ginn.\n\nD\'App reflektéiert entweder FM- oder DAB+-Ofdeckung, jee nodeem wéi de Sender ausgestraalt gëtt. Wann e Sender béid benotzt, gëtt hir Ofdeckung kombinéiert.\n\nKuckt d\'Ofdeckungsnetz op onqa.barteq.cz</string>
     <string name="search_stations_hint">Sender sichen…</string>
+    <string name="search_location_placeholder">Standuert sichen…</string>
     <string name="category_general">Allgemeng</string>
     <string name="category_location">Standuert</string>
     <string name="location_source_title">Standuertquell</string>

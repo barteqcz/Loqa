@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Täckningsdata</string>
     <string name="disclaimer_message">Stationsdäckningsdata tillhandahålls av fmscan.org och bör betraktas som ungefärlig.\n\nAppen speglar antingen FM- eller DAB+-täckning, beroende på hur stationen sänder. Om en station använder båda kombineras deras täckning.\n\nKontrollera täckningsnätverket på onqa.barteq.cz</string>
     <string name="search_stations_hint">Sök stationer…</string>
+    <string name="search_location_placeholder">Sök plats…</string>
     <string name="category_general">Allmänt</string>
     <string name="category_location">Plats</string>
     <string name="location_source_title">Platskälla</string>

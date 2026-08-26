@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Дані про покриття</string>
     <string name="disclaimer_message">Дані про покриття станцій надаються fmscan.org і повинні вважатися приблизними.\n\nПрограма відображає покриття FM або DAB+, залежно від того, як веде мовлення станція. Якщо станція використовує обидва варіанти, їхнє покриття поєднується.\n\nПеревірте мережу покриття на onqa.barteq.cz</string>
     <string name="search_stations_hint">Пошук станцій…</string>
+    <string name="search_location_placeholder">Пошук місця знаходження…</string>
     <string name="category_general">Загальні</string>
     <string name="category_location">Місцезнаходження</string>
     <string name="location_source_title">Джерело місцезнаходження</string>

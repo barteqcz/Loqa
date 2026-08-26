@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Abdeckungsdaten</string>
     <string name="disclaimer_message">Die Daten zur Senderabdeckung werden von fmscan.org bereitgestellt und sind als Näherungswerte zu betrachten.\n\nDie App spiegelt entweder die FM- oder die DAB+-Abdeckung wider, je nachdem, wie der Sender sendet. Wenn ein Sender beides nutzt, wird deren Abdeckung kombiniert.\n\nÜberprüfe das Abdeckungsnetzwerk auf onqa.barteq.cz</string>
     <string name="search_stations_hint">Sender suchen…</string>
+    <string name="search_location_placeholder">Standort suchen…</string>
     <string name="category_general">Allgemein</string>
     <string name="category_location">Standort</string>
     <string name="location_source_title">Standortquelle</string>

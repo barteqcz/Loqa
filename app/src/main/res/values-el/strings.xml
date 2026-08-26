@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Δεδομένα κάλυψης</string>
     <string name="disclaimer_message">Τα δεδομένα κάλυψης σταθμών παρέχονται από το fmscan.org και πρέπει να θεωρούνται κατά προσέγγιση.\n\nΗ εφαρμογή αντικατοπτρίζει είτε την κάλυψη FM είτε την DAB+, ανάλογα με τον τρόπο μετάδοσης του σταθμού. Εάν ένας σταθμός χρησιμοποιεί και τα δύο, η κάλυψή τους συνδυάζεται.\n\nΕλέγξτε το δίκτυο κάλυψης στο onqa.barteq.cz</string>
     <string name="search_stations_hint">Αναζήτηση σταθμών…</string>
+    <string name="search_location_placeholder">Αναζήτηση τοποθεσίας…</string>
     <string name="category_general">Γενικά</string>
     <string name="category_location">Τοποθεσία</string>
     <string name="location_source_title">Πηγή τοποθεσίας</string>

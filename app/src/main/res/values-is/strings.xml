@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Upplýsingar um útbreiðslu</string>
     <string name="disclaimer_message">Upplýsingar um útbreiðslu stöðva koma frá fmscan.org og ber að skoða sem áætlaðar tölur.\n\nForritið sýnir annaðhvort FM- eða DAB+ útbreiðslu, eftir því hvernig stöðin sendir út. Ef stöð notar hvort tveggja er útbreiðsla þeirra sameinuð.\n\nSkoðaðu útbreiðslukerfið á onqa.barteq.cz</string>
     <string name="search_stations_hint">Leita að stöðvum…</string>
+    <string name="search_location_placeholder">Leita að staðsetningu…</string>
     <string name="category_general">Almennt</string>
     <string name="category_location">Staðsetning</string>
     <string name="location_source_title">Uppruni staðsetningar</string>

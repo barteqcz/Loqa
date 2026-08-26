@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Date despre acoperire</string>
     <string name="disclaimer_message">Datele despre acoperirea posturilor sunt furnizate de fmscan.org și trebuie considerate aproximative.\n\nAplicația reflectă fie acoperirea FM sau DAB+, în funcție de modul în care emite postul. Dacă un post folosește ambele, acoperirea lor este combinată.\n\nVerificați rețeaua de acoperire pe onqa.barteq.cz</string>
     <string name="search_stations_hint">Caută posturi…</string>
+    <string name="search_location_placeholder">Caută locația…</string>
     <string name="category_general">General</string>
     <string name="category_location">Locație</string>
     <string name="location_source_title">Sursă locație</string>

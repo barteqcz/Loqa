@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Dane o zasięgu</string>
     <string name="disclaimer_message">Dane o zasięgu stacji są dostarczane przez fmscan.org i należy je traktować jako przybliżone.\n\nAplikacja odzwierciedla zasięg FM lub DAB+, w zależności od sposobu nadawania stacji. Jeśli stacja korzysta z obu, ich zasięg jest połączony.\n\nSprawdź sieć zasięgu na onqa.barteq.cz</string>
     <string name="search_stations_hint">Szukaj stacji…</string>
+    <string name="search_location_placeholder">Szukaj lokalizacji…</string>
     <string name="category_general">Ogólne</string>
     <string name="category_location">Lokalizacja</string>
     <string name="location_source_title">Źródło lokalizacji</string>

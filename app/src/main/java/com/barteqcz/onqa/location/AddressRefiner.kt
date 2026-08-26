@@ -5,6 +5,8 @@ import com.barteqcz.onqa.data.model.LocationInfo
 
 object AddressRefiner {
 
+    private val COUNTRIES_PREFERRING_LOCALITY = setOf("ES")
+
     fun refineLocation(addresses: List<Address>?, lat: Double? = null, lon: Double? = null): LocationInfo {
         val firstAddress = addresses?.firstOrNull()
         val baseInfo = if (firstAddress == null) {
@@ -24,8 +26,13 @@ object AddressRefiner {
                 
                 if (loc.equals(subAdmin, ignoreCase = true)) {
                     val subLoc = addr.subLocality
+
+                    // Special case for countries where major cities share names with provinces (like Spain).
+                    // We prefer the city name (locality) over neighborhood names (subLocality).
+                    if (addr.countryCode in COUNTRIES_PREFERRING_LOCALITY) return@firstNotNullOfOrNull loc
+
                     if (subLoc != null && subLoc.lowercase() !in roadNames) return@firstNotNullOfOrNull subLoc
-                    
+
                     // If no subLocality, we'll keep looking in other address results.
                     return@firstNotNullOfOrNull null
                 }

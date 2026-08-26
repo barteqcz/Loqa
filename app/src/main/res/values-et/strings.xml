@@ -58,6 +58,7 @@
     <string name="disclaimer_title">Leviala andmed</string>
     <string name="disclaimer_message">Jaamade leviala andmed pärinevad fmscan.org-ist ja neid tuleks pidada ligikaudseks.\n\nRakendus peegeldab kas FM- või DAB+-levi, olenevalt sellest, kuidas jaam edastab. Kui jaam kasutab mõlemat, siis nende levialad kombineeritakse.\n\nKontrollige leviala võrku aadressil onqa.barteq.cz</string>
     <string name="search_stations_hint">Otsi jaamu…</string>
+    <string name="search_location_placeholder">Otsi asukohta…</string>
     <string name="category_general">Üldine</string>
     <string name="category_location">Asukoht</string>
     <string name="location_source_title">Asukoha allikas</string>
