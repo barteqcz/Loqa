@@ -25,6 +25,9 @@ class UpdateDownloader : Service() {
     @Inject
     lateinit var okHttpClient: OkHttpClient
 
+    @Inject
+    lateinit var updateManager: UpdateManager
+
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var downloadJob: Job? = null
 
@@ -50,15 +53,21 @@ class UpdateDownloader : Service() {
             startForeground(NOTIFICATION_ID, notification)
         }
 
+        updateManager.updateProgress(0)
+
         downloadJob?.cancel()
         downloadJob = serviceScope.launch {
             try {
                 val file = downloadFile(url)
                 if (file != null) {
+                    updateManager.setCompleted()
                     installApk(file)
+                } else {
+                    updateManager.setError("Download failed")
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Download failed")
+                updateManager.setError(e.message ?: "Download failed")
             } finally {
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
@@ -88,6 +97,7 @@ class UpdateDownloader : Service() {
                     if (totalBytes > 0) {
                         val progress = (totalRead * 100 / totalBytes).toInt()
                         updateNotification(progress, progress == 100)
+                        updateManager.updateProgress(progress)
                     }
                 }
             }

@@ -15,6 +15,8 @@ import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.model.StableLocation
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.data.model.UpdateInfo
+import com.barteqcz.onqa.update.UpdateDownloadStatus
+import com.barteqcz.onqa.update.UpdateManager
 import com.barteqcz.onqa.player.RadioPlayer
 import com.barteqcz.onqa.data.repository.RadioRepository
 import com.barteqcz.onqa.data.repository.SettingsRepository
@@ -37,12 +39,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -67,6 +71,7 @@ data class RadioViewState(
     val isScrollable: Boolean = false,
     val metadata: String? = null,
     val updateInfo: UpdateInfo? = null,
+    val updateDownloadStatus: UpdateDownloadStatus = UpdateDownloadStatus.Idle,
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
 )
@@ -83,6 +88,7 @@ class RadioViewModel @Inject constructor(
     private val radioPlayer: RadioPlayer,
     private val settingsRepository: SettingsRepository,
     private val updateRepository: UpdateRepository,
+    private val updateManager: UpdateManager,
     private val getSortedStations: GetSortedStationsUseCase,
     connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
@@ -211,6 +217,7 @@ class RadioViewModel @Inject constructor(
         currentStation,
         radioPlayer.state,
         repository.locationInfo,
+        updateManager.downloadStatus,
         settings,
         connectivityStatus,
         _isScrollable,
@@ -221,8 +228,8 @@ class RadioViewModel @Inject constructor(
     ) { args ->
         @Suppress("UNCHECKED_CAST")
         val player = args[3] as com.barteqcz.onqa.player.PlayerState
-        val settings = args[5] as AppSettings
-        val lang = args[11] as AppLanguage
+        val settings = args[6] as AppSettings
+        val lang = args[12] as AppLanguage
         RadioViewState(
             uiState = args[0] as RadioUiState,
             selectedUrl = args[1] as String?,
@@ -231,13 +238,14 @@ class RadioViewModel @Inject constructor(
             isBuffering = player.isBuffering,
             playbackError = player.playbackError,
             locationInfo = args[4] as LocationInfo,
+            updateDownloadStatus = args[5] as UpdateDownloadStatus,
             settings = settings.copy(language = lang),
-            isNetworkAvailable = args[6] is ConnectivityObserver.Status.Available,
-            isScrollable = args[7] as Boolean,
+            isNetworkAvailable = args[7] is ConnectivityObserver.Status.Available,
+            isScrollable = args[8] as Boolean,
             metadata = if (player.isPlaying || player.isBuffering) player.metadata else null,
-            updateInfo = args[8] as UpdateInfo?,
-            searchQuery = args[9] as String,
-            isSearchActive = args[10] as Boolean,
+            updateInfo = args[9] as UpdateInfo?,
+            searchQuery = args[10] as String,
+            isSearchActive = args[11] as Boolean,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
@@ -247,12 +255,14 @@ class RadioViewModel @Inject constructor(
         observeConnectivity()
         setupLocationTracking()
         setupPlayerListeners()
+        setupLocationAwarePlayback()
     }
 
     private fun checkForUpdates() {
         viewModelScope.launch {
             val info = updateRepository.checkForUpdates()
             if (info.isUpdateAvailable) {
+                updateManager.reset()
                 _updateInfo.value = info
             }
         }
@@ -339,6 +349,60 @@ class RadioViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    private fun setupLocationAwarePlayback() {
+        processedStations
+            .filterIsInstance<RadioUiState.Success>()
+            .distinctUntilChanged { old, new -> old.currentLocation == new.currentLocation }
+            .onEach { state: RadioUiState.Success ->
+                val playerState = radioPlayer.state.value
+                val isActuallyActive = playerState.isPlaying || playerState.isBuffering || playerState.playbackError
+                val currentUrl = _selectedStationUrl.value ?: return@onEach
+                val currentName = _selectedStationName.value
+                
+                val allStations = state.allStations
+                val stationInNewLocation = allStations.find { it.matches(currentName, currentUrl) }
+                val isStillAvailable = stationInNewLocation != null
+
+                if (isStillAvailable) {
+                    if (isActuallyActive) {
+                        val currentNetwork = stationInNewLocation.network
+                        val bestInNetwork = state.stations.find { it.network == currentNetwork && it.name == currentName }
+                        val bestUrl = bestInNetwork?.getStreamUrl(settings.value.useHqStream)
+                        
+                        if (bestUrl != null && bestUrl != currentUrl) {
+                            Timber.i("Switching to better transmitter for $currentName: $bestUrl")
+                            playStation(bestInNetwork, bestInNetwork.name, bestUrl)
+                        }
+                    }
+                } else {
+                    if (isActuallyActive) {
+                        // Current station completely gone, but we were playing.
+                        // Switch to the first station in the new list (closest)
+                        val closest = state.stations.firstOrNull()
+                        if (closest != null) {
+                            val closestUrl = closest.getStreamUrl(settings.value.useHqStream)
+                            if (closestUrl != null) {
+                                Timber.i("Station $currentName gone. Switching to closest: ${closest.name}")
+                                playStation(closest, closest.name, closestUrl)
+                            }
+                        } else {
+                            // No stations available in this region at all
+                            Timber.i("No stations available. Stopping.")
+                            radioPlayer.pause()
+                            _selectedStationUrl.value = null
+                            _selectedStationName.value = null
+                        }
+                    } else {
+                        // Current station gone and we were NOT playing. Hide miniplayer.
+                        Timber.i("Station $currentName gone and not playing. Hiding miniplayer.")
+                        _selectedStationUrl.value = null
+                        _selectedStationName.value = null
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     fun updateMaterialYou(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateMaterialYou(enabled) }
     fun updateThemeMode(mode: ThemeMode) = viewModelScope.launch { settingsRepository.updateThemeMode(mode) }
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
@@ -389,6 +453,7 @@ class RadioViewModel @Inject constructor(
     }
 
     fun refresh() {
+        updateManager.reset()
         repository.currentLocation.value?.let { viewModelScope.launch { repository.updateNearbyStations(it) } }
     }
 
