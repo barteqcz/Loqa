@@ -11,10 +11,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ViewList
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.GridView
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Map
@@ -43,6 +45,7 @@ import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
+import com.barteqcz.onqa.data.model.ViewMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
 import com.barteqcz.onqa.ui.theme.OnqaBlue
 import com.barteqcz.onqa.ui.theme.OnqaCyan
@@ -215,6 +218,17 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(48.dp))
 
                 SettingCategory(title = stringResource(R.string.category_ui_elements))
+
+                Text(stringResource(R.string.view_mode_title), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.view_mode_desc), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ViewModeSwitcher(
+                    currentMode = settings.viewMode
+                ) { viewModel.updateViewMode(it) }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -662,6 +676,51 @@ private fun LocationSourceOption(
     val label = when (source) {
         LocationSource.GPS -> stringResource(R.string.location_source_gps)
         LocationSource.MANUAL -> stringResource(R.string.location_source_manual)
+    }
+
+    SelectableOption(
+        icon = icon,
+        label = label,
+        isSelected = isSelected,
+        onClick = onClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ViewModeSwitcher(
+    currentMode: ViewMode,
+    onModeSelect: (ViewMode) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        ViewMode.entries.forEach { mode ->
+            ViewModeOption(
+                mode = mode,
+                isSelected = currentMode == mode,
+                onClick = { onModeSelect(mode) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun ViewModeOption(
+    mode: ViewMode,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val icon = when (mode) {
+        ViewMode.LIST -> Icons.AutoMirrored.Rounded.ViewList
+        ViewMode.TILE -> Icons.Rounded.GridView
+    }
+    val label = when (mode) {
+        ViewMode.LIST -> stringResource(R.string.view_mode_list)
+        ViewMode.TILE -> stringResource(R.string.view_mode_tile)
     }
 
     SelectableOption(

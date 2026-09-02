@@ -9,6 +9,8 @@
     <string name="buffering">Буфериране…</string>
     <string name="distance_with_dot">"• %d км"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 км"</string>
+    <string name="distance_km">%d км</string>
+    <string name="less_than_one_km">&lt; 1 км</string>
     <string name="back">Назад</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Използване на системни динамични акцентни цветове</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Показване на текущото местоположение</string>
     <string name="show_location_header_desc">Показване на информация за местоположението в горната лента</string>
     <string name="unknown_location">&#129517; Нямаме представа къде се намирате</string>
-    <string name="update_available_title">Налична актуализация</string>
-    <string name="update_available_message_simple">Налична е нова версия</string>
-    <string name="update_action_download">Изтегляне</string>
     <string name="disclaimer_title">Данни за покритието</string>
     <string name="disclaimer_message">Данните за покритието на станциите се предоставят от fmscan.org и трябва да се считат за приблизителни.\n\nПриложението отразява или FM, или DAB+ покритие, в зависимост от това как предава станцията. Ако станцията използва и двете, тяхното покритие се комбинира.\n\nПроверете мрежата за покритие на onqa.barteq.cz</string>
     <string name="search_stations_hint">Търсене на станции…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Избери местоположение</string>
     <string name="confirm">Потвърди</string>
     <string name="category_ui_elements">Елементи на потребителския интерфейс</string>
+    <string name="view_mode_title">Режим на преглед</string>
+    <string name="view_mode_desc">Превключване между списък и плочки</string>
+    <string name="view_mode_list">Списък</string>
+    <string name="view_mode_tile">Плочки</string>
     <string name="language_title">Език</string>
     <string name="language_desc">Изберете предпочитания от вас език</string>
     <string name="language_system">Системен език</string>

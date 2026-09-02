@@ -9,6 +9,8 @@
     <string name="buffering">Vyrovnávanie pamäte…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Späť</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Použiť systémové dynamické farby akcentu</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Zobraziť aktuálnu polohu</string>
     <string name="show_location_header_desc">Zobraziť informácie o polohe v hornej lište</string>
     <string name="unknown_location">&#129517; Netušíme, kde sa nachádzate</string>
-    <string name="update_available_title">Dostupná aktualizácia</string>
-    <string name="update_available_message_simple">K dispozícii je nová verzia</string>
-    <string name="update_action_download">Stiahnuť</string>
     <string name="disclaimer_title">Údaje o pokrytí</string>
     <string name="disclaimer_message">Údaje o pokrytí staníc poskytuje fmscan.org a mali by sa považovať za približné.\n\nAplikácia odráža buď pokrytie FM alebo DAB+ v závislosti od spôsobu vysielania stanice. Ak stanica používa obe, ich pokrytie sa kombinuje.\n\nSkontrolujte sieť pokrytia na onqa.barteq.cz</string>
     <string name="search_stations_hint">Hľadať stanice…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Vybrať polohu</string>
     <string name="confirm">Potvrdiť</string>
     <string name="category_ui_elements">Prvky UI</string>
+    <string name="view_mode_title">Režim zobrazenia</string>
+    <string name="view_mode_desc">Prepínanie medzi zoznamom a dlaždicami</string>
+    <string name="view_mode_list">Zoznam</string>
+    <string name="view_mode_tile">Dlaždice</string>
     <string name="language_title">Jazyk</string>
     <string name="language_desc">Vyberte si preferovaný jazyk</string>
     <string name="language_system">Systémový jazyk</string>

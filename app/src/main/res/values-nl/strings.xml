@@ -9,6 +9,8 @@
     <string name="buffering">Bufferen…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Terug</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Gebruik systeem dynamische accentkleuren</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Huidige locatie tonen</string>
     <string name="show_location_header_desc">Toon locatie-informatie in de bovenste balk</string>
     <string name="unknown_location">&#129517; We hebben geen idee waar je bent</string>
-    <string name="update_available_title">Update beschikbaar</string>
-    <string name="update_available_message_simple">Er is een nieuwe versie beschikbaar</string>
-    <string name="update_action_download">Downloaden</string>
     <string name="disclaimer_title">Dekkingsgegevens</string>
     <string name="disclaimer_message">Dekkingsgegevens van stations worden verstrekt door fmscan.org en moeten als bij benadering worden beschouwd.\n\nDe app geeft FM- of DAB+-dekking weer, afhankelijk van hoe het station uitzendt. Als een station beide gebruikt, wordt hun dekking gecombineerd.\n\nBekijk het dekkingsnetwerk op onqa.barteq.cz</string>
     <string name="search_stations_hint">Stations zoeken…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Kies locatie</string>
     <string name="confirm">Bevestigen</string>
     <string name="category_ui_elements">UI-elementen</string>
+    <string name="view_mode_title">Weergavemodus</string>
+    <string name="view_mode_desc">Schakelen tussen lijst- en tegelweergave</string>
+    <string name="view_mode_list">Lijst</string>
+    <string name="view_mode_tile">Tegel</string>
     <string name="language_title">Taal</string>
     <string name="language_desc">Kies uw voorkeurstaal</string>
     <string name="language_system">Systeemtaal</string>

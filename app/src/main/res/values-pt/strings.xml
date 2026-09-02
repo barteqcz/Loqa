@@ -9,6 +9,8 @@
     <string name="buffering">A carregar o buffer…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Voltar</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Usar cores de destaque dinâmicas do sistema</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Mostrar localização atual</string>
     <string name="show_location_header_desc">Apresentar info de localização na barra superior</string>
     <string name="unknown_location">&#129517; Não fazemos ideia de onde está</string>
-    <string name="update_available_title">Atualização disponível</string>
-    <string name="update_available_message_simple">Uma nova versão está disponível</string>
-    <string name="update_action_download">Transferir</string>
     <string name="disclaimer_title">Dados de cobertura</string>
     <string name="disclaimer_message">Os dados de cobertura das estações são fornecidos por fmscan.org e devem ser considerados aproximados.\n\nA aplicação reflete a cobertura FM ou DAB+, dependendo de como a estação transmite. Se uma estação usar ambos, a sua cobertura é combinada.\n\nVerifique a rede de cobertura em onqa.barteq.cz</string>
     <string name="search_stations_hint">Procurar estações…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Escolher localização</string>
     <string name="confirm">Confirmar</string>
     <string name="category_ui_elements">Elementos da IU</string>
+    <string name="view_mode_title">Modo de visualização</string>
+    <string name="view_mode_desc">Alternar entre visualização de lista e mosaico</string>
+    <string name="view_mode_list">Lista</string>
+    <string name="view_mode_tile">Mosaico</string>
     <string name="language_title">Idioma</string>
     <string name="language_desc">Escolha o seu idioma preferido</string>
     <string name="language_system">Idioma do sistema</string>

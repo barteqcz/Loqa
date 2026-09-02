@@ -46,9 +46,12 @@ fun HqIcon(
 }
 
 @Composable
-fun EqualizerAnimation(color: Color = MaterialTheme.colorScheme.primary) {
+fun EqualizerAnimation(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary,
+) {
     Row(
-        modifier = Modifier.height(20.dp),
+        modifier = modifier.height(20.dp),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
         verticalAlignment = Alignment.Bottom,
     ) {

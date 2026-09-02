@@ -9,6 +9,8 @@
     <string name="buffering">Arabelleğe alınıyor…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Geri</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Sistemin dinamik vurgu renklerini kullan</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Mevcut konumu göster</string>
     <string name="show_location_header_desc">Üst çubukta konum bilgisini görüntüle</string>
     <string name="unknown_location">&#129517; Nerede olduğun hakkında hiçbir fikrimiz yok</string>
-    <string name="update_available_title">Güncelleme mevcut</string>
-    <string name="update_available_message_simple">Yeni bir sürüm mevcut</string>
-    <string name="update_action_download">İndir</string>
     <string name="disclaimer_title">Kapsama verileri</string>
     <string name="disclaimer_message">İstasyon kapsama verileri fmscan.org tarafından sağlanır ve yaklaşık olarak kabul edilmelidir.\n\nUygulama, istasyonun nasıl yayın yaptığına bağlı olarak FM veya DAB+ kapsamını yansıtır. Bir istasyon her ikisini de kullanıyorsa, kapsamları birleştirilir.\n\nonqa.barteq.cz adresindeki kapsama ağını kontrol edin</string>
     <string name="search_stations_hint">İstasyon ara…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Konum seç</string>
     <string name="confirm">Onayla</string>
     <string name="category_ui_elements">UI öğeleri</string>
+    <string name="view_mode_title">Görünüm modu</string>
+    <string name="view_mode_desc">Liste ve döşeme görünümü arasında geçiş yapın</string>
+    <string name="view_mode_list">Liste</string>
+    <string name="view_mode_tile">Döşeme</string>
     <string name="language_title">Dil</string>
     <string name="language_desc">Tercih ettiğiniz dili seçin</string>
     <string name="language_system">Sistem dili</string>

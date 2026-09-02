@@ -9,6 +9,8 @@
     <string name="buffering">Buffering…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Lura</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Uża kuluri ta\' aċċent dinamiċi tas-sistema</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Uri l-post kurrenti</string>
     <string name="show_location_header_desc">Uri l-info tal-post fil-bar ta\' fuq</string>
     <string name="unknown_location">&#129517; M\'għandniex idea fejn qiegħed</string>
-    <string name="update_available_title">Aġġornament disponibbli</string>
-    <string name="update_available_message_simple">Verżjoni ġdida hija disponibbli</string>
-    <string name="update_action_download">Niżżel</string>
     <string name="disclaimer_title">Data tal-kopertura</string>
     <string name="disclaimer_message">Id-data tal-kopertura tal-istazzjonijiet hija pprovduta minn fmscan.org u għandha titqies bħala approssimattiva.\n\nL-app tirrifletti jew kopertura FM u DAB+, skont kif ixandar l-stazzjon. Jekk stazzjon juża t-tnejn, il-kopertura tagħhom hija kkombinata.\n\nIċċekkja n-netwerk tal-kopertura fuq onqa.barteq.cz</string>
     <string name="search_stations_hint">Fittex stazzjonijiet…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Agħżel post</string>
     <string name="confirm">Ikkonferma</string>
     <string name="category_ui_elements">Elementi tal-UI</string>
+    <string name="view_mode_title">Modalità tal-vista</string>
+    <string name="view_mode_desc">Aqleb bejn il-vista tal-lista u tal-madum</string>
+    <string name="view_mode_list">Lista</string>
+    <string name="view_mode_tile">Madum</string>
     <string name="language_title">Lingwa</string>
     <string name="language_desc">Agħżel il-lingwa preferuta tiegħek</string>
     <string name="language_system">Lingwa tas-sistema</string>

@@ -9,6 +9,8 @@
     <string name="buffering">Se încarcă…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Înapoi</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Utilizați culorile de accent dinamice ale sistemului</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Arată locația actuală</string>
     <string name="show_location_header_desc">Afișează info despre locație în bara de sus</string>
     <string name="unknown_location">&#129517; Nu avem nicio idee unde te afli</string>
-    <string name="update_available_title">Actualizare disponibilă</string>
-    <string name="update_available_message_simple">O nouă versiune este disponibilă</string>
-    <string name="update_action_download">Descarcă</string>
     <string name="disclaimer_title">Date despre acoperire</string>
     <string name="disclaimer_message">Datele despre acoperirea posturilor sunt furnizate de fmscan.org și trebuie considerate aproximative.\n\nAplicația reflectă fie acoperirea FM sau DAB+, în funcție de modul în care emite postul. Dacă un post folosește ambele, acoperirea lor este combinată.\n\nVerificați rețeaua de acoperire pe onqa.barteq.cz</string>
     <string name="search_stations_hint">Caută posturi…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Alege locația</string>
     <string name="confirm">Confirmă</string>
     <string name="category_ui_elements">Elemente UI</string>
+    <string name="view_mode_title">Mod de vizualizare</string>
+    <string name="view_mode_desc">Comutați între vizualizarea listă și mozaic</string>
+    <string name="view_mode_list">Listă</string>
+    <string name="view_mode_tile">Mozaic</string>
     <string name="language_title">Limbă</string>
     <string name="language_desc">Alegeți limba preferată</string>
     <string name="language_system">Limba sistemului</string>

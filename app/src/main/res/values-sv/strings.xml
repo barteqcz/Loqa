@@ -9,6 +9,8 @@
     <string name="buffering">Buffrar…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Bakåt</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Använd systemets dynamiska accentfärger</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Visa aktuell plats</string>
     <string name="show_location_header_desc">Visa platsinfo i den övre fältet</string>
     <string name="unknown_location">&#129517; Vi har ingen aning om var du är</string>
-    <string name="update_available_title">Uppdatering tillgänglig</string>
-    <string name="update_available_message_simple">En ny version är tillgänglig</string>
-    <string name="update_action_download">Ladda ner</string>
     <string name="disclaimer_title">Täckningsdata</string>
     <string name="disclaimer_message">Stationsdäckningsdata tillhandahålls av fmscan.org och bör betraktas som ungefärlig.\n\nAppen speglar antingen FM- eller DAB+-täckning, beroende på hur stationen sänder. Om en station använder båda kombineras deras täckning.\n\nKontrollera täckningsnätverket på onqa.barteq.cz</string>
     <string name="search_stations_hint">Sök stationer…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Välj plats</string>
     <string name="confirm">Bekräfta</string>
     <string name="category_ui_elements">UI-element</string>
+    <string name="view_mode_title">Visningsläge</string>
+    <string name="view_mode_desc">Växla mellan list- och rutnätsvy</string>
+    <string name="view_mode_list">Lista</string>
+    <string name="view_mode_tile">Rutor</string>
     <string name="language_title">Språk</string>
     <string name="language_desc">Välj ditt föredragna språk</string>
     <string name="language_system">Systemspråk</string>

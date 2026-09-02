@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.barteqcz.onqa.data.model.AppSettings
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
+import com.barteqcz.onqa.data.model.ViewMode
 import com.barteqcz.onqa.ui.theme.OnqaGreen
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.collections.immutable.toPersistentSet
@@ -42,6 +43,7 @@ class SettingsRepository @Inject constructor(
         val MANUAL_LONGITUDE = doublePreferencesKey("manual_longitude")
         val MANUAL_CITY = stringPreferencesKey("manual_city")
         val MANUAL_COUNTRY_CODE = stringPreferencesKey("manual_country_code")
+        val VIEW_MODE = stringPreferencesKey("view_mode")
     }
 
     val settingsFlow: Flow<AppSettings> = context.dataStore.data
@@ -64,6 +66,7 @@ class SettingsRepository @Inject constructor(
                 manualLongitude = preferences[PreferencesKeys.MANUAL_LONGITUDE],
                 manualCity = preferences[PreferencesKeys.MANUAL_CITY],
                 manualCountryCode = preferences[PreferencesKeys.MANUAL_COUNTRY_CODE],
+                viewMode = ViewMode.valueOf(preferences[PreferencesKeys.VIEW_MODE] ?: ViewMode.LIST.name),
                 isInitialValue = false
             )
         }
@@ -122,6 +125,12 @@ class SettingsRepository @Inject constructor(
             preferences[PreferencesKeys.MANUAL_COUNTRY_CODE] = code ?: ""
             preferences[PreferencesKeys.MANUAL_LATITUDE] = latitude
             preferences[PreferencesKeys.MANUAL_LONGITUDE] = longitude
+        }
+    }
+
+    suspend fun updateViewMode(mode: ViewMode) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.VIEW_MODE] = mode.name
         }
     }
 

@@ -9,6 +9,8 @@
     <string name="buffering">Ag maolú…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Ar ais</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Úsáid dathanna blas dinimiciúla an chórais</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Taispeáin láthair reatha</string>
     <string name="show_location_header_desc">Taispeáin faisnéis suímh sa bharra barr</string>
     <string name="unknown_location">&#129517; Níl leid againn cá bhfuil tú</string>
-    <string name="update_available_title">Nuashonrú ar fáil</string>
-    <string name="update_available_message_simple">Tá leagan nua ar fáil</string>
-    <string name="update_action_download">Íoslódáil</string>
     <string name="disclaimer_title">Sonraí clúdach</string>
     <string name="disclaimer_message">Is é fmscan.org a sholáthraíonn sonraí clúdach na stáisiún agus ba cheart glacadh leo mar neas-sonraí.\n\nLéiríonn an aip clúdach FM nó DAB+, ag brath ar an gcaoi a gcraolann an stáisiún. Má úsáideann stáisiún an dá cheann, cuirtear a gclúdach le chéile.\n\nSeiceáil an líonra clúdach ag onqa.barteq.cz</string>
     <string name="search_stations_hint">Cuardaigh stáisiúin…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Roghnaigh suíomh</string>
     <string name="confirm">Deimhnigh</string>
     <string name="category_ui_elements">Eilimintí UI</string>
+    <string name="view_mode_title">Mód amhairc</string>
+    <string name="view_mode_desc">Athraigh idir amharc liosta agus tíleanna</string>
+    <string name="view_mode_list">Liosta</string>
+    <string name="view_mode_tile">Tíleanna</string>
     <string name="language_title">Teanga</string>
     <string name="language_desc">Roghnaigh do rogha teanga</string>
     <string name="language_system">Teanga an chórais</string>

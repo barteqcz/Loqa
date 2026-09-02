@@ -1,6 +1,5 @@
 package com.barteqcz.onqa.ui.main
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Immutable
 import androidx.core.os.LocaleListCompat
@@ -14,13 +13,10 @@ import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.model.StableLocation
 import com.barteqcz.onqa.data.model.ThemeMode
-import com.barteqcz.onqa.data.model.UpdateInfo
-import com.barteqcz.onqa.update.UpdateDownloadStatus
-import com.barteqcz.onqa.update.UpdateManager
+import com.barteqcz.onqa.data.model.ViewMode
 import com.barteqcz.onqa.player.RadioPlayer
 import com.barteqcz.onqa.data.repository.RadioRepository
 import com.barteqcz.onqa.data.repository.SettingsRepository
-import com.barteqcz.onqa.data.repository.UpdateRepository
 import com.barteqcz.onqa.data.util.NetworkResult
 import com.barteqcz.onqa.domain.GetSortedStationsUseCase
 import com.barteqcz.onqa.ui.theme.OnqaGreen
@@ -70,8 +66,6 @@ data class RadioViewState(
     val isNetworkAvailable: Boolean = true,
     val isScrollable: Boolean = false,
     val metadata: String? = null,
-    val updateInfo: UpdateInfo? = null,
-    val updateDownloadStatus: UpdateDownloadStatus = UpdateDownloadStatus.Idle,
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
 )
@@ -87,8 +81,6 @@ class RadioViewModel @Inject constructor(
     private val repository: RadioRepository,
     private val radioPlayer: RadioPlayer,
     private val settingsRepository: SettingsRepository,
-    private val updateRepository: UpdateRepository,
-    private val updateManager: UpdateManager,
     private val getSortedStations: GetSortedStationsUseCase,
     connectivityObserver: ConnectivityObserver,
 ) : ViewModel() {
@@ -97,7 +89,6 @@ class RadioViewModel @Inject constructor(
     private val _selectedStationUrl = MutableStateFlow<String?>(null)
     private val _selectedStationName = MutableStateFlow<String?>(null)
     private val _isScrollable = MutableStateFlow(value = false)
-    private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(value = false)
     private val _currentLanguage = MutableStateFlow(getCurrentAppLanguage())
@@ -219,19 +210,17 @@ class RadioViewModel @Inject constructor(
         currentStation,
         radioPlayer.state,
         repository.locationInfo,
-        updateManager.downloadStatus,
         settings,
         connectivityStatus,
         _isScrollable,
-        _updateInfo,
         _searchQuery,
         _isSearchActive,
         _currentLanguage,
     ) { args ->
         @Suppress("UNCHECKED_CAST")
         val player = args[3] as com.barteqcz.onqa.player.PlayerState
-        val settings = args[6] as AppSettings
-        val lang = args[12] as AppLanguage
+        val settings = args[5] as AppSettings
+        val lang = args[10] as AppLanguage
         RadioViewState(
             uiState = args[0] as RadioUiState,
             selectedUrl = args[1] as String?,
@@ -240,34 +229,21 @@ class RadioViewModel @Inject constructor(
             isBuffering = player.isBuffering,
             playbackError = player.playbackError,
             locationInfo = args[4] as LocationInfo,
-            updateDownloadStatus = args[5] as UpdateDownloadStatus,
             settings = settings.copy(language = lang),
-            isNetworkAvailable = args[7] is ConnectivityObserver.Status.Available,
-            isScrollable = args[8] as Boolean,
+            isNetworkAvailable = args[6] is ConnectivityObserver.Status.Available,
+            isScrollable = args[7] as Boolean,
             metadata = if (player.isPlaying || player.isBuffering) player.metadata else null,
-            updateInfo = args[9] as UpdateInfo?,
-            searchQuery = args[10] as String,
-            isSearchActive = args[11] as Boolean,
+            searchQuery = args[8] as String,
+            isSearchActive = args[9] as Boolean,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
     init {
-        checkForUpdates()
         observeSettings()
         observeConnectivity()
         setupLocationTracking()
         setupPlayerListeners()
         setupLocationAwarePlayback()
-    }
-
-    private fun checkForUpdates() {
-        viewModelScope.launch {
-            val info = updateRepository.checkForUpdates()
-            if (info.isUpdateAvailable) {
-                updateManager.reset()
-                _updateInfo.value = info
-            }
-        }
     }
 
     private fun observeSettings() {
@@ -410,6 +386,7 @@ class RadioViewModel @Inject constructor(
     fun updateUseHqStream(useHq: Boolean) = viewModelScope.launch { settingsRepository.updateUseHqStream(useHq) }
     fun updateShowLocationHeader(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowLocationHeader(enabled) }
     fun updateAccentColor(color: Color) = viewModelScope.launch { settingsRepository.updateAccentColor(color) }
+    fun updateViewMode(mode: ViewMode) = viewModelScope.launch { settingsRepository.updateViewMode(mode) }
     
     fun updateLocationSource(source: LocationSource) = viewModelScope.launch { 
         settingsRepository.updateLocationSource(source) 
@@ -450,22 +427,14 @@ class RadioViewModel @Inject constructor(
     fun completeOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = true) }
     fun resetOnboarding() = viewModelScope.launch { settingsRepository.updateOnboardingCompleted(completed = false) }
 
-    fun startUpdateDownload(context: Context, url: String) {
-        com.barteqcz.onqa.update.UpdateDownloader.start(context, url)
-    }
-
     fun refresh() {
-        updateManager.reset()
         repository.currentLocation.value?.let { viewModelScope.launch { repository.updateNearbyStations(it) } }
     }
 
     fun toggleFavorite(station: RadioStation) {
         viewModelScope.launch {
-            val isCurrentlyFavorite = settings.value.favoriteStations.contains(station.name)
             settingsRepository.toggleFavorite(station.name)
-            if (!isCurrentlyFavorite) {
-                _events.emit(RadioUiEvent.ScrollToTop)
-            }
+            _events.emit(RadioUiEvent.ScrollToTop)
         }
     }
 

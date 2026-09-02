@@ -9,6 +9,8 @@
     <string name="buffering">Buferizācija…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Atpakaļ</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Izmantot sistēmas dinamiskās akcentu krāsas</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Rādīt pašreizējo atrašanās vietu</string>
     <string name="show_location_header_desc">Rādīt atrašanās vietas informāciju augšējā joslā</string>
     <string name="unknown_location">&#129517; Mums nav ne jausmas, kur jūs atrodaties</string>
-    <string name="update_available_title">Pieejams atjauninājums</string>
-    <string name="update_available_message_simple">Ir pieejama jauna versija</string>
-    <string name="update_action_download">Lejupielādēt</string>
     <string name="disclaimer_title">Pārklājuma dati</string>
     <string name="disclaimer_message">Staciju pārklājuma datus nodrošina fmscan.org, un tie jāuzskata par aptuveniem.\n\nLietotne atspoguļo vai nu FM, vai DAB+ pārklājumu atkarībā no tā, kā stacija pārraida. Ja stacija izmanto abus, to pārklājums tiek apvienots.\n\nPārbaudiet pārklājuma tīklu vietnē onqa.barteq.cz</string>
     <string name="search_stations_hint">Meklēt stacijas…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Izvēlēties vietu</string>
     <string name="confirm">Apstiprināt</string>
     <string name="category_ui_elements">UI elementi</string>
+    <string name="view_mode_title">Skata režīms</string>
+    <string name="view_mode_desc">Pārslēgties starp saraksta un flīžu skatu</string>
+    <string name="view_mode_list">Saraksts</string>
+    <string name="view_mode_tile">Flīzes</string>
     <string name="language_title">Valoda</string>
     <string name="language_desc">Izvēlieties vēlamo valodu</string>
     <string name="language_system">Sistēmas valoda</string>

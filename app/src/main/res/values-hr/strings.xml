@@ -9,6 +9,8 @@
     <string name="buffering">Međuspremanje…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Natrag</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Koristi sistemske dinamičke boje akcenta</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Prikaži trenutnu lokaciju</string>
     <string name="show_location_header_desc">Prikaži informacije o lokaciji u gornjoj traci</string>
     <string name="unknown_location">&#129517; Nemamo pojma gdje se nalazite</string>
-    <string name="update_available_title">Dostupno ažuriranje</string>
-    <string name="update_available_message_simple">Dostupna je nova verzija</string>
-    <string name="update_action_download">Preuzmi</string>
     <string name="disclaimer_title">Podaci o pokrivenosti</string>
     <string name="disclaimer_message">Podatke o pokrivenosti postaja pruža fmscan.org i treba ih smatrati približnima.\n\nAplikacija odražava ili FM ili DAB+ pokrivenost, ovisno o tome kako postaja emitira. Ako postaja koristi oboje, njihova pokrivenost se kombinira.\n\nProvjerite mrežu pokrivenosti na onqa.barteq.cz</string>
     <string name="search_stations_hint">Traži postaje…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Odaberi lokaciju</string>
     <string name="confirm">Potvrdi</string>
     <string name="category_ui_elements">UI elementi</string>
+    <string name="view_mode_title">Način prikaza</string>
+    <string name="view_mode_desc">Prebacivanje između prikaza popisa i pločica</string>
+    <string name="view_mode_list">Popis</string>
+    <string name="view_mode_tile">Pločice</string>
     <string name="language_title">Jezik</string>
     <string name="language_desc">Odaberite željeni jezik</string>
     <string name="language_system">Sistemski jezik</string>

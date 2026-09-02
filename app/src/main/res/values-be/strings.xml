@@ -9,6 +9,8 @@
     <string name="buffering">Буферызацыя…</string>
     <string name="distance_with_dot">"• %d км"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 км"</string>
+    <string name="distance_km">%d км</string>
+    <string name="less_than_one_km">&lt; 1 км</string>
     <string name="back">Назад</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Выкарыстоўваць сістэмныя дынамічныя колеры</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Паказваць бягучае месцапалажэнне</string>
     <string name="show_location_header_desc">Адлюстроўваць інфармацыю аб месцапалажэнні ў верхняй панэлі</string>
     <string name="unknown_location">&#129517; Мы не ведаем, дзе вы знаходзіцеся</string>
-    <string name="update_available_title">Даступна абнаўленне</string>
-    <string name="update_available_message_simple">Даступная новая версія</string>
-    <string name="update_action_download">Спампаваць</string>
     <string name="disclaimer_title">Даныя аб пакрыцці</string>
     <string name="disclaimer_message">Даныя аб пакрыцці станцый прадастаўляюцца fmscan.org і павінны лічыцца прыблізнымі.\n\nПраграма адлюстроўвае пакрыццё FM або DAB+, у залежнасці ад таго, як вяшчае станцыя. Калі станцыя выкарыстоўвае абодва варыянты, іх пакрыццё аб\'ядноўваецца.\n\nПраверце сетку пакрыцця на onqa.barteq.cz</string>
     <string name="search_stations_hint">Пошук станцый…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Выбраць месца</string>
     <string name="confirm">Пацвердзіць</string>
     <string name="category_ui_elements">Элементы інтэрфейсу</string>
+    <string name="view_mode_title">Рэжым прагляду</string>
+    <string name="view_mode_desc">Пераключэнне паміж спісам і пліткамі</string>
+    <string name="view_mode_list">Спіс</string>
+    <string name="view_mode_tile">Плітка</string>
     <string name="language_title">Мова</string>
     <string name="language_desc">Выберыце пажаданую мову</string>
     <string name="language_system">Сістэмная мова</string>

@@ -28,8 +28,13 @@ data class AppSettings(
     val manualLongitude: Double? = null,
     val manualCity: String? = null,
     val manualCountryCode: String? = null,
+    val viewMode: ViewMode = ViewMode.LIST,
     val isInitialValue: Boolean = true
 )
+
+enum class ViewMode {
+    LIST, TILE
+}
 
 enum class ThemeMode {
     SYSTEM, LIGHT, DARK

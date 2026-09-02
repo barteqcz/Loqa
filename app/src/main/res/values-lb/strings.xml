@@ -9,6 +9,8 @@
     <string name="buffering">Buffering…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Zréck</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Benotzt systemdynamesch Akzentfarwen</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Aktuell Positioun weisen</string>
     <string name="show_location_header_desc">Standuertinfo an der ieweschter Bar weisen</string>
     <string name="unknown_location">&#129517; Mir hu keng Anung wou Dir sidd</string>
-    <string name="update_available_title">Update disponibel</string>
-    <string name="update_available_message_simple">Eng nei Versioun ass disponibel</string>
-    <string name="update_action_download">Eroflueden</string>
     <string name="disclaimer_title">Ofdeckungsinformatiounen</string>
     <string name="disclaimer_message">D\'Ofdeckungsinformatioune vun de Sende gi vu fmscan.org zur Verfügung gestallt a sollten als ongeféier ugesi ginn.\n\nD\'App reflektéiert entweder FM- oder DAB+-Ofdeckung, jee nodeem wéi de Sender ausgestraalt gëtt. Wann e Sender béid benotzt, gëtt hir Ofdeckung kombinéiert.\n\nKuckt d\'Ofdeckungsnetz op onqa.barteq.cz</string>
     <string name="search_stations_hint">Sender sichen…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Standuert wielen</string>
     <string name="confirm">Bestätegen</string>
     <string name="category_ui_elements">UI-Elementer</string>
+    <string name="view_mode_title">Usiicht-Modus</string>
+    <string name="view_mode_desc">Tëscht Lëschten- a Kachelusiicht wiesselen</string>
+    <string name="view_mode_list">Lëscht</string>
+    <string name="view_mode_tile">Kachel</string>
     <string name="language_title">Sprooch</string>
     <string name="language_desc">Wielt Är bevorzugt Sprooch</string>
     <string name="language_system">Systemsprooch</string>

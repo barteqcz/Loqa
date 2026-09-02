@@ -9,6 +9,8 @@
     <string name="buffering">Προσωρινή αποθήκευση…</string>
     <string name="distance_with_dot">"• %d χλμ"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 χλμ"</string>
+    <string name="distance_km">%d χλμ</string>
+    <string name="less_than_one_km">&lt; 1 χλμ</string>
     <string name="back">Πίσω</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Χρήση δυναμικών χρωμάτων συστήματος</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Εμφάνιση τρέχουσας τοποθεσίας</string>
     <string name="show_location_header_desc">Εμφάνιση πληροφοριών τοποθεσίας στην επάνω γραμμή</string>
     <string name="unknown_location">&#129517; Δεν έχουμε ιδέα πού βρίσκεστε</string>
-    <string name="update_available_title">Διαθέσιμη ενημέρωση</string>
-    <string name="update_available_message_simple">Μια νέα έκδοση είναι διαθέσιμη</string>
-    <string name="update_action_download">Λήψη</string>
     <string name="disclaimer_title">Δεδομένα κάλυψης</string>
     <string name="disclaimer_message">Τα δεδομένα κάλυψης σταθμών παρέχονται από το fmscan.org και πρέπει να θεωρούνται κατά προσέγγιση.\n\nΗ εφαρμογή αντικατοπτρίζει είτε την κάλυψη FM είτε την DAB+, ανάλογα με τον τρόπο μετάδοσης του σταθμού. Εάν ένας σταθμός χρησιμοποιεί και τα δύο, η κάλυψή τους συνδυάζεται.\n\nΕλέγξτε το δίκτυο κάλυψης στο onqa.barteq.cz</string>
     <string name="search_stations_hint">Αναζήτηση σταθμών…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Επιλογή τοποθεσίας</string>
     <string name="confirm">Επιβεβαίωση</string>
     <string name="category_ui_elements">Στοιχεία διεπαφής</string>
+    <string name="view_mode_title">Λειτουργία προβολής</string>
+    <string name="view_mode_desc">Εναλλαγή μεταξύ προβολής λίστας και πλακιδίων</string>
+    <string name="view_mode_list">Λίστα</string>
+    <string name="view_mode_tile">Πλακίδια</string>
     <string name="language_title">Γλώσσα</string>
     <string name="language_desc">Επιλέξτε τη γλώσσα που προτιμάτε</string>
     <string name="language_system">Γλώσσα συστήματος</string>

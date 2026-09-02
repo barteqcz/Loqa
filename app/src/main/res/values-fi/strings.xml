@@ -9,6 +9,8 @@
     <string name="buffering">Puskuroidaan…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Takaisin</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Käytä järjestelmän dynaamisia korostusvärejä</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Näytä nykyinen sijainti</string>
     <string name="show_location_header_desc">Näytä sijaintitiedot yläpalkissa</string>
     <string name="unknown_location">&#129517; Meillä ei ole aavistustakaan, missä olet</string>
-    <string name="update_available_title">Päivitys saatavilla</string>
-    <string name="update_available_message_simple">Uusi versio on saatavilla</string>
-    <string name="update_action_download">Lataa</string>
     <string name="disclaimer_title">Kattavuustiedot</string>
     <string name="disclaimer_message">Asemien kattavuustiedot tarjoaa fmscan.org, ja ne ovat arvioita.\n\nSovellus näyttää joko FM- tai DAB+-kattavuuden riippuen siitä, miten asema lähettää. Jos asema käyttää molempia, niiden kattavuus yhdistetään.\n\nTarkista kattavuusverkko osoitteessa onqa.barteq.cz</string>
     <string name="search_stations_hint">Hae asemia…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Valitse sijainti</string>
     <string name="confirm">Vahvista</string>
     <string name="category_ui_elements">UI-elementit</string>
+    <string name="view_mode_title">Näkymätila</string>
+    <string name="view_mode_desc">Vaihda luettelo- ja ruutunäkymän välillä</string>
+    <string name="view_mode_list">Luettelo</string>
+    <string name="view_mode_tile">Ruutu</string>
     <string name="language_title">Kieli</string>
     <string name="language_desc">Valitse haluamasi kieli</string>
     <string name="language_system">Järjestelmän kieli</string>

@@ -9,6 +9,8 @@
     <string name="buffering">Buffering…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Back</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Use system dynamic accent colors</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Show current location</string>
     <string name="show_location_header_desc">Display location info in the top bar</string>
     <string name="unknown_location">&#129517; We got no clue where you are</string>
-    <string name="update_available_title">Update available</string>
-    <string name="update_available_message_simple">A new version is available</string>
-    <string name="update_action_download">Download</string>
     <string name="disclaimer_title">Coverage data</string>
     <string name="disclaimer_message">Station coverage data is provided by fmscan.org and should be considered approximate.\n\nThe app reflects either FM or DAB+ coverage, depending on how the station broadcasts. If a station uses both, their coverage is combined.\n\nCheck the coverage network at onqa.barteq.cz</string>
     <string name="search_stations_hint">Search stations…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Pick location</string>
     <string name="confirm">Confirm</string>
     <string name="category_ui_elements">UI elements</string>
+    <string name="view_mode_title">View mode</string>
+    <string name="view_mode_desc">Switch between list and tile station view</string>
+    <string name="view_mode_list">List</string>
+    <string name="view_mode_tile">Tile</string>
     <string name="language_title">Language</string>
     <string name="language_desc">Choose your preferred language</string>
     <string name="language_system">System language</string>

@@ -9,6 +9,8 @@
     <string name="buffering">Chargiar…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Enavos</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Utilisar las colurs d\'accent dinamicas dal sistem</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Mussar posiziun actuala</string>
     <string name="show_location_header_desc">Mussar infurmaziuns da posiziun en la trav superiura</string>
     <string name="unknown_location">&#129517; Nus n\'avain nagina idea nua che vus essas</string>
-    <string name="update_available_title">Actualisaziun disponibla</string>
-    <string name="update_available_message_simple">Ina nova versiun è disponibla</string>
-    <string name="update_action_download">Chargiar giu</string>
     <string name="disclaimer_title">Datas da cuvridira</string>
     <string name="disclaimer_message">Las datas da cuvridira da las emischuns vegnan furnidas da fmscan.org e duessan vegnir consideradas sco datas approximativas.\n\nL\'applicaziun visualisescha u la cuvridira FM u DAB+, tut tenor co che l\'emischun emetta. Sche l\'emischun utilisescha ombdus, vegn lur cuvridira combinada.\n\nControllai la rait da cuvridira sin onqa.barteq.cz</string>
     <string name="search_stations_hint">Tscherchar emischuns…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Tschernair la posiziun</string>
     <string name="confirm">Confermar</string>
     <string name="category_ui_elements">Elements UI</string>
+    <string name="view_mode_title">Modus da vista</string>
+    <string name="view_mode_desc">Midar tranter la vista da glista e da quadrels</string>
+    <string name="view_mode_list">Glista</string>
+    <string name="view_mode_tile">Quadrels</string>
     <string name="language_title">Lingua</string>
     <string name="language_desc">Tscherni vossa lingua preferida</string>
     <string name="language_system">Lingua dal sistem</string>

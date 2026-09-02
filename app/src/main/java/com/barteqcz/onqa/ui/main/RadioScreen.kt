@@ -8,6 +8,11 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,7 +20,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
@@ -34,11 +38,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.time.Duration.Companion.milliseconds
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
-import com.barteqcz.onqa.data.model.UpdateInfo
-import com.barteqcz.onqa.update.UpdateDownloadStatus
+import com.barteqcz.onqa.data.model.ViewMode
 import com.barteqcz.onqa.ui.components.*
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +52,6 @@ fun RadioScreen(
     onSettingsClick: () -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
-    val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = LocalFocusManager.current
     val searchFocusRequester = remember { FocusRequester() }
     var isSearchFocused by remember { mutableStateOf(value = false) }
@@ -216,14 +220,6 @@ fun RadioScreen(
                 if (viewState.settings.showLocationHeader) {
                     LocationHeader(viewState.locationInfo)
                 }
-
-                viewState.updateInfo?.let { updateInfo ->
-                    UpdateBanner(
-                        updateInfo = updateInfo,
-                        accentColor = viewState.settings.accentColor,
-                        downloadStatus = viewState.updateDownloadStatus,
-                    ) { viewModel.startUpdateDownload(context, it) }
-                }
             }
         }
     ) { paddingValues ->
@@ -274,13 +270,16 @@ fun RadioScreen(
                                 )
                             } else {
                                 val listState = rememberLazyListState()
+                                val gridState = rememberLazyGridState()
                                 val density = LocalDensity.current
 
                                 LaunchedEffect(Unit) {
                                     viewModel.events.collect { event ->
                                         when (event) {
                                             is RadioUiEvent.ScrollToTop -> {
-                                                // Auto-scroll disabled per user request
+                                                delay(50.milliseconds)
+                                                listState.scrollToItem(0)
+                                                gridState.scrollToItem(0)
                                             }
                                         }
                                     }
@@ -290,12 +289,22 @@ fun RadioScreen(
                                 LaunchedEffect(viewState.selectedUrl) {
                                     val selectedUrl = viewState.selectedUrl
                                     if (selectedUrl != null) {
-                                        val layoutInfo = listState.layoutInfo
-                                        val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
+                                        if (viewState.settings.viewMode == ViewMode.LIST) {
+                                            val layoutInfo = listState.layoutInfo
+                                            val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
 
-                                        if (isLastItemVisible && !wasMiniPlayerVisible) {
-                                            val scrollAmount = with(density) { 100.dp.toPx() }
-                                            listState.animateScrollBy(scrollAmount)
+                                            if (isLastItemVisible && !wasMiniPlayerVisible) {
+                                                val scrollAmount = with(density) { 100.dp.toPx() }
+                                                listState.animateScrollBy(scrollAmount)
+                                            }
+                                        } else {
+                                            val layoutInfo = gridState.layoutInfo
+                                            val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
+
+                                            if (isLastItemVisible && !wasMiniPlayerVisible) {
+                                                val scrollAmount = with(density) { 100.dp.toPx() }
+                                                gridState.animateScrollBy(scrollAmount)
+                                            }
                                         }
                                     }
                                     wasMiniPlayerVisible = selectedUrl != null
@@ -308,47 +317,107 @@ fun RadioScreen(
                                     }
                                 }
 
-                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward) {
-                                    viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
+                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward, gridState.canScrollForward, gridState.canScrollBackward, viewState.settings.viewMode) {
+                                    if (viewState.settings.viewMode == ViewMode.LIST) {
+                                        viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
+                                    } else {
+                                        viewModel.setScrollable(gridState.canScrollForward || gridState.canScrollBackward)
+                                    }
                                 }
 
                                 Box(modifier = Modifier.fillMaxSize()) {
-                                    LazyColumn(
-                                        state = listState,
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentPadding = PaddingValues(
-                                            top = paddingValues.calculateTopPadding() + 8.dp,
-                                            bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
-                                            start = 20.dp,
-                                            end = 20.dp
-                                        ),
-                                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                                    ) {
-                                        item(key = "scroll_anchor") {
-                                            Spacer(modifier = Modifier.height(0.5.dp))
-                                        }
+                                    if (viewState.settings.viewMode == ViewMode.LIST) {
+                                        LazyColumn(
+                                            state = listState,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentPadding = PaddingValues(
+                                                top = paddingValues.calculateTopPadding() + 8.dp,
+                                                bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
+                                                start = 20.dp,
+                                                end = 20.dp
+                                            ),
+                                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                                        ) {
+                                            item(key = "scroll_anchor") {
+                                                Spacer(modifier = Modifier.height(0.5.dp))
+                                            }
 
-                                        items(
-                                            items = state.stations,
-                                            key = { "${it.streamUrl ?: it.name}|${it.network}" }
-                                        ) { station ->
-                                            StationCard(
-                                                station = station,
-                                                isActive = station.matchesUrl(viewState.selectedUrl),
-                                                isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                showHqIcon = !station.streamUrlHq.isNullOrBlank(),
-                                                modifier = Modifier.animateItem(
-                                                    fadeInSpec = tween(durationMillis = 300),
-                                                    fadeOutSpec = tween(durationMillis = 300),
-                                                    placementSpec = if (viewState.isSearchActive) null else spring()
-                                                ),
-                                                onClick = {
-                                                    focusManager.clearFocus()
-                                                    val url = station.streamUrl ?: station.streamUrlHq
-                                                    url?.let { viewModel.toggleStation(it) }
-                                                },
-                                                onLongClick = { viewModel.toggleFavorite(station) }
-                                            )
+                                            items(
+                                                items = state.stations,
+                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
+                                            ) { station ->
+                                                StationCard(
+                                                    station = station,
+                                                    isActive = station.matchesUrl(viewState.selectedUrl),
+                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                    showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                    modifier = Modifier.animateItem(
+                                                        fadeInSpec = tween(durationMillis = 300),
+                                                        fadeOutSpec = tween(durationMillis = 300),
+                                                        placementSpec = if (viewState.isSearchActive) null else spring()
+                                                    ),
+                                                    onClick = {
+                                                        focusManager.clearFocus()
+                                                        val url = station.streamUrl ?: station.streamUrlHq
+                                                        url?.let { viewModel.toggleStation(it) }
+                                                    },
+                                                    onLongClick = {
+                                                        focusManager.clearFocus()
+                                                        viewModel.toggleFavorite(station)
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        LazyVerticalGrid(
+                                            columns = GridCells.Adaptive(minSize = 100.dp),
+                                            state = gridState,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentPadding = PaddingValues(
+                                                top = paddingValues.calculateTopPadding() + 8.dp,
+                                                bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
+                                                start = 12.dp,
+                                                end = 12.dp
+                                            ),
+                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                        ) {
+                                            item(key = "scroll_anchor", span = { GridItemSpan(maxCurrentLineSpan) }) {
+                                                Spacer(modifier = Modifier.height(0.1.dp))
+                                            }
+
+                                            items(
+                                                items = state.stations,
+                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
+                                            ) { station ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .animateItem(
+                                                            fadeInSpec = tween(durationMillis = 300),
+                                                            fadeOutSpec = tween(durationMillis = 300),
+                                                            placementSpec = if (viewState.isSearchActive) null else spring()
+                                                        ),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    StationTile(
+                                                        station = station,
+                                                        isActive = station.matchesUrl(viewState.selectedUrl),
+                                                        isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                        showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                        modifier = Modifier.widthIn(max = 140.dp),
+                                                        onClick = {
+                                                            focusManager.clearFocus()
+                                                            val url = station.streamUrl ?: station.streamUrlHq
+                                                            url?.let { viewModel.toggleStation(it) }
+                                                        },
+                                                        onLongClick = {
+                                                            focusManager.clearFocus()
+                                                            viewModel.toggleFavorite(station)
+                                                        }
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
 
@@ -396,90 +465,6 @@ fun RadioScreen(
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun UpdateBanner(
-    updateInfo: UpdateInfo,
-    accentColor: Color,
-    downloadStatus: UpdateDownloadStatus,
-    onDownloadClick: (String) -> Unit
-) {
-    val isDownloading = downloadStatus is UpdateDownloadStatus.Downloading
-    val progress = (downloadStatus as? UpdateDownloadStatus.Downloading)?.progress ?: 0
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        color = accentColor.copy(alpha = 0.15f),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f)),
-        tonalElevation = 2.dp
-    ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = if (isDownloading) "Downloading update…" else stringResource(R.string.update_available_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = if (isDownloading) "Progress: $progress%" else stringResource(R.string.update_available_message_simple),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                
-                when (downloadStatus) {
-                    is UpdateDownloadStatus.Idle, is UpdateDownloadStatus.Error -> {
-                        TextButton(
-                            onClick = { onDownloadClick(updateInfo.downloadUrl) },
-                            colors = ButtonDefaults.textButtonColors(contentColor = accentColor)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.update_action_download),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                    is UpdateDownloadStatus.Downloading -> {
-                        CircularProgressIndicator(
-                            progress = { progress / 100f },
-                            modifier = Modifier.size(32.dp),
-                            color = accentColor,
-                            strokeWidth = 3.dp,
-                        )
-                    }
-                    is UpdateDownloadStatus.Completed -> {
-                        Icon(
-                            imageVector = Icons.Rounded.Done,
-                            contentDescription = null,
-                            tint = accentColor,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                }
-            }
-            
-            if (isDownloading) {
-                LinearProgressIndicator(
-                    progress = { progress / 100f },
-                    modifier = Modifier.fillMaxWidth().height(2.dp),
-                    color = accentColor,
-                    trackColor = accentColor.copy(alpha = 0.1f)
-                )
             }
         }
     }

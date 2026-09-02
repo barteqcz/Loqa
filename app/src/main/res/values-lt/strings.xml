@@ -9,6 +9,8 @@
     <string name="buffering">Buferizuojama…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Atgal</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Naudoti sistemos dinamines akcento spalvas</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Rodyti dabartinę vietą</string>
     <string name="show_location_header_desc">Rodyti vietos informaciją viršutinėje juostoje</string>
     <string name="unknown_location">&#129517; Mes neįsivaizduojame, kur esate</string>
-    <string name="update_available_title">Yra atnaujinimas</string>
-    <string name="update_available_message_simple">Yra nauja versija</string>
-    <string name="update_action_download">Atsisiųsti</string>
     <string name="disclaimer_title">Aprėpties duomenys</string>
     <string name="disclaimer_message">Stočių aprėpties duomenis teikia fmscan.org ir jie turėtų būti laikomi apytiksliais.\n\nProgramėlė atspindi FM arba DAB+ aprėptį, priklausomai nuo to, kaip stotis transliuoja. Jei stotis naudoja abi, jų aprėptis sujungiama.\n\nPatikrinkite aprėpties tinklą onqa.barteq.cz</string>
     <string name="search_stations_hint">Ieškoti stočių…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Pasirinkti vietą</string>
     <string name="confirm">Patvirtinti</string>
     <string name="category_ui_elements">UI elementai</string>
+    <string name="view_mode_title">Peržiūros režimas</string>
+    <string name="view_mode_desc">Perjungti tarp sąrašo ir plytelių rodinio</string>
+    <string name="view_mode_list">Sąrašas</string>
+    <string name="view_mode_tile">Plytelės</string>
     <string name="language_title">Kalba</string>
     <string name="language_desc">Pasirinkite norimą kalbą</string>
     <string name="language_system">Sistemos kalba</string>

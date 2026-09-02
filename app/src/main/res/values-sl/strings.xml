@@ -9,6 +9,8 @@
     <string name="buffering">Polnjenje medpomnilnika…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Nazaj</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Uporabi sistemske dinamične barve poudarkov</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Pokaži trenutno lokacijo</string>
     <string name="show_location_header_desc">Prikaži informacije o lokaciji v zgornji vrstici</string>
     <string name="unknown_location">&#129517; Nimamo pojma, kje ste</string>
-    <string name="update_available_title">Na voljo je posodobitev</string>
-    <string name="update_available_message_simple">Na voljo je nova različica</string>
-    <string name="update_action_download">Prenesi</string>
     <string name="disclaimer_title">Podatki o pokritosti</string>
     <string name="disclaimer_message">Podatke o pokritosti postaj zagotavlja fmscan.org in jih je treba upoštevati kot približne.\n\nAplikacija odraža pokritost FM ali DAB+, odvisno od tega, kako postaja oddaja. Če postaja oddaja na oba načina, je njuna pokritost združena.\n\nPreverite omrežje pokritosti na onqa.barteq.cz</string>
     <string name="search_stations_hint">Išči postaje…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Izberi lokacijo</string>
     <string name="confirm">Potrdi</string>
     <string name="category_ui_elements">Elementi uporabniškega vmesnika</string>
+    <string name="view_mode_title">Način prikaza</string>
+    <string name="view_mode_desc">Preklop med seznamom in ploščicami</string>
+    <string name="view_mode_list">Seznam</string>
+    <string name="view_mode_tile">Ploščice</string>
     <string name="language_title">Jezik</string>
     <string name="language_desc">Izberite želeni jezik</string>
     <string name="language_system">Sistemski jezik</string>

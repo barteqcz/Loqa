@@ -9,6 +9,8 @@
     <string name="buffering">Po ngarkohet…</string>
     <string name="distance_with_dot">"• %d km"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 km"</string>
+    <string name="distance_km">%d km</string>
+    <string name="less_than_one_km">&lt; 1 km</string>
     <string name="back">Mbrapa</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Përdor ngjyrat dinamike të sistemit</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Shfaq vendndodhjen aktuale</string>
     <string name="show_location_header_desc">Shfaq info të vendndodhjes në shiritin e sipërm</string>
     <string name="unknown_location">&#129517; Nuk kemi asnjë ide se ku jeni</string>
-    <string name="update_available_title">Përditësim i disponueshëm</string>
-    <string name="update_available_message_simple">Një version i ri është i disponueshëm</string>
-    <string name="update_action_download">Shkarko</string>
     <string name="disclaimer_title">Të dhënat e mbulimit</string>
     <string name="disclaimer_message">Të dhënat e mbulimit të stacioneve ofrohen nga fmscan.org dhe duhet të konsiderohen të përafërta.\n\nAplikacioni pasqyron mbulimin FM ose DAB+, varësisht se si transmeton stacioni. Nëse një stacion përdor të dyja, mbulimi i tyre kombinohet.\n\nKontrolloni rrjetin e mbulimit në onqa.barteq.cz</string>
     <string name="search_stations_hint">Kërko stacione…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Zgjidh vendndodhjen</string>
     <string name="confirm">Konfirmo</string>
     <string name="category_ui_elements">Elementet e UI</string>
+    <string name="view_mode_title">Mënyra e shikimit</string>
+    <string name="view_mode_desc">Kaloni midis shikimit me listë dhe me pllaka</string>
+    <string name="view_mode_list">Lista</string>
+    <string name="view_mode_tile">Pllaka</string>
     <string name="language_title">Gjuha</string>
     <string name="language_desc">Zgjidhni gjuhën tuaj të preferuar</string>
     <string name="language_system">Gjuha e sistemit</string>

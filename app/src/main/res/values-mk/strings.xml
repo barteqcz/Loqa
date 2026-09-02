@@ -9,6 +9,8 @@
     <string name="buffering">Баферирање…</string>
     <string name="distance_with_dot">"• %д км"</string>
     <string name="less_than_one_km_with_dot">"• &lt; 1 км"</string>
+    <string name="distance_km">%d км</string>
+    <string name="less_than_one_km">&lt; 1 км</string>
     <string name="back">Назад</string>
     <string name="material_you_title">Material You</string>
     <string name="material_you_desc">Користи системски динамични бои за акцент</string>
@@ -52,9 +54,6 @@
     <string name="show_location_header_title">Прикажи моментална локација</string>
     <string name="show_location_header_desc">Прикажи инфо за локација во горната лента</string>
     <string name="unknown_location">&#129517; Немаме поим каде сте</string>
-    <string name="update_available_title">Достапно ажурирање</string>
-    <string name="update_available_message_simple">Достапна е нова верзија</string>
-    <string name="update_action_download">Преземи</string>
     <string name="disclaimer_title">Податоци за покриеност</string>
     <string name="disclaimer_message">Податоците за покриеност на станиците се обезбедени од fmscan.org и треба да се сметаат за приближни.\n\nАпликацијата ја одразува или FM или DAB+ покриеноста, во зависност од тоа како емитува станицата. Ако станицата ги користи и двете, нивната покриеност се комбинира.\n\nПроверете ја мрежата за покриеност на onqa.barteq.cz</string>
     <string name="search_stations_hint">Пребарувај станици…</string>
@@ -70,6 +69,10 @@
     <string name="map_picker_title">Избери локација</string>
     <string name="confirm">Потврди</string>
     <string name="category_ui_elements">UI елементи</string>
+    <string name="view_mode_title">Режим на приказ</string>
+    <string name="view_mode_desc">Префрлање помеѓу приказ на листа и плочки</string>
+    <string name="view_mode_list">Листа</string>
+    <string name="view_mode_tile">Плочки</string>
     <string name="language_title">Јазик</string>
     <string name="language_desc">Изберете го вашиот омилен јазик</string>
     <string name="language_system">Системски јазик</string>
