@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -40,7 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -86,7 +86,6 @@ fun StationInfoBox(
             ) {
                 @Suppress("DEPRECATION")
                 val labelStyle = MaterialTheme.typography.labelSmall.copy(
-                    lineHeight = 14.sp,
                     platformStyle = PlatformTextStyle(includeFontPadding = false)
                 )
                 station.transmitterName?.let {
@@ -175,7 +174,7 @@ fun StationTile(
             ),
         shape = cardShape,
         color = MaterialTheme.colorScheme.surfaceVariant,
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             1.dp,
             borderColor
         ),
@@ -189,16 +188,14 @@ fun StationTile(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 8.dp, top = 6.dp, end = 8.dp, bottom = 12.dp),
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 var isImageLoaded by remember(station.logo) { mutableStateOf(false) }
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(36.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
                     contentAlignment = Alignment.Center
@@ -207,7 +204,7 @@ fun StationTile(
                         Icon(
                             imageVector = Icons.Rounded.Radio,
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(18.dp),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     }
@@ -224,19 +221,17 @@ fun StationTile(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = station.name,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.labelLarge.copy(
-                        lineHeight = 16.sp,
                         platformStyle = PlatformTextStyle(includeFontPadding = false)
                     ),
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(bottom = 2.dp)
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -324,7 +319,7 @@ fun StationCard(
             ),
         shape = cardShape,
         color = MaterialTheme.colorScheme.surfaceVariant,
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             1.dp,
             borderColor
         ),
