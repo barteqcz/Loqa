@@ -1,6 +1,5 @@
 package com.barteqcz.onqa.di
 
-import com.barteqcz.onqa.data.remote.GitHubApiService
 import com.barteqcz.onqa.data.remote.RadioApiService
 import dagger.Module
 import dagger.Provides
@@ -20,7 +19,6 @@ import javax.inject.Singleton
 object NetworkModule {
 
     private const val BASE_URL = "https://onqa-api.barteq.cz/"
-    private const val GITHUB_BASE_URL = "https://api.github.com/"
 
     @Provides
     @Singleton
@@ -52,24 +50,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named("GitHubRetrofit")
-    fun provideGitHubRetrofit(json: Json, okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(GITHUB_BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .build()
-    }
-
-    @Provides
-    @Singleton
     fun provideRadioApiService(@Named("RadioRetrofit") retrofit: Retrofit): RadioApiService {
         return retrofit.create(RadioApiService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideGitHubApiService(@Named("GitHubRetrofit") retrofit: Retrofit): GitHubApiService {
-        return retrofit.create(GitHubApiService::class.java)
     }
 }

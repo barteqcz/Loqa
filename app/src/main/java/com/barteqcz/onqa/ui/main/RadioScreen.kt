@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
@@ -36,8 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
-import com.barteqcz.onqa.data.model.UpdateInfo
-import com.barteqcz.onqa.update.UpdateDownloadStatus
 import com.barteqcz.onqa.ui.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +44,6 @@ fun RadioScreen(
     onSettingsClick: () -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
-    val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = LocalFocusManager.current
     val searchFocusRequester = remember { FocusRequester() }
     var isSearchFocused by remember { mutableStateOf(value = false) }
@@ -215,14 +211,6 @@ fun RadioScreen(
                 
                 if (viewState.settings.showLocationHeader) {
                     LocationHeader(viewState.locationInfo)
-                }
-
-                viewState.updateInfo?.let { updateInfo ->
-                    UpdateBanner(
-                        updateInfo = updateInfo,
-                        accentColor = viewState.settings.accentColor,
-                        downloadStatus = viewState.updateDownloadStatus,
-                    ) { viewModel.startUpdateDownload(context, it) }
                 }
             }
         }
@@ -401,86 +389,3 @@ fun RadioScreen(
     }
 }
 
-@Composable
-fun UpdateBanner(
-    updateInfo: UpdateInfo,
-    accentColor: Color,
-    downloadStatus: UpdateDownloadStatus,
-    onDownloadClick: (String) -> Unit
-) {
-    val isDownloading = downloadStatus is UpdateDownloadStatus.Downloading
-    val progress = (downloadStatus as? UpdateDownloadStatus.Downloading)?.progress ?: 0
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        color = accentColor.copy(alpha = 0.15f),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, accentColor.copy(alpha = 0.3f)),
-        tonalElevation = 2.dp
-    ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = if (isDownloading) "Downloading update…" else stringResource(R.string.update_available_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = if (isDownloading) "Progress: $progress%" else stringResource(R.string.update_available_message_simple),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                
-                when (downloadStatus) {
-                    is UpdateDownloadStatus.Idle, is UpdateDownloadStatus.Error -> {
-                        TextButton(
-                            onClick = { onDownloadClick(updateInfo.downloadUrl) },
-                            colors = ButtonDefaults.textButtonColors(contentColor = accentColor)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.update_action_download),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                    is UpdateDownloadStatus.Downloading -> {
-                        CircularProgressIndicator(
-                            progress = { progress / 100f },
-                            modifier = Modifier.size(32.dp),
-                            color = accentColor,
-                            strokeWidth = 3.dp,
-                        )
-                    }
-                    is UpdateDownloadStatus.Completed -> {
-                        Icon(
-                            imageVector = Icons.Rounded.Done,
-                            contentDescription = null,
-                            tint = accentColor,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                }
-            }
-            
-            if (isDownloading) {
-                LinearProgressIndicator(
-                    progress = { progress / 100f },
-                    modifier = Modifier.fillMaxWidth().height(2.dp),
-                    color = accentColor,
-                    trackColor = accentColor.copy(alpha = 0.1f)
-                )
-            }
-        }
-    }
-}

@@ -14,12 +14,9 @@
     <uses-permission
         android:name="android.permission.FOREGROUND_SERVICE"
         tools:ignore="ForegroundServicePermission" />
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-    <uses-permission
-        android:name="android.permission.REQUEST_INSTALL_PACKAGES"
-        tools:ignore="RequestInstallPackages" />
 
     <application
         android:name=".OnqaApplication"
@@ -65,11 +62,6 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </service>
-
-        <service
-            android:name=".update.UpdateDownloader"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
