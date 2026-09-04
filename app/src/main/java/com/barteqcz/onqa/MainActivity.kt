@@ -227,22 +227,16 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
 
-                            val allStations = (viewState.uiState as? RadioUiState.Success)?.allStations ?: emptyList()
-                            val isNoStationsSuccess = viewState.uiState is RadioUiState.Success && allStations.isEmpty()
+                            val uiState = viewState.uiState
+                            val stations = (uiState as? RadioUiState.Success)?.stations ?: emptyList()
 
                             AnimatedVisibility(
-                                visible = viewState.selectedUrl != null && !isMapPickerVisible && !isNoStationsSuccess,
+                                visible = viewState.isMiniPlayerActive && !isMapPickerVisible,
                                 enter = slideInVertically { it } + fadeIn(),
                                 exit = slideOutVertically { it } + fadeOut(),
                                 modifier = Modifier.align(Alignment.BottomCenter),
                             ) {
-                                val stations = (viewState.uiState as? RadioUiState.Success)?.stations ?: emptyList()
-                                val selectedStation = viewState.selectedUrl?.let { url ->
-                                    stations.find { (it.streamUrl == url) || (it.streamUrlHq == url) }
-                                }
-                                val displayStation = selectedStation ?: viewState.currentStation
-
-                                displayStation?.let {
+                                viewState.displayStation?.let {
                                     MiniPlayer(
                                         station = it,
                                         stations = stations,

@@ -63,8 +63,8 @@
     <string name="category_location">Τοποθεσία</string>
     <string name="location_source_title">Πηγή τοποθεσίας</string>
     <string name="location_source_desc">Επιλέξτε πώς η εφαρμογή λαμβάνει τη θέση σας</string>
-    <string name="location_source_gps">GPS (Δυναμικό)</string>
-    <string name="location_source_manual">Χειροκίνητα (Στατικό)</string>
+
+    <string name="location_source_manual">Χειροκίνητα</string>
     <string name="pick_location_button">Επιλογή τοποθεσίας στον χάρτη</string>
     <string name="pick_location_button_picked">Επιλεγμένη τοποθεσία</string>
     <string name="map_picker_title">Επιλογή τοποθεσίας</string>

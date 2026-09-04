@@ -63,8 +63,8 @@
     <string name="category_location">Vendndodhja</string>
     <string name="location_source_title">Burimi i vendndodhjes</string>
     <string name="location_source_desc">Zgjidhni se si e merr pozicionin tuaj aplikacioni</string>
-    <string name="location_source_gps">GPS (Dinamik)</string>
-    <string name="location_source_manual">Manual (Statik)</string>
+
+    <string name="location_source_manual">Manual</string>
     <string name="pick_location_button">Zgjidh vendndodhjen në hartë</string>
     <string name="pick_location_button_picked">Vendndodhja e zgjedhur</string>
     <string name="map_picker_title">Zgjidh vendndodhjen</string>

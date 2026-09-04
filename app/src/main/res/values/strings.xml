@@ -63,8 +63,8 @@
     <string name="category_location">Location</string>
     <string name="location_source_title">Location source</string>
     <string name="location_source_desc">Choose how the app gets your position</string>
-    <string name="location_source_gps">GPS (Dynamic)</string>
-    <string name="location_source_manual">Manual (Static)</string>
+    <string name="location_source_gps" translatable="false">GPS</string>
+    <string name="location_source_manual">Manual</string>
     <string name="pick_location_button">Pick location on map</string>
     <string name="pick_location_button_picked">Picked location</string>
     <string name="map_picker_title">Pick location</string>

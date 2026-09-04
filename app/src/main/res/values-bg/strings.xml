@@ -63,8 +63,8 @@
     <string name="category_location">Местоположение</string>
     <string name="location_source_title">Източник на местоположение</string>
     <string name="location_source_desc">Изберете как приложението да получава позицията ви</string>
-    <string name="location_source_gps">GPS (Динамично)</string>
-    <string name="location_source_manual">Ръчно (Статично)</string>
+
+    <string name="location_source_manual">Ръчно</string>
     <string name="pick_location_button">Избор на местоположение на картата</string>
     <string name="pick_location_button_picked">Избрано местоположение</string>
     <string name="map_picker_title">Избери местоположение</string>

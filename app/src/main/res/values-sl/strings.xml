@@ -63,8 +63,8 @@
     <string name="category_location">Lokacija</string>
     <string name="location_source_title">Vir lokacije</string>
     <string name="location_source_desc">Izberite, kako aplikacija pridobi vašo lokacijo</string>
-    <string name="location_source_gps">GPS (Dinamično)</string>
-    <string name="location_source_manual">Ročno (Statično)</string>
+
+    <string name="location_source_manual">Ročno</string>
     <string name="pick_location_button">Izberi lokaciju na zemljevidu</string>
     <string name="pick_location_button_picked">Izbrana lokacija</string>
     <string name="map_picker_title">Izberi lokacijo</string>

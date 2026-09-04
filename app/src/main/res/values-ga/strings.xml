@@ -63,8 +63,8 @@
     <string name="category_location">Suíomh</string>
     <string name="location_source_title">Foinse suímh</string>
     <string name="location_source_desc">Roghnaigh an chaoi a bhfaigheann an aip do shuíomh</string>
-    <string name="location_source_gps">GPS (Dinimiciúil)</string>
-    <string name="location_source_manual">De láimh (Statach)</string>
+
+    <string name="location_source_manual">De láimh</string>
     <string name="pick_location_button">Roghnaigh suíomh ar mhapa</string>
     <string name="pick_location_button_picked">Suíomh roghnaithe</string>
     <string name="map_picker_title">Roghnaigh suíomh</string>

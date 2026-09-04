@@ -63,8 +63,8 @@
     <string name="category_location">Localização</string>
     <string name="location_source_title">Fonte de localização</string>
     <string name="location_source_desc">Escolha como a aplicação obtém a sua posição</string>
-    <string name="location_source_gps">GPS (Dinâmico)</string>
-    <string name="location_source_manual">Manual (Estático)</string>
+
+    <string name="location_source_manual">Manual</string>
     <string name="pick_location_button">Escolher localização no mapa</string>
     <string name="pick_location_button_picked">Localização escolhida</string>
     <string name="map_picker_title">Escolher localização</string>

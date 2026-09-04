@@ -63,8 +63,8 @@
     <string name="category_location">Locație</string>
     <string name="location_source_title">Sursă locație</string>
     <string name="location_source_desc">Alegeți cum obține aplicația poziția dvs.</string>
-    <string name="location_source_gps">GPS (Dinamic)</string>
-    <string name="location_source_manual">Manual (Static)</string>
+
+    <string name="location_source_manual">Manual</string>
     <string name="pick_location_button">Alege locația pe hartă</string>
     <string name="pick_location_button_picked">Locație selectată</string>
     <string name="map_picker_title">Alege locația</string>

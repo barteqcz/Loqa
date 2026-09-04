@@ -63,8 +63,8 @@
     <string name="category_location">Plats</string>
     <string name="location_source_title">Platskälla</string>
     <string name="location_source_desc">Välj hur appen hämtar din position</string>
-    <string name="location_source_gps">GPS (Dynamisk)</string>
-    <string name="location_source_manual">Manuell (Statisk)</string>
+
+    <string name="location_source_manual">Manuell</string>
     <string name="pick_location_button">Välj plats på karta</string>
     <string name="pick_location_button_picked">Vald plats</string>
     <string name="map_picker_title">Välj plats</string>

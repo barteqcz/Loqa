@@ -63,8 +63,8 @@
     <string name="category_location">Staðsetning</string>
     <string name="location_source_title">Uppruni staðsetningar</string>
     <string name="location_source_desc">Veldu hvernig appið nær í staðsetningu þína</string>
-    <string name="location_source_gps">GPS (Breytilegt)</string>
-    <string name="location_source_manual">Handvirkt (Fast)</string>
+
+    <string name="location_source_manual">Handvirkt</string>
     <string name="pick_location_button">Velja staðsetningu á korti</string>
     <string name="pick_location_button_picked">Valin staðsetning</string>
     <string name="map_picker_title">Velja staðsetningu</string>

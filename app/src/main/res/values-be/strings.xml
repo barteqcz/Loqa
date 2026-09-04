@@ -63,8 +63,8 @@
     <string name="category_location">Месцапалажэнне</string>
     <string name="location_source_title">Крыніца месцапалажэння</string>
     <string name="location_source_desc">Выберыце, як праграма вызначае ваша становішча</string>
-    <string name="location_source_gps">GPS (Дынамічна)</string>
-    <string name="location_source_manual">Уручную (Статычна)</string>
+
+    <string name="location_source_manual">Уручную</string>
     <string name="pick_location_button">Выбраць месца на карце</string>
     <string name="pick_location_button_picked">Выбранае месца</string>
     <string name="map_picker_title">Выбраць месца</string>

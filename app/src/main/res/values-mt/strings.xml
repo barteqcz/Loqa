@@ -63,8 +63,8 @@
     <string name="category_location">Post</string>
     <string name="location_source_title">Sors tal-lokazzjoni</string>
     <string name="location_source_desc">Agħżel kif l-app tikseb il-pożizzjoni tiegħek</string>
-    <string name="location_source_gps">GPS (Dinamiku)</string>
-    <string name="location_source_manual">Manwali (Statiku)</string>
+
+    <string name="location_source_manual">Manwali</string>
     <string name="pick_location_button">Agħżel post fuq il-mappa</string>
     <string name="pick_location_button_picked">Post magħżul</string>
     <string name="map_picker_title">Agħżel post</string>

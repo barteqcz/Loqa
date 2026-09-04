@@ -63,8 +63,8 @@
     <string name="category_location">Helyszín</string>
     <string name="location_source_title">Helymeghatározás forrása</string>
     <string name="location_source_desc">Válassza ki, hogyan határozza meg a helyzetét az app</string>
-    <string name="location_source_gps">GPS (Dinamikus)</string>
-    <string name="location_source_manual">Kézi (Statikus)</string>
+
+    <string name="location_source_manual">Kézi</string>
     <string name="pick_location_button">Hely kiválasztása a térképen</string>
     <string name="pick_location_button_picked">Kiválasztott helyszín</string>
     <string name="map_picker_title">Hely kiválasztása</string>

@@ -63,8 +63,8 @@
     <string name="category_location">Poloha</string>
     <string name="location_source_title">Zdroj polohy</string>
     <string name="location_source_desc">Vyberte, jak aplikace zjišťuje vaši polohu</string>
-    <string name="location_source_gps">GPS (Dynamicky)</string>
-    <string name="location_source_manual">Ručně (Staticky)</string>
+
+    <string name="location_source_manual">Ručně</string>
     <string name="pick_location_button">Vybrat polohu na mapě</string>
     <string name="pick_location_button_picked">Vybraná poloha</string>
     <string name="map_picker_title">Vybrat polohu</string>

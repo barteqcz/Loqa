@@ -63,8 +63,8 @@
     <string name="category_location">Locatie</string>
     <string name="location_source_title">Locatiebron</string>
     <string name="location_source_desc">Kies hoe de app je positie ophaalt</string>
-    <string name="location_source_gps">GPS (Dynamisch)</string>
-    <string name="location_source_manual">Handmatig (Statisch)</string>
+
+    <string name="location_source_manual">Handmatig</string>
     <string name="pick_location_button">Kies locatie op kaart</string>
     <string name="pick_location_button_picked">Gekozen locatie</string>
     <string name="map_picker_title">Kies locatie</string>

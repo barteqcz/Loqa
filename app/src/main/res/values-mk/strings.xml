@@ -63,8 +63,8 @@
     <string name="category_location">Локација</string>
     <string name="location_source_title">Извор на локација</string>
     <string name="location_source_desc">Изберете како апликацијата ја добива вашата позиција</string>
-    <string name="location_source_gps">GPS (Динамично)</string>
-    <string name="location_source_manual">Рачно (Статично)</string>
+
+    <string name="location_source_manual">Рачно</string>
     <string name="pick_location_button">Избери локација на мапа</string>
     <string name="pick_location_button_picked">Избрана локација</string>
     <string name="map_picker_title">Избери локација</string>

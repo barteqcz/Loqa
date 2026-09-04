@@ -63,8 +63,8 @@
     <string name="category_location">Vietovė</string>
     <string name="location_source_title">Vietovės šaltinis</string>
     <string name="location_source_desc">Pasirinkite, kaip programėlė nustato jūsų vietą</string>
-    <string name="location_source_gps">GPS (Dinaminis)</string>
-    <string name="location_source_manual">Rankinis (Statinis)</string>
+
+    <string name="location_source_manual">Rankinis</string>
     <string name="pick_location_button">Pasirinkti vietą žemėlapyje</string>
     <string name="pick_location_button_picked">Pasirinkta vietovė</string>
     <string name="map_picker_title">Pasirinkti vietą</string>

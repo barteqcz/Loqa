@@ -63,8 +63,8 @@
     <string name="category_location">Sijainti</string>
     <string name="location_source_title">Sijaintilähde</string>
     <string name="location_source_desc">Valitse, miten sovellus noutaa sijaintisi</string>
-    <string name="location_source_gps">GPS (Dynaaminen)</string>
-    <string name="location_source_manual">Manuaalinen (Staattinen)</string>
+
+    <string name="location_source_manual">Manuaalinen</string>
     <string name="pick_location_button">Valitse sijainti kartalta</string>
     <string name="pick_location_button_picked">Valittu sijainti</string>
     <string name="map_picker_title">Valitse sijainti</string>

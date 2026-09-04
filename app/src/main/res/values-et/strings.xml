@@ -63,8 +63,8 @@
     <string name="category_location">Asukoht</string>
     <string name="location_source_title">Asukoha allikas</string>
     <string name="location_source_desc">Vali, kuidas rakendus sinu asukoha tuvastab</string>
-    <string name="location_source_gps">GPS (Dünaamiline)</string>
-    <string name="location_source_manual">Manuaalne (Staatiline)</string>
+
+    <string name="location_source_manual">Manuaalne</string>
     <string name="pick_location_button">Vali asukoht kaardil</string>
     <string name="pick_location_button_picked">Valitud asukoht</string>
     <string name="map_picker_title">Vali asukoht</string>

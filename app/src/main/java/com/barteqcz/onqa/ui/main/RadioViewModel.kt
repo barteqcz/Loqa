@@ -14,6 +14,7 @@ import com.barteqcz.onqa.data.model.RadioStation
 import com.barteqcz.onqa.data.model.StableLocation
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.player.RadioPlayer
+import com.barteqcz.onqa.player.PlayerState
 import com.barteqcz.onqa.data.repository.RadioRepository
 import com.barteqcz.onqa.data.repository.SettingsRepository
 import com.barteqcz.onqa.data.util.NetworkResult
@@ -67,6 +68,8 @@ data class RadioViewState(
     val metadata: String? = null,
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
+    val displayStation: RadioStation? = null,
+    val isMiniPlayerActive: Boolean = false,
 )
 
 @Immutable
@@ -178,14 +181,7 @@ class RadioViewModel @Inject constructor(
         favoriteStations,
         _selectedStationUrl,
         _selectedStationName,
-    ) { args ->
-        val player = args[0] as com.barteqcz.onqa.player.PlayerState
-        val state = args[1] as RadioUiState
-        @Suppress("UNCHECKED_CAST")
-        val favorites = args[2] as Set<String>
-        val selectedUrl = args[3] as String?
-        val selectedName = args[4] as String?
-
+    ) { player, state, favorites, selectedUrl, selectedName ->
         val info = player.stationInfo
         val url = info.url ?: selectedUrl ?: return@combine null
         val name = info.name ?: selectedName
@@ -216,24 +212,43 @@ class RadioViewModel @Inject constructor(
         _isSearchActive,
         _currentLanguage,
     ) { args ->
-        @Suppress("UNCHECKED_CAST")
-        val player = args[3] as com.barteqcz.onqa.player.PlayerState
+        val uiState = args[0] as RadioUiState
+        val selectedUrl = args[1] as String?
+        val currentStation = args[2] as RadioStation?
+        val player = args[3] as PlayerState
+        val locationInfo = args[4] as LocationInfo
         val settings = args[5] as AppSettings
+        val connectivity = args[6] as ConnectivityObserver.Status
+        val isScrollable = args[7] as Boolean
+        val searchQuery = args[8] as String
+        val isSearchActive = args[9] as Boolean
         val lang = args[10] as AppLanguage
+
+        val stations = (uiState as? RadioUiState.Success)?.stations ?: emptyList()
+        val allStations = (uiState as? RadioUiState.Success)?.allStations ?: emptyList()
+        val isNoStationsSuccess = uiState is RadioUiState.Success && allStations.isEmpty()
+
+        val selectedStation = selectedUrl?.let { url ->
+            stations.find { (it.streamUrl == url) || (it.streamUrlHq == url) }
+        }
+        val displayStation = selectedStation ?: currentStation
+
         RadioViewState(
-            uiState = args[0] as RadioUiState,
-            selectedUrl = args[1] as String?,
-            currentStation = args[2] as RadioStation?,
+            uiState = uiState,
+            selectedUrl = selectedUrl,
+            currentStation = currentStation,
             isPlaying = player.isPlaying,
             isBuffering = player.isBuffering,
             playbackError = player.playbackError,
-            locationInfo = args[4] as LocationInfo,
+            locationInfo = locationInfo,
             settings = settings.copy(language = lang),
-            isNetworkAvailable = args[6] is ConnectivityObserver.Status.Available,
-            isScrollable = args[7] as Boolean,
+            isNetworkAvailable = connectivity is ConnectivityObserver.Status.Available,
+            isScrollable = isScrollable,
             metadata = if (player.isPlaying || player.isBuffering) player.metadata else null,
-            searchQuery = args[8] as String,
-            isSearchActive = args[9] as Boolean,
+            searchQuery = searchQuery,
+            isSearchActive = isSearchActive,
+            displayStation = displayStation,
+            isMiniPlayerActive = selectedUrl != null && !isNoStationsSuccess
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 

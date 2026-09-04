@@ -63,8 +63,8 @@
     <string name="category_location">Posisjon</string>
     <string name="location_source_title">Posisjonskilde</string>
     <string name="location_source_desc">Velg hvordan appen henter posisjonen din</string>
-    <string name="location_source_gps">GPS (Dynamisk)</string>
-    <string name="location_source_manual">Manuell (Statisk)</string>
+
+    <string name="location_source_manual">Manuell</string>
     <string name="pick_location_button">Velg posisjon på kartet</string>
     <string name="pick_location_button_picked">Valgt posisjon</string>
     <string name="map_picker_title">Velg posisjon</string>
