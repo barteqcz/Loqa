@@ -7,11 +7,15 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
@@ -261,7 +265,7 @@ fun RadioScreen(
                                     modifier = Modifier.padding(paddingValues)
                                 )
                             } else {
-                                val listState = rememberLazyListState()
+                                val gridState = rememberLazyGridState()
                                 val density = LocalDensity.current
 
                                 LaunchedEffect(Unit) {
@@ -278,41 +282,53 @@ fun RadioScreen(
                                 LaunchedEffect(viewState.selectedUrl) {
                                     val selectedUrl = viewState.selectedUrl
                                     if (selectedUrl != null) {
-                                        val layoutInfo = listState.layoutInfo
+                                        val layoutInfo = gridState.layoutInfo
                                         val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
 
                                         if (isLastItemVisible && !wasMiniPlayerVisible) {
                                             val scrollAmount = with(density) { 100.dp.toPx() }
-                                            listState.animateScrollBy(scrollAmount)
+                                            gridState.animateScrollBy(scrollAmount)
                                         }
                                     }
                                     wasMiniPlayerVisible = selectedUrl != null
                                 }
 
                                 val bottomNavPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                                val configuration = LocalConfiguration.current
+                                val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                                
                                 val showShadow by remember {
                                     derivedStateOf {
                                         viewState.selectedUrl != null
                                     }
                                 }
 
-                                LaunchedEffect(listState.canScrollForward, listState.canScrollBackward) {
-                                    viewModel.setScrollable(listState.canScrollForward || listState.canScrollBackward)
+                                LaunchedEffect(gridState.canScrollForward, gridState.canScrollBackward) {
+                                    viewModel.setScrollable(gridState.canScrollForward || gridState.canScrollBackward)
                                 }
 
                                 Box(modifier = Modifier.fillMaxSize()) {
-                                    LazyColumn(
-                                        state = listState,
+                                    LazyVerticalGrid(
+                                        columns = GridCells.Adaptive(minSize = 340.dp),
+                                        state = gridState,
                                         modifier = Modifier.fillMaxSize(),
                                         contentPadding = PaddingValues(
                                             top = paddingValues.calculateTopPadding() + 8.dp,
-                                            bottom = if (viewState.selectedUrl != null) 116.dp + bottomNavPadding else 16.dp + bottomNavPadding,
+                                            bottom = if (viewState.selectedUrl != null) {
+                                                (if (isLandscape) 88.dp else 116.dp) + bottomNavPadding
+                                            } else {
+                                                16.dp + bottomNavPadding
+                                            },
                                             start = 20.dp,
                                             end = 20.dp
                                         ),
-                                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                                     ) {
-                                        item(key = "scroll_anchor") {
+                                        item(
+                                            key = "scroll_anchor",
+                                            span = { GridItemSpan(maxLineSpan) }
+                                        ) {
                                             Spacer(modifier = Modifier.height(0.5.dp))
                                         }
 
@@ -360,7 +376,7 @@ fun RadioScreen(
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .height(140.dp)
+                                                .height(if (isLandscape) 100.dp else 140.dp)
                                                 .background(shadowBrush)
                                         )
                                     }

@@ -28,45 +28,50 @@ fun OnboardingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(32.dp)
+                .systemBarsPadding(),
+            horizontalAlignment = Alignment.Start,
         ) {
             Text(
                 text = stringResource(R.string.welcome_title),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.Bold
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Text(
-                text = stringResource(R.string.welcome_desc),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp
-            )
-            
-            Spacer(modifier = Modifier.height(48.dp))
-            
-            PermissionItem(
-                icon = Icons.Rounded.LocationOn,
-                title = stringResource(R.string.permission_location_title),
-                desc = stringResource(R.string.permission_location_desc)
-            )
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            PermissionItem(
-                icon = Icons.Rounded.Notifications,
-                title = stringResource(R.string.permission_notifications_title),
-                desc = stringResource(R.string.permission_notifications_desc)
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
-            
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = stringResource(R.string.welcome_desc),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Start,
+                    lineHeight = 24.sp
+                )
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                PermissionItem(
+                    icon = Icons.Rounded.LocationOn,
+                    title = stringResource(R.string.permission_location_title),
+                    desc = stringResource(R.string.permission_location_desc)
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                PermissionItem(
+                    icon = Icons.Rounded.Notifications,
+                    title = stringResource(R.string.permission_notifications_title),
+                    desc = stringResource(R.string.permission_notifications_desc)
+                )
+            }
+
             Button(
                 onClick = onGrantClick,
                 modifier = Modifier

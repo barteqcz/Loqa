@@ -42,6 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -104,12 +106,23 @@ fun MiniPlayer(
         label = "miniPlayerElevation"
     )
 
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    
+    val playerHeight = if (isLandscape) 72.dp else 88.dp
+    val playerPadding = if (isLandscape) 8.dp else 12.dp
+    val playerCorner = if (isLandscape) 22.dp else 28.dp
+    val logoSize = if (isLandscape) 48.dp else 60.dp
+    val logoIconSize = if (isLandscape) 28.dp else 36.dp
+    val actionButtonSize = if (isLandscape) 44.dp else 52.dp
+    val actionIconSize = if (isLandscape) 28.dp else 36.dp
+
     Surface(
         modifier = Modifier
-            .padding(12.dp)
+            .padding(playerPadding)
             .navigationBarsPadding()
             .fillMaxWidth()
-            .height(88.dp)
+            .height(playerHeight)
             .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
             .drawBehind {
                 val shadowColor = Color.Black.copy(alpha = 0.2f)
@@ -129,19 +142,19 @@ fun MiniPlayer(
                         0f,
                         size.width,
                         size.height,
-                        28.dp.toPx(),
-                        28.dp.toPx(),
+                        playerCorner.toPx(),
+                        playerCorner.toPx(),
                         paint
                     )
                 }
             }
             .shadow(
                 elevation = elevation,
-                shape = RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(playerCorner),
                 ambientColor = Color.Black.copy(alpha = 0.25f),
                 spotColor = Color.Black.copy(alpha = 0.2f)
             )
-            .clip(RoundedCornerShape(28.dp))
+            .clip(RoundedCornerShape(playerCorner))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -226,7 +239,7 @@ fun MiniPlayer(
 
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(logoSize)
                         .graphicsLayer {
                             scaleX = scale
                             scaleY = scale
@@ -239,7 +252,7 @@ fun MiniPlayer(
                         Icon(
                             imageVector = Icons.Rounded.Radio,
                             contentDescription = null,
-                            modifier = Modifier.size(36.dp),
+                            modifier = Modifier.size(logoIconSize),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     }
@@ -322,7 +335,7 @@ fun MiniPlayer(
 
                 IconButton(
                     onClick = onToggle,
-                    modifier = Modifier.size(52.dp)
+                    modifier = Modifier.size(actionButtonSize)
                 ) {
                     AnimatedContent(
                         targetState = isBuffering to isPlaying,
@@ -333,7 +346,7 @@ fun MiniPlayer(
                     ) { (buffering, playing) ->
                         if (buffering) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(32.dp),
+                                modifier = Modifier.size(if (isLandscape) 24.dp else 32.dp),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 strokeWidth = 3.dp,
                             )
@@ -342,7 +355,7 @@ fun MiniPlayer(
                                 if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(36.dp),
+                                modifier = Modifier.size(actionIconSize),
                             )
                         }
                     }

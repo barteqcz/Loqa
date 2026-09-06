@@ -29,60 +29,65 @@ fun DataDisclaimer(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(32.dp)
+                .systemBarsPadding(),
+            horizontalAlignment = Alignment.Start,
         ) {
             Text(
                 text = stringResource(R.string.disclaimer_title),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start
             )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            val fullText = stringResource(R.string.disclaimer_message)
-            val annotatedString = buildAnnotatedString {
-                append(fullText)
-                
-                val links = listOf(
-                    "fmscan.org" to "https://fmscan.org",
-                    "onqa.barteq.cz" to "https://onqa.barteq.cz"
-                )
-                
-                links.forEach { (linkText, url) ->
-                    val startIndex = fullText.indexOf(linkText)
-                    if (startIndex != -1) {
-                        addLink(
-                            url = LinkAnnotation.Url(
-                                url = url,
-                                styles = TextLinkStyles(
-                                    style = SpanStyle(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        textDecoration = TextDecoration.Underline,
-                                        fontWeight = FontWeight.Bold
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                val fullText = stringResource(R.string.disclaimer_message)
+                val annotatedString = buildAnnotatedString {
+                    append(fullText)
+
+                    val links = listOf(
+                        "fmscan.org" to "https://fmscan.org",
+                        "onqa.barteq.cz" to "https://onqa.barteq.cz"
+                    )
+
+                    links.forEach { (linkText, url) ->
+                        val startIndex = fullText.indexOf(linkText)
+                        if (startIndex != -1) {
+                            addLink(
+                                url = LinkAnnotation.Url(
+                                    url = url,
+                                    styles = TextLinkStyles(
+                                        style = SpanStyle(
+                                            color = MaterialTheme.colorScheme.primary,
+                                            textDecoration = TextDecoration.Underline,
+                                            fontWeight = FontWeight.Bold
+                                        )
                                     )
-                                )
-                            ),
-                            start = startIndex,
-                            end = startIndex + linkText.length
-                        )
+                                ),
+                                start = startIndex,
+                                end = startIndex + linkText.length
+                            )
+                        }
                     }
                 }
+
+                Text(
+                    text = annotatedString,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Start,
+                        lineHeight = 24.sp
+                    )
+                )
             }
 
-            Text(
-                text = annotatedString,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 24.sp
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(48.dp))
-            
             Button(
                 onClick = onConfirm,
                 modifier = Modifier
