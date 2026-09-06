@@ -3,8 +3,11 @@ package com.barteqcz.onqa.ui.components
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -68,6 +71,48 @@ fun LocationHeader(info: LocationInfo) {
                     fontWeight = FontWeight.Bold,
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun CompactLocationHeader(
+    info: LocationInfo,
+    modifier: Modifier = Modifier
+) {
+    val cityText = info.city ?: stringResource(R.string.unknown_location)
+    val targetCode = info.countryCode
+    val flagEmoji = remember(targetCode) {
+        if (targetCode?.length == 2) {
+            targetCode.uppercase().map { char ->
+                Character.toChars(0x1F1E6 + (char - 'A'))
+            }.joinToString("") { String(it) }
+        } else null
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            flagEmoji?.let {
+                Text(
+                    text = it,
+                    fontSize = 16.sp
+                )
+            }
+            Text(
+                text = cityText,
+                color = Color.White,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
         }
     }
 }

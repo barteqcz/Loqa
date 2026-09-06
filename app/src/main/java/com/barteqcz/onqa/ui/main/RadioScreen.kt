@@ -51,6 +51,8 @@ fun RadioScreen(
     val focusManager = LocalFocusManager.current
     val searchFocusRequester = remember { FocusRequester() }
     var isSearchFocused by remember { mutableStateOf(value = false) }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     BackHandler(viewState.isSearchActive) {
         if (isSearchFocused) {
@@ -83,137 +85,146 @@ fun RadioScreen(
                     ) { 
                         focusManager.clearFocus()
                     }
-                    .padding(bottom = if (viewState.settings.showLocationHeader) 8.dp else 4.dp),
+                    .padding(bottom = if (viewState.settings.showLocationHeader && !isLandscape) 8.dp else 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    AnimatedContent(
-                        targetState = viewState.isSearchActive,
-                        transitionSpec = {
-                            if (targetState) {
-                                (slideInHorizontally { it } + fadeIn()).togetherWith(slideOutHorizontally { -it } + fadeOut())
-                            } else {
-                                (slideInHorizontally { -it } + fadeIn()).togetherWith(slideOutHorizontally { it } + fadeOut())
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                        label = "TopBarSearchTransition",
-                    ) { isSearchActive ->
-                        if (isSearchActive) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(
-                                    onClick = { viewModel.setSearchActive(false) },
-                                    modifier = Modifier.size(32.dp)
-                                ) {
-                                    Icon(
-                                        Icons.AutoMirrored.Rounded.ArrowBack,
-                                        contentDescription = stringResource(R.string.back),
-                                        tint = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.size(24.dp)
-                                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        AnimatedContent(
+                            targetState = viewState.isSearchActive,
+                            transitionSpec = {
+                                if (targetState) {
+                                    (slideInHorizontally { it } + fadeIn()).togetherWith(slideOutHorizontally { -it } + fadeOut())
+                                } else {
+                                    (slideInHorizontally { -it } + fadeIn()).togetherWith(slideOutHorizontally { it } + fadeOut())
                                 }
-
-                                TextField(
-                                    value = viewState.searchQuery,
-                                    onValueChange = { viewModel.setSearchQuery(it) },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .focusRequester(searchFocusRequester)
-                                        .onFocusChanged { isSearchFocused = it.isFocused },
-                                    placeholder = {
-                                        Text(
-                                            stringResource(R.string.search_stations_hint),
-                                            style = MaterialTheme.typography.headlineSmall,
-                                            fontWeight = FontWeight.Medium,
-                                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                            },
+                            modifier = Modifier.weight(1f),
+                            label = "TopBarSearchTransition",
+                        ) { isSearchActive ->
+                            if (isSearchActive) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(
+                                        onClick = { viewModel.setSearchActive(false) },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.AutoMirrored.Rounded.ArrowBack,
+                                            contentDescription = stringResource(R.string.back),
+                                            tint = MaterialTheme.colorScheme.onBackground,
+                                            modifier = Modifier.size(24.dp)
                                         )
-                                    },
-                                    colors = TextFieldDefaults.colors(
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedContainerColor = Color.Transparent,
-                                        disabledContainerColor = Color.Transparent,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent,
-                                        cursorColor = MaterialTheme.colorScheme.primary
-                                    ),
-                                    textStyle = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    ),
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                                    keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
-                                    trailingIcon = {
-                                        if (viewState.searchQuery.isNotEmpty()) {
-                                            IconButton(
-                                                onClick = { viewModel.setSearchQuery("") },
-                                                modifier = Modifier.size(32.dp)
-                                            ) {
-                                                Icon(
-                                                    Icons.Rounded.Close,
-                                                    contentDescription = null,
-                                                    tint = MaterialTheme.colorScheme.onBackground,
-                                                    modifier = Modifier.size(24.dp)
-                                                )
+                                    }
+
+                                    TextField(
+                                        value = viewState.searchQuery,
+                                        onValueChange = { viewModel.setSearchQuery(it) },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .focusRequester(searchFocusRequester)
+                                            .onFocusChanged { isSearchFocused = it.isFocused },
+                                        placeholder = {
+                                            Text(
+                                                stringResource(R.string.search_stations_hint),
+                                                style = MaterialTheme.typography.headlineSmall,
+                                                fontWeight = FontWeight.Medium,
+                                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                            )
+                                        },
+                                        colors = TextFieldDefaults.colors(
+                                            focusedContainerColor = Color.Transparent,
+                                            unfocusedContainerColor = Color.Transparent,
+                                            disabledContainerColor = Color.Transparent,
+                                            focusedIndicatorColor = Color.Transparent,
+                                            unfocusedIndicatorColor = Color.Transparent,
+                                            cursorColor = MaterialTheme.colorScheme.primary
+                                        ),
+                                        textStyle = MaterialTheme.typography.headlineSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        ),
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                                        keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+                                        trailingIcon = {
+                                            if (viewState.searchQuery.isNotEmpty()) {
+                                                IconButton(
+                                                    onClick = { viewModel.setSearchQuery("") },
+                                                    modifier = Modifier.size(32.dp)
+                                                ) {
+                                                    Icon(
+                                                        Icons.Rounded.Close,
+                                                        contentDescription = null,
+                                                        tint = MaterialTheme.colorScheme.onBackground,
+                                                        modifier = Modifier.size(24.dp)
+                                                    )
+                                                }
                                             }
                                         }
-                                    }
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    stringResource(R.string.app_name),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = (-0.5).sp,
                                 )
                             }
-                        } else {
-                            Text(
-                                stringResource(R.string.app_name),
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = (-0.5).sp,
-                            )
                         }
-                    }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (!viewState.isSearchActive) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (!viewState.isSearchActive) {
+                                IconButton(
+                                    onClick = { viewModel.setSearchActive(true) },
+                                    modifier = Modifier.size(32.dp),
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Search,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.size(24.dp),
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                            } else {
+                                Spacer(modifier = Modifier.width(16.dp))
+                            }
+
                             IconButton(
-                                onClick = { viewModel.setSearchActive(true) },
+                                onClick = {
+                                    if (!viewState.isSearchActive) {
+                                        onSettingsClick()
+                                    }
+                                },
                                 modifier = Modifier.size(32.dp),
                             ) {
                                 Icon(
-                                    Icons.Rounded.Search,
-                                    contentDescription = null,
+                                    Icons.Rounded.Settings,
+                                    contentDescription = stringResource(R.string.settings_title),
                                     tint = MaterialTheme.colorScheme.onBackground,
                                     modifier = Modifier.size(24.dp),
                                 )
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
-                        } else {
-                            Spacer(modifier = Modifier.width(16.dp))
                         }
+                    }
 
-                        IconButton(
-                            onClick = {
-                                if (!viewState.isSearchActive) {
-                                    onSettingsClick()
-                                }
-                            },
-                            modifier = Modifier.size(32.dp),
-                        ) {
-                            Icon(
-                                Icons.Rounded.Settings,
-                                contentDescription = stringResource(R.string.settings_title),
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
+                    if (isLandscape && viewState.settings.showLocationHeader && !viewState.isSearchActive) {
+                        CompactLocationHeader(viewState.locationInfo)
                     }
                 }
                 
-                if (viewState.settings.showLocationHeader) {
+                if (viewState.settings.showLocationHeader && !isLandscape) {
                     LocationHeader(viewState.locationInfo)
                 }
             }
