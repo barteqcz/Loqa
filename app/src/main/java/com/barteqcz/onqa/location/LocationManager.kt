@@ -39,7 +39,7 @@ class LocationManager @Inject constructor(
                 
                 if (settings.locationSource == LocationSource.MANUAL) {
                     stopTracking()
-                    if (settings.manualLatitude != null && settings.manualLongitude != null) {
+                    if ((settings.manualLatitude != null) && (settings.manualLongitude != null)) {
                         val manualLoc = Location("manual").apply {
                             latitude = settings.manualLatitude
                             longitude = settings.manualLongitude
@@ -47,7 +47,7 @@ class LocationManager @Inject constructor(
                         _currentLocation.value = manualLoc
                         _locationInfo.value = LocationInfo(
                             city = settings.manualCity,
-                            countryCode = settings.manualCountryCode
+                            countryCode = settings.manualCountryCode,
                         )
                         Timber.d("Using manual location: ${settings.manualCity} (${settings.manualLatitude}, ${settings.manualLongitude})")
                     }
@@ -156,8 +156,8 @@ class LocationManager @Inject constructor(
         geocodingJob = scope.launch {
             val result = locationRepository.getAddressesFromLocation(location)
 
-            if (result is NetworkResult.Error) {
-                Timber.w("Geocoding failed: ${result.message}")
+            (result as? NetworkResult.Error)?.let {
+                Timber.w("Geocoding failed: ${it.message}")
             }
 
             val addresses = (result as? NetworkResult.Success)?.data

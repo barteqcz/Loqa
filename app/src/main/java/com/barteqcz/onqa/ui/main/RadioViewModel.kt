@@ -226,7 +226,7 @@ class RadioViewModel @Inject constructor(
 
         val stations = (uiState as? RadioUiState.Success)?.stations ?: emptyList()
         val allStations = (uiState as? RadioUiState.Success)?.allStations ?: emptyList()
-        val isNoStationsSuccess = uiState is RadioUiState.Success && allStations.isEmpty()
+        val isNoStationsSuccess = (uiState is RadioUiState.Success) && allStations.isEmpty()
 
         val selectedStation = selectedUrl?.let { url ->
             stations.find { (it.streamUrl == url) || (it.streamUrlHq == url) }
@@ -248,7 +248,7 @@ class RadioViewModel @Inject constructor(
             searchQuery = searchQuery,
             isSearchActive = isSearchActive,
             displayStation = displayStation,
-            isMiniPlayerActive = selectedUrl != null && !isNoStationsSuccess
+            isMiniPlayerActive = (selectedUrl != null) && !isNoStationsSuccess,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
@@ -344,7 +344,7 @@ class RadioViewModel @Inject constructor(
     private fun setupLocationAwarePlayback() {
         processedStations
             .filterIsInstance<RadioUiState.Success>()
-            .distinctUntilChanged { old, new -> old.currentLocation == new.currentLocation }
+            .distinctUntilChanged()
             .onEach { state: RadioUiState.Success ->
                 val playerState = radioPlayer.state.value
                 val isActuallyActive = playerState.isPlaying || playerState.isBuffering || playerState.playbackError
@@ -427,7 +427,7 @@ class RadioViewModel @Inject constructor(
         val currentLocales = AppCompatDelegate.getApplicationLocales()
         if (currentLocales.isEmpty) return AppLanguage.SYSTEM
         
-        val tag = currentLocales.get(0)?.language ?: return AppLanguage.SYSTEM
+        val tag = currentLocales[0]?.language ?: return AppLanguage.SYSTEM
         return AppLanguage.entries.find { it.code.equals(tag, ignoreCase = true) } ?: AppLanguage.SYSTEM
     }
     fun updateAmoledMode(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateAmoledMode(enabled) }

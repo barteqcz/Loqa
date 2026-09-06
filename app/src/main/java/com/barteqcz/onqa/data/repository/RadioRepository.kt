@@ -27,7 +27,6 @@ import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
 import java.net.UnknownHostException
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -44,7 +43,6 @@ class RadioRepository @Inject constructor(
     val currentLocation: StateFlow<Location?> = locationManager.currentLocation
     val locationInfo: StateFlow<LocationInfo> = locationManager.locationInfo
 
-    private val isFetching = AtomicBoolean(false)
     private var observationJob: Job? = null
 
     init {
@@ -81,6 +79,7 @@ class RadioRepository @Inject constructor(
     }
 
     suspend fun updateNearbyStations(location: Location) = safeApiCall("updateNearbyStations") {
+        _stations.value = NetworkResult.Loading
         val request = LocationRequest(location.latitude, location.longitude)
         apiService.getNearbyStations(request)
     }
@@ -91,11 +90,6 @@ class RadioRepository @Inject constructor(
         initialDelay: Long = 1000,
         call: suspend () -> List<RadioStation>,
     ) {
-        if (isFetching.getAndSet(true)) {
-            Timber.d("Already fetching stations ($actionName), skipping.")
-            return
-        }
-
         var currentDelay = initialDelay
         try {
             repeat(maxRetries) { attempt ->
@@ -113,7 +107,7 @@ class RadioRepository @Inject constructor(
                         else -> false
                     }
 
-                    if (attempt < maxRetries - 1 && shouldRetry) {
+                    if ((attempt < maxRetries - 1) && shouldRetry) {
                         Timber.w(e, "Attempt ${attempt + 1} failed for $actionName. Retrying in ${currentDelay}ms...")
                         delay(currentDelay.milliseconds)
                         currentDelay *= 2
@@ -137,8 +131,6 @@ class RadioRepository @Inject constructor(
             Timber.e(e, "Unexpected error in $actionName after retries")
             val message = e.message ?: context.getString(R.string.error_unknown)
             _stations.value = NetworkResult.Error(message, e, isServerError = true)
-        } finally {
-            isFetching.set(false)
         }
     }
 }

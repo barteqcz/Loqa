@@ -255,7 +255,7 @@ fun RadioScreen(
                         message = stringResource(R.string.error_no_internet),
                         isError = true,
                         modifier = Modifier.padding(paddingValues),
-                        onRetry = { viewModel.refresh() }
+                        onRetry = { viewModel.refresh() },
                     )
                 } else {
                     when (state) {
@@ -309,8 +309,16 @@ fun RadioScreen(
                                 val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
                                 
                                 val showShadow by remember {
+                                    derivedStateOf { viewState.selectedUrl != null }
+                                }
+                                
+                                val bottomPadding by remember(viewState.selectedUrl, isLandscape, bottomNavPadding) {
                                     derivedStateOf {
-                                        viewState.selectedUrl != null
+                                        if (viewState.selectedUrl != null) {
+                                            (if (isLandscape) 96.dp else 116.dp) + bottomNavPadding
+                                        } else {
+                                            16.dp + bottomNavPadding
+                                        }
                                     }
                                 }
 
@@ -325,11 +333,7 @@ fun RadioScreen(
                                         modifier = Modifier.fillMaxSize(),
                                         contentPadding = PaddingValues(
                                             top = paddingValues.calculateTopPadding() + 8.dp,
-                                            bottom = if (viewState.selectedUrl != null) {
-                                                (if (isLandscape) 88.dp else 116.dp) + bottomNavPadding
-                                            } else {
-                                                16.dp + bottomNavPadding
-                                            },
+                                            bottom = bottomPadding,
                                             start = 20.dp,
                                             end = 20.dp
                                         ),
@@ -405,7 +409,7 @@ fun RadioScreen(
                                     message = stringResource(R.string.error_no_internet),
                                     isError = true,
                                     modifier = Modifier.padding(paddingValues),
-                                    onRetry = { viewModel.refresh() }
+                                    onRetry = { viewModel.refresh() },
                                 )
                             }
                         }
