@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Tá leagan nua ar fáil</string>
     <string name="update_action_download">Íoslódáil</string>
     <string name="disclaimer_title">Sonraí clúdach</string>
-    <string name="disclaimer_message">Is é fmscan.org a sholáthraíonn sonraí clúdach na stáisiún agus ba cheart glacadh leo mar neas-sonraí.\n\nLéiríonn an aip clúdach FM nó DAB+, ag brath ar an gcaoi a gcraolann an stáisiún. Má úsáideann stáisiún an dá cheann, cuirtear a gclúdach le chéile.\n\nSeiceáil an líonra clúdach ag onqa.barteq.cz</string>
+    <string name="disclaimer_message">Is é fmscan.org a sholáthraíonn sonraí clúdach na stáisiún agus ba cheart glacadh leo mar neas-sonraí.\n\nLéiríonn an aip clúdach FM nó DAB+, ag brath ar an gcaoi a gcraolann an stáisiún. Má úsáideann stáisiún an dá cheann, cuirtear a gclúdach le chéile.\n\nSeiceáil an líonra clúdach ag onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Cuardaigh stáisiúin…</string>
     <string name="search_location_placeholder">Cuardaigh suíomh…</string>
     <string name="category_general">Ginearálta</string>

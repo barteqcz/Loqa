@@ -2,6 +2,7 @@ package com.barteqcz.onqa
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +12,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -46,6 +46,7 @@ import com.barteqcz.onqa.ui.settings.MapPickerScreen
 import com.barteqcz.onqa.ui.settings.MapViewModel
 import com.barteqcz.onqa.ui.settings.SettingsScreen
 import com.barteqcz.onqa.ui.theme.OnqaTheme
+import com.barteqcz.onqa.ui.theme.AnimationSystem
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
@@ -122,8 +123,8 @@ class MainActivity : AppCompatActivity() {
 
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.auto(
-                android.graphics.Color.TRANSPARENT,
-                android.graphics.Color.TRANSPARENT,
+                Color.TRANSPARENT,
+                Color.TRANSPARENT,
             ),
         )
 
@@ -176,128 +177,116 @@ class MainActivity : AppCompatActivity() {
                             OnboardingScreen(onGrantClick = { launchPermissionRequest() })
                         }
                     } else {
-                        val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+                        val focusManager = LocalFocusManager.current
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = navBackStackEntry?.destination
                         
                         val isMapPickerVisible = currentDestination?.hasRoute<MapPickerRoute>() == true
 
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            NavHost(
-                                navController = navController,
-                                startDestination = RadioRoute,
-                            ) {
-                                composable<RadioRoute>(
-                                    exitTransition = {
-                                        if (targetState.destination.hasRoute<SettingsRoute>()) {
-                                            slideOutHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeOut(tween(300))
-                                        } else {
-                                            slideOutVertically(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeOut(tween(300))
-                                        }
-                                    },
-                                    popEnterTransition = {
-                                        if (initialState.destination.hasRoute<SettingsRoute>()) {
-                                            slideInHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeIn(tween(300))
-                                        } else {
-                                            slideInVertically(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeIn(tween(300))
-                                        }
-                                    }
+                        LookaheadScope {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                NavHost(
+                                    navController = navController,
+                                    startDestination = RadioRoute,
                                 ) {
-                                    RadioScreen(
-                                        viewModel = viewModel,
-                                        onSettingsClick = { 
-                                            if (navController.currentDestination?.hasRoute<RadioRoute>() == true) {
+                                    composable<RadioRoute>(
+                                        exitTransition = {
+                                            slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
+                                        },
+                                        popEnterTransition = {
+                                            slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
+                                        }
+                                    ) {
+                                        RadioScreen(
+                                            viewModel = viewModel,
+                                            onSettingsClick = { 
                                                 navController.navigate(SettingsRoute)
                                             }
-                                        }
-                                    )
-                                }
-                                composable<SettingsRoute>(
-                                    enterTransition = {
-                                        slideInHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(tween(300)) + scaleIn(initialScale = 0.92f)
-                                    },
-                                    exitTransition = {
-                                        fadeOut(tween(300)) + scaleOut(targetScale = 0.95f)
-                                    },
-                                    popEnterTransition = {
-                                        fadeIn(tween(300)) + scaleIn(initialScale = 0.95f)
-                                    },
-                                    popExitTransition = {
-                                        slideOutHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(300)) + scaleOut(targetScale = 0.92f)
+                                        )
                                     }
-                                ) {
-                                    SettingsScreen(
-                                        viewModel = viewModel,
-                                        onBack = { 
-                                            if (navController.currentDestination?.hasRoute<SettingsRoute>() == true) {
-                                                navController.popBackStack(RadioRoute, inclusive = false)
-                                            }
+                                    composable<SettingsRoute>(
+                                        enterTransition = {
+                                            slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween())
                                         },
-                                        onNavigateToMapPicker = {
-                                            if (navController.currentDestination?.hasRoute<SettingsRoute>() == true) {
+                                        exitTransition = {
+                                            slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
+                                        },
+                                        popEnterTransition = {
+                                            slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
+                                        },
+                                        popExitTransition = {
+                                            slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween())
+                                        }
+                                    ) {
+                                        SettingsScreen(
+                                            viewModel = viewModel,
+                                            onBack = { 
+                                                navController.popBackStack()
+                                            },
+                                            onNavigateToMapPicker = {
                                                 navController.navigate(MapPickerRoute)
                                             }
-                                        }
-                                    )
-                                }
-                                composable<MapPickerRoute>(
-                                    enterTransition = {
-                                        slideInVertically(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(tween(300)) + scaleIn(initialScale = 0.92f)
-                                    },
-                                    exitTransition = {
-                                        fadeOut(tween(300)) + scaleOut(targetScale = 0.95f)
-                                    },
-                                    popEnterTransition = {
-                                        fadeIn(tween(300)) + scaleIn(initialScale = 0.95f)
-                                    },
-                                    popExitTransition = {
-                                        slideOutVertically(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(300)) + scaleOut(targetScale = 0.92f)
+                                        )
                                     }
-                                ) {
-                                    val mapViewModel: MapViewModel = hiltViewModel()
-                                    MapPickerScreen(
-                                        radioViewModel = viewModel,
-                                        mapViewModel = mapViewModel,
-                                        onBack = { 
-                                            if (navController.currentDestination?.hasRoute<MapPickerRoute>() == true) {
-                                                navController.popBackStack()
+                                    composable<MapPickerRoute>(
+                                        enterTransition = {
+                                            slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        },
+                                        exitTransition = {
+                                            slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        },
+                                        popEnterTransition = {
+                                            slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        },
+                                        popExitTransition = {
+                                            slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        }
+                                    ) {
+                                        val mapViewModel: MapViewModel = hiltViewModel()
+                                        MapPickerScreen(
+                                            radioViewModel = viewModel,
+                                            mapViewModel = mapViewModel,
+                                            onBack = { 
+                                                if (navController.currentDestination?.hasRoute<MapPickerRoute>() == true) {
+                                                    navController.popBackStack()
+                                                }
                                             }
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
-                            }
 
-                            val uiState = viewState.uiState
-                            val stations = (uiState as? RadioUiState.Success)?.stations ?: emptyList()
+                                val uiState = viewState.uiState
+                                val stations = (uiState as? RadioUiState.Success)?.stations ?: emptyList()
 
-                            AnimatedVisibility(
-                                visible = viewState.isMiniPlayerActive && !isMapPickerVisible,
-                                enter = slideInVertically { it } + fadeIn(),
-                                exit = slideOutVertically { it } + fadeOut(),
-                                modifier = Modifier.align(Alignment.BottomCenter),
-                            ) {
-                                viewState.displayStation?.let {
-                                    MiniPlayer(
-                                        station = it,
-                                        stations = stations,
-                                        isPlaying = viewState.isPlaying,
-                                        isBuffering = viewState.isBuffering,
-                                        metadata = viewState.metadata,
-                                        showHqIcon = viewState.settings.useHqStream && !it.streamUrlHq.isNullOrBlank(),
-                                        isScrollable = viewState.isScrollable,
-                                        onToggle = { 
-                                            focusManager.clearFocus()
-                                            viewModel.toggleStation(viewState.selectedUrl!!) 
-                                        },
-                                        onNext = { 
-                                            focusManager.clearFocus()
-                                            viewModel.nextStation() 
-                                        },
-                                        onPrevious = { 
-                                            focusManager.clearFocus()
-                                            viewModel.previousStation() 
-                                        }
-                                    )
+                                AnimatedVisibility(
+                                    visible = viewState.isMiniPlayerActive && !isMapPickerVisible,
+                                    enter = slideInVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(),
+                                    exit = slideOutVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(),
+                                    modifier = Modifier.align(Alignment.BottomCenter),
+                                ) {
+                                    viewState.displayStation?.let {
+                                        MiniPlayer(
+                                            station = it,
+                                            stations = stations,
+                                            isPlaying = viewState.isPlaying,
+                                            isBuffering = viewState.isBuffering,
+                                            metadata = viewState.metadata,
+                                            showHqIcon = viewState.settings.useHqStream && !it.streamUrlHq.isNullOrBlank(),
+                                            isScrollable = viewState.isScrollable,
+                                            onToggle = { 
+                                                focusManager.clearFocus()
+                                                viewModel.toggleStation(viewState.selectedUrl!!) 
+                                            },
+                                            onNext = { 
+                                                focusManager.clearFocus()
+                                                viewModel.nextStation() 
+                                            },
+                                            onPrevious = { 
+                                                focusManager.clearFocus()
+                                                viewModel.previousStation() 
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }

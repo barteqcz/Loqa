@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Налична е нова версия</string>
     <string name="update_action_download">Изтегляне</string>
     <string name="disclaimer_title">Данни за покритието</string>
-    <string name="disclaimer_message">Данните за покритието на станциите се предоставят от fmscan.org и трябва да се считат за приблизителни.\n\nПриложението отразява или FM, или DAB+ покритие, в зависимост от това как предава станцията. Ако станцията използва и двете, тяхното покритие се комбинира.\n\nПроверете мрежата за покритие на onqa.barteq.cz</string>
+    <string name="disclaimer_message">Данните за покритието на станциите се предоставят от fmscan.org и трябва да се считат за приблизителни.\n\nПриложението отразява или FM, или DAB+ покритие, в зависимост от това как предава станцията. Ако станцията използва и двете, тяхното покритие се комбинира.\n\nПроверете мрежата за покритие на onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Търсене на станции…</string>
     <string name="search_location_placeholder">Търсене на местоположение…</string>
     <string name="category_general">Общи</string>

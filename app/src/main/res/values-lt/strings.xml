@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Yra nauja versija</string>
     <string name="update_action_download">Atsisiųsti</string>
     <string name="disclaimer_title">Aprėpties duomenys</string>
-    <string name="disclaimer_message">Stočių aprėpties duomenis teikia fmscan.org ir jie turėtų būti laikomi apytiksliais.\n\nProgramėlė atspindi FM arba DAB+ aprėptį, priklausomai nuo to, kaip stotis transliuoja. Jei stotis naudoja abi, jų aprėptis sujungiama.\n\nPatikrinkite aprėpties tinklą onqa.barteq.cz</string>
+    <string name="disclaimer_message">Stočių aprėpties duomenis teikia fmscan.org ir jie turėtų būti laikomi apytiksliais.\n\nProgramėlė atspindi FM arba DAB+ aprėptį, priklausomai nuo to, kaip stotis transliuoja. Jei stotis naudoja abi, jų aprėptis sujungiama.\n\nPatikrinkite aprėpties tinklą onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Ieškoti stočių…</string>
     <string name="search_location_placeholder">Ieškoti vietos…</string>
     <string name="category_general">Bendra</string>

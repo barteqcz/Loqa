@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Ina nova versiun è disponibla</string>
     <string name="update_action_download">Chargiar giu</string>
     <string name="disclaimer_title">Datas da cuvridira</string>
-    <string name="disclaimer_message">Las datas da cuvridira da las emischuns vegnan furnidas da fmscan.org e duessan vegnir consideradas sco datas approximativas.\n\nL\'applicaziun visualisescha u la cuvridira FM u DAB+, tut tenor co che l\'emischun emetta. Sche l\'emischun utilisescha ombdus, vegn lur cuvridira combinada.\n\nControllai la rait da cuvridira sin onqa.barteq.cz</string>
+    <string name="disclaimer_message">Las datas da cuvridira da las emischuns vegnan furnidas da fmscan.org e duessan vegnir consideradas sco datas approximativas.\n\nL\'applicaziun visualisescha u la cuvridira FM u DAB+, tut tenor co che l\'emischun emetta. Sche l\'emischun utilisescha ombdus, vegn lur cuvridira combinada.\n\nControllai la rait da cuvridira sin onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Tscherchar emischuns…</string>
     <string name="search_location_placeholder">Tscherchar lieu…</string>
     <string name="category_general">General</string>

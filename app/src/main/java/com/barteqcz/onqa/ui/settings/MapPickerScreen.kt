@@ -1,11 +1,14 @@
 package com.barteqcz.onqa.ui.settings
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
@@ -23,14 +26,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.ui.main.RadioViewModel
+import com.barteqcz.onqa.ui.theme.AnimationSystem
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -51,15 +57,15 @@ fun MapPickerScreen(
     val density = LocalDensity.current.density
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val mapView = remember {
         MapView(context).apply {
             setTileSource(TileSourceFactory.MAPNIK)
             setMultiTouchControls(true)
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+            setFlingEnabled(true)
             
-            // Limit scaling to avoid excessive blurriness while keeping text readable
             val scale = (density / 1.5f).coerceAtLeast(1.0f)
             setTilesScaleFactor(scale)
             
@@ -69,12 +75,8 @@ fun MapPickerScreen(
 
     DisposableEffect(lifecycleOwner) {
         val observer = object : DefaultLifecycleObserver {
-            override fun onResume(owner: LifecycleOwner) {
-                mapView.onResume()
-            }
-            override fun onPause(owner: LifecycleOwner) {
-                mapView.onPause()
-            }
+            override fun onResume(owner: LifecycleOwner) { mapView.onResume() }
+            override fun onPause(owner: LifecycleOwner) { mapView.onPause() }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
@@ -105,40 +107,14 @@ fun MapPickerScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.map_picker_title), fontWeight = FontWeight.SemiBold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                },
-                actions = {
-                    Button(
-                        onClick = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                            mapViewModel.confirmLocation(radioViewModel, onBack)
-                        },
-                        enabled = state.selectedLocation != null && !state.isGeocoding,
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Text(stringResource(R.string.confirm))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                )
-            )
-        }
-    ) { padding ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
@@ -166,10 +142,7 @@ fun MapPickerScreen(
                                 mapViewModel.onLocationSelected(p)
                                 return true
                             }
-
-                            override fun longPressHelper(p: GeoPoint): Boolean {
-                                return false
-                            }
+                            override fun longPressHelper(p: GeoPoint): Boolean { return false }
                         }
                         
                         overlays.add(MapEventsOverlay(eventsReceiver))
@@ -190,94 +163,106 @@ fun MapPickerScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // Search Bar
-            Surface(
+            // Search Bar Area
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
                     .align(Alignment.TopCenter)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    },
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.surfaceVariant,
             ) {
-                TextField(
-                    value = state.searchQuery,
-                    onValueChange = { mapViewModel.onSearchQueryChanged(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(stringResource(R.string.search_location_placeholder)) },
-                    leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        errorContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent,
-                    ),
-                    trailingIcon = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (state.searchQuery.isNotEmpty()) {
-                                IconButton(onClick = { mapViewModel.onSearchQueryChanged("") }) {
-                                    Icon(Icons.Rounded.Close, contentDescription = null)
-                                }
-                            }
-                            if (state.isGeocoding) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp).padding(end = 8.dp),
-                                    strokeWidth = 2.dp
-                                )
-                            }
-                        }
-                    },
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        imeAction = androidx.compose.ui.text.input.ImeAction.Search
-                    ),
-                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(
-                        onSearch = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                            mapViewModel.searchLocation()
-                        }
-                    )
-                )
-
-                if (state.searchResults.isNotEmpty()) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    LazyColumn(
+                Spacer(modifier = Modifier.statusBarsPadding())
+                Spacer(modifier = Modifier.height(80.dp)) // Locked header height
+                
+                AnimatedVisibility(
+                    visible = true,
+                    enter = expandVertically(AnimationSystem.VividSpringIntSize) + fadeIn(AnimationSystem.vividTween()),
+                    exit = shrinkVertically(AnimationSystem.VividSpringIntSize) + fadeOut(AnimationSystem.vividTween())
+                ) {
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 300.dp)
+                            .padding(16.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shadowElevation = 4.dp
                     ) {
-                        items(state.searchResults) { address ->
-                            val fullAddress = remember(address) {
-                                val parts = mutableListOf<String>()
-                                address.locality?.let { parts.add(it) }
-                                address.adminArea?.let { parts.add(it) }
-                                address.countryName?.let { parts.add(it) }
-                                if (parts.isEmpty()) {
-                                    address.getAddressLine(0) ?: ""
-                                } else {
-                                    parts.joinToString(", ")
+                        Column {
+                            TextField(
+                                value = state.searchQuery,
+                                onValueChange = { mapViewModel.onSearchQueryChanged(it) },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = { Text(stringResource(R.string.search_location_placeholder)) },
+                                leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
+                                singleLine = true,
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                ),
+                                trailingIcon = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        if (state.searchQuery.isNotEmpty()) {
+                                            IconButton(onClick = { mapViewModel.onSearchQueryChanged("") }) {
+                                                Icon(Icons.Rounded.Close, contentDescription = null)
+                                            }
+                                        }
+                                        if (state.isGeocoding) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(24.dp).padding(end = 8.dp),
+                                                strokeWidth = 2.dp
+                                            )
+                                        }
+                                    }
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Search
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onSearch = {
+                                        focusManager.clearFocus()
+                                        keyboardController?.hide()
+                                        mapViewModel.searchLocation()
+                                    }
+                                )
+                            )
+
+                            AnimatedVisibility(
+                                visible = state.searchResults.isNotEmpty(),
+                                enter = expandVertically(AnimationSystem.VividSpringIntSize) + fadeIn(),
+                                exit = shrinkVertically(AnimationSystem.VividSpringIntSize) + fadeOut()
+                            ) {
+                                Column {
+                                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                                    LazyColumn(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(max = 300.dp)
+                                    ) {
+                                        items(state.searchResults) { address ->
+                                            val fullAddress = remember(address) {
+                                                val parts = mutableListOf<String>()
+                                                address.locality?.let { parts.add(it) }
+                                                address.adminArea?.let { parts.add(it) }
+                                                address.countryName?.let { parts.add(it) }
+                                                if (parts.isEmpty()) {
+                                                    address.getAddressLine(0) ?: ""
+                                                } else {
+                                                    parts.joinToString(", ")
+                                                }
+                                            }
+                                            
+                                            ListItem(
+                                                headlineContent = { Text(fullAddress) },
+                                                modifier = Modifier.clickable {
+                                                    focusManager.clearFocus()
+                                                    keyboardController?.hide()
+                                                    mapViewModel.onSearchResultSelected(address)
+                                                }
+                                            )
+                                        }
+                                    }
                                 }
                             }
-                            
-                            ListItem(
-                                headlineContent = { Text(fullAddress) },
-                                modifier = Modifier.clickable {
-                                    focusManager.clearFocus()
-                                    keyboardController?.hide()
-                                    mapViewModel.onSearchResultSelected(address)
-                                }
-                            )
                         }
                     }
                 }
@@ -299,36 +284,113 @@ fun MapPickerScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .navigationBarsPadding()
             ) {
-                state.city?.let { city ->
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
-                        ),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(
-                            text = city,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                AnimatedVisibility(
+                    visible = state.city != null,
+                    enter = slideInVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(),
+                    exit = slideOutVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    state.city?.let { city ->
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
+                            )
+                        ) {
+                            Text(
+                                text = city,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
                 
-                state.error?.let { error ->
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.9f)
-                        ),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                AnimatedVisibility(
+                    visible = state.error != null,
+                    enter = slideInVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(),
+                    exit = slideOutVertically(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    state.error?.let { error ->
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.9f)
+                            )
+                        ) {
+                            Text(
+                                text = error,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Top Bar
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+                .statusBarsPadding()
+                .align(Alignment.TopCenter)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.size(48.dp)
                     ) {
-                        Text(
-                            text = error,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(24.dp)
                         )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        stringResource(R.string.map_picker_title),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    AnimatedVisibility(
+                        visible = state.selectedLocation != null && !state.isGeocoding,
+                        enter = scaleIn(AnimationSystem.VividSpring) + fadeIn(),
+                        exit = scaleOut(AnimationSystem.VividSpring) + fadeOut()
+                    ) {
+                        Button(
+                            onClick = {
+                                focusManager.clearFocus()
+                                keyboardController?.hide()
+                                mapViewModel.confirmLocation(radioViewModel, onBack)
+                            },
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.height(40.dp)
+                        ) {
+                            Text(stringResource(R.string.confirm))
+                        }
                     }
                 }
             }

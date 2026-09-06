@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Даступная новая версія</string>
     <string name="update_action_download">Спампаваць</string>
     <string name="disclaimer_title">Даныя аб пакрыцці</string>
-    <string name="disclaimer_message">Даныя аб пакрыцці станцый прадастаўляюцца fmscan.org і павінны лічыцца прыблізнымі.\n\nПраграма адлюстроўвае пакрыццё FM або DAB+, у залежнасці ад таго, як вяшчае станцыя. Калі станцыя выкарыстоўвае абодва варыянты, іх пакрыццё аб\'ядноўваецца.\n\nПраверце сетку пакрыцця на onqa.barteq.cz</string>
+    <string name="disclaimer_message">Даныя аб пакрыцці станцый прадастаўляюцца fmscan.org і павінны лічыцца прыблізнымі.\n\nПраграма адлюстроўвае пакрыццё FM або DAB+, у залежнасці ад таго, як вяшчае станцыя. Калі станцыя выкарыстоўвае абодва варыянты, іх пакрыццё аб\'ядноўваецца.\n\nПраверце сетку пакрыцця на onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Пошук станцый…</string>
     <string name="search_location_placeholder">Пошук месцазнаходжання…</string>
     <string name="category_general">Агульныя</string>

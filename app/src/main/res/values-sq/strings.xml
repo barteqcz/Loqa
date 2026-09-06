@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Një version i ri është i disponueshëm</string>
     <string name="update_action_download">Shkarko</string>
     <string name="disclaimer_title">Të dhënat e mbulimit</string>
-    <string name="disclaimer_message">Të dhënat e mbulimit të stacioneve ofrohen nga fmscan.org dhe duhet të konsiderohen të përafërta.\n\nAplikacioni pasqyron mbulimin FM ose DAB+, varësisht se si transmeton stacioni. Nëse një stacion përdor të dyja, mbulimi i tyre kombinohet.\n\nKontrolloni rrjetin e mbulimit në onqa.barteq.cz</string>
+    <string name="disclaimer_message">Të dhënat e mbulimit të stacioneve ofrohen nga fmscan.org dhe duhet të konsiderohen të përafërta.\n\nAplikacioni pasqyron mbulimin FM ose DAB+, varësisht se si transmeton stacioni. Nëse një stacion përdor të dyja, mbulimi i tyre kombinohet.\n\nKontrolloni rrjetin e mbulimit në onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Kërko stacione…</string>
     <string name="search_location_placeholder">Kërko vendndodhjen…</string>
     <string name="category_general">Të përgjithshme</string>

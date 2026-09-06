@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Új verzió érhető el</string>
     <string name="update_action_download">Letöltés</string>
     <string name="disclaimer_title">Lefedettségi adatok</string>
-    <string name="disclaimer_message">Az állomások lefedettségi adatait az fmscan.org szolgáltatja, és hozzávetőlegesnek kell tekinteni.\n\nAz alkalmazás az FM vagy a DAB+ lefedettséget tükrözi, attól függően, hogyan sugároz az állomás. Ha egy állomás mindkettőt használja, a lefedettségük összeadódik.\n\nEllenőrizze a lefedettségi hálózatot az onqa.barteq.cz oldalon</string>
+    <string name="disclaimer_message">Az állomások lefedettségi adatait az fmscan.org szolgáltatja, és hozzávetőlegesnek kell tekinteni.\n\nAz alkalmazás az FM vagy a DAB+ lefedettséget tükrözi, attól függően, hogyan sugároz az állomás. Ha egy állomás mindkettőt használja, a lefedettségük összeadódik.\n\nEllenőrizze a lefedettségi hálózatot az onqa.barteq.cz/db oldalon</string>
     <string name="search_stations_hint">Állomások keresése…</string>
     <string name="search_location_placeholder">Hely keresése…</string>
     <string name="category_general">Általános</string>

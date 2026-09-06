@@ -1,9 +1,7 @@
 package com.barteqcz.onqa.ui.settings
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -31,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,12 +43,7 @@ import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
-import com.barteqcz.onqa.ui.theme.OnqaBlue
-import com.barteqcz.onqa.ui.theme.OnqaCyan
-import com.barteqcz.onqa.ui.theme.OnqaGreen
-import com.barteqcz.onqa.ui.theme.OnqaOrange
-import com.barteqcz.onqa.ui.theme.OnqaPurple
-import com.barteqcz.onqa.ui.theme.applyLightVariant
+import com.barteqcz.onqa.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -58,7 +52,6 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onNavigateToMapPicker: () -> Unit,
 ) {
-    BackHandler(onBack = onBack)
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     val settings = viewState.settings
     val selectedUrl = viewState.selectedUrl
@@ -69,11 +62,7 @@ fun SettingsScreen(
 
     val scrollState = rememberScrollState()
 
-    val showShadow by remember {
-        derivedStateOf {
-            selectedUrl != null
-        }
-    }
+    val showShadow = selectedUrl != null
 
     LaunchedEffect(scrollState.canScrollForward, scrollState.canScrollBackward) {
         viewModel.setScrollable(scrollState.canScrollForward || scrollState.canScrollBackward)
@@ -89,49 +78,30 @@ fun SettingsScreen(
 
     val displayAccentColors = accentColors.map { color ->
         val target = if (isLightMode) color.applyLightVariant() else color
-        animateColorAsState(target, tween(500), label = "paletteColor").value
+        animateColorAsState(target, AnimationSystem.vividTween(500), label = "paletteColor").value
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        modifier = Modifier.clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) {
+                    focusManager.clearFocus()
+                }
         ) {
-            focusManager.clearFocus()
-        },
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.settings_title), fontWeight = FontWeight.SemiBold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                ),
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .statusBarsPadding(),
-            )
-        }
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(
-                        top = padding.calculateTopPadding() + 16.dp,
-                        bottom = if (selectedUrl != null) 120.dp + padding.calculateBottomPadding() else 16.dp + padding.calculateBottomPadding(),
-                        start = 24.dp,
-                        end = 24.dp
-                    )
-                    .animateContentSize(),
-            ) {
+            // Stable Offset for Top Bar
+            Spacer(modifier = Modifier.statusBarsPadding())
+            Spacer(modifier = Modifier.height(80.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                 SettingCategory(title = stringResource(R.string.category_general))
 
                 LanguageSettings(
@@ -153,8 +123,8 @@ fun SettingsScreen(
 
                 AnimatedVisibility(
                     visible = settings.locationSource == LocationSource.MANUAL,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
+                    enter = expandVertically(AnimationSystem.VividSpringIntSize) + fadeIn(AnimationSystem.vividTween()),
+                    exit = shrinkVertically(AnimationSystem.VividSpringIntSize) + fadeOut(AnimationSystem.vividTween())
                 ) {
                     Column {
                         Spacer(modifier = Modifier.height(16.dp))
@@ -324,8 +294,8 @@ fun SettingsScreen(
 
                     AnimatedVisibility(
                         visible = !settings.isMaterialYouEnabled,
-                        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(animationSpec = tween(300)),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(animationSpec = tween(300))
+                        enter = expandVertically(AnimationSystem.VividSpringIntSize, expandFrom = Alignment.Top) + fadeIn(animationSpec = AnimationSystem.vividTween(300)),
+                        exit = shrinkVertically(AnimationSystem.VividSpringIntSize, shrinkTowards = Alignment.Top) + fadeOut(animationSpec = AnimationSystem.vividTween(300))
                     ) {
                         Column(
                             modifier = Modifier
@@ -374,30 +344,78 @@ fun SettingsScreen(
                     }
                 }
             }
+            
+            // Bottom Padding for MiniPlayer
+            Spacer(modifier = Modifier.height(if (selectedUrl != null) 140.dp else 24.dp))
+        }
 
-            AnimatedVisibility(
-                visible = showShadow,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) {
-                val bgColor = MaterialTheme.colorScheme.background
-                val shadowBrush = remember(bgColor) {
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            bgColor.copy(alpha = 0.4f),
-                            bgColor.copy(alpha = 0.8f),
-                            bgColor
-                        )
+        AnimatedVisibility(
+            visible = showShadow,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            val bgColor = MaterialTheme.colorScheme.background
+            val shadowBrush = remember(bgColor) {
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        bgColor.copy(alpha = 0.4f),
+                        bgColor.copy(alpha = 0.8f),
+                        bgColor
                     )
-                }
-                Box(
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .background(shadowBrush)
+            )
+        }
+
+        // Top Bar
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+                .statusBarsPadding()
+                .align(Alignment.TopCenter)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(140.dp)
-                        .background(shadowBrush)
-                )
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        stringResource(R.string.settings_title),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
         }
     }
@@ -722,7 +740,7 @@ private fun ThemeOption(
 
 @Composable
 private fun SelectableOption(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit,

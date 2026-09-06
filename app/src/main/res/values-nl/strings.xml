@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Er is een nieuwe versie beschikbaar</string>
     <string name="update_action_download">Downloaden</string>
     <string name="disclaimer_title">Dekkingsgegevens</string>
-    <string name="disclaimer_message">Dekkingsgegevens van stations worden verstrekt door fmscan.org en moeten als bij benadering worden beschouwd.\n\nDe app geeft FM- of DAB+-dekking weer, afhankelijk van hoe het station uitzendt. Als een station beide gebruikt, wordt hun dekking gecombineerd.\n\nBekijk het dekkingsnetwerk op onqa.barteq.cz</string>
+    <string name="disclaimer_message">Dekkingsgegevens van stations worden verstrekt door fmscan.org en moeten als bij benadering worden beschouwd.\n\nDe app geeft FM- of DAB+-dekking weer, afhankelijk van hoe het station uitzendt. Als een station beide gebruikt, wordt hun dekking gecombineerd.\n\nBekijk het dekkingsnetwerk op onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Stations zoeken…</string>
     <string name="search_location_placeholder">Locatie zoeken…</string>
     <string name="category_general">Algemeen</string>

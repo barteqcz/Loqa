@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Hay una nueva versión disponible</string>
     <string name="update_action_download">Descargar</string>
     <string name="disclaimer_title">Datos de cobertura</string>
-    <string name="disclaimer_message">Los datos de cobertura de las emisoras son proporcionados por fmscan.org y deben considerarse aproximados.\n\nLa aplicación refleja la cobertura FM o DAB+, dependiendo de cómo emita la emisora. Si una emisora utiliza ambas, su cobertura se combina.\n\nConsulta la red de cobertura en onqa.barteq.cz</string>
+    <string name="disclaimer_message">Los datos de cobertura de las emisoras son proporcionados por fmscan.org y deben considerarse aproximados.\n\nLa aplicación refleja la cobertura FM o DAB+, dependiendo de cómo emita la emisora. Si una emisora utiliza ambas, su cobertura se combina.\n\nConsulta la red de cobertura en onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Buscar emisoras…</string>
     <string name="search_location_placeholder">Buscar ubicación…</string>
     <string name="category_general">General</string>

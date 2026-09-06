@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Yeni bir sürüm mevcut</string>
     <string name="update_action_download">İndir</string>
     <string name="disclaimer_title">Kapsama verileri</string>
-    <string name="disclaimer_message">İstasyon kapsama verileri fmscan.org tarafından sağlanır ve yaklaşık olarak kabul edilmelidir.\n\nUygulama, istasyonun nasıl yayın yaptığına bağlı olarak FM veya DAB+ kapsamını yansıtır. Bir istasyon her ikisini de kullanıyorsa, kapsamları birleştirilir.\n\nonqa.barteq.cz adresindeki kapsama ağını kontrol edin</string>
+    <string name="disclaimer_message">İstasyon kapsama verileri fmscan.org tarafından sağlanır ve yaklaşık olarak kabul edilmelidir.\n\nUygulama, istasyonun nasıl yayın yaptığına bağlı olarak FM veya DAB+ kapsamını yansıtır. Bir istasyon her ikisini de kullanıyorsa, kapsamları birleştirilir.\n\nonqa.barteq.cz/db adresindeki kapsama ağını kontrol edin</string>
     <string name="search_stations_hint">İstasyon ara…</string>
     <string name="search_location_placeholder">Konum ara…</string>
     <string name="category_general">Genel</string>

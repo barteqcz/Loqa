@@ -2,7 +2,6 @@ package com.barteqcz.onqa.ui.main
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.ui.components.*
+import com.barteqcz.onqa.ui.theme.AnimationSystem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,171 +70,12 @@ fun RadioScreen(
         }
     }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .statusBarsPadding()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        enabled = viewState.isSearchActive,
-                    ) { 
-                        focusManager.clearFocus()
-                    }
-                    .padding(bottom = if (viewState.settings.showLocationHeader && !isLandscape) 8.dp else 4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        AnimatedContent(
-                            targetState = viewState.isSearchActive,
-                            transitionSpec = {
-                                if (targetState) {
-                                    (slideInHorizontally { it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
-                                        slideOutHorizontally { -it } + fadeOut() + scaleOut(targetScale = 0.95f)
-                                    )
-                                } else {
-                                    (slideInHorizontally { -it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
-                                        slideOutHorizontally { it } + fadeOut() + scaleOut(targetScale = 0.95f)
-                                    )
-                                }
-                            },
-                            modifier = Modifier.weight(1f),
-                            label = "TopBarSearchTransition",
-                        ) { isSearchActive ->
-                            if (isSearchActive) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(
-                                        onClick = { viewModel.setSearchActive(false) },
-                                        modifier = Modifier.size(32.dp)
-                                    ) {
-                                        Icon(
-                                            Icons.AutoMirrored.Rounded.ArrowBack,
-                                            contentDescription = stringResource(R.string.back),
-                                            tint = MaterialTheme.colorScheme.onBackground,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-
-                                    TextField(
-                                        value = viewState.searchQuery,
-                                        onValueChange = { viewModel.setSearchQuery(it) },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .focusRequester(searchFocusRequester)
-                                            .onFocusChanged { isSearchFocused = it.isFocused },
-                                        placeholder = {
-                                            Text(
-                                                stringResource(R.string.search_stations_hint),
-                                                style = MaterialTheme.typography.headlineSmall,
-                                                fontWeight = FontWeight.Medium,
-                                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-                                            )
-                                        },
-                                        colors = TextFieldDefaults.colors(
-                                            focusedContainerColor = Color.Transparent,
-                                            unfocusedContainerColor = Color.Transparent,
-                                            disabledContainerColor = Color.Transparent,
-                                            focusedIndicatorColor = Color.Transparent,
-                                            unfocusedIndicatorColor = Color.Transparent,
-                                            cursorColor = MaterialTheme.colorScheme.primary
-                                        ),
-                                        textStyle = MaterialTheme.typography.headlineSmall.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        ),
-                                        singleLine = true,
-                                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                                        keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
-                                        trailingIcon = {
-                                            if (viewState.searchQuery.isNotEmpty()) {
-                                                IconButton(
-                                                    onClick = { viewModel.setSearchQuery("") },
-                                                    modifier = Modifier.size(32.dp)
-                                                ) {
-                                                    Icon(
-                                                        Icons.Rounded.Close,
-                                                        contentDescription = null,
-                                                        tint = MaterialTheme.colorScheme.onBackground,
-                                                        modifier = Modifier.size(24.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    )
-                                }
-                            } else {
-                                Text(
-                                    stringResource(R.string.app_name),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Black,
-                                    letterSpacing = (-0.5).sp,
-                                )
-                            }
-                        }
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (!viewState.isSearchActive) {
-                                IconButton(
-                                    onClick = { viewModel.setSearchActive(true) },
-                                    modifier = Modifier.size(32.dp),
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Search,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.size(24.dp),
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(16.dp))
-                            } else {
-                                Spacer(modifier = Modifier.width(16.dp))
-                            }
-
-                            IconButton(
-                                onClick = {
-                                    if (!viewState.isSearchActive) {
-                                        onSettingsClick()
-                                    }
-                                },
-                                modifier = Modifier.size(32.dp),
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Settings,
-                                    contentDescription = stringResource(R.string.settings_title),
-                                    tint = MaterialTheme.colorScheme.onBackground,
-                                    modifier = Modifier.size(24.dp),
-                                )
-                            }
-                        }
-                    }
-
-                    if (isLandscape && viewState.settings.showLocationHeader && !viewState.isSearchActive) {
-                        CompactLocationHeader(viewState.locationInfo)
-                    }
-                }
-                
-                if (viewState.settings.showLocationHeader && !isLandscape) {
-                    LocationHeader(viewState.locationInfo)
-                }
-            }
-        }
-    ) { paddingValues ->
-        Box(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable(
@@ -244,188 +85,336 @@ fun RadioScreen(
                 ) {
                     focusManager.clearFocus()
                 }
-        ) {
-            AnimatedContent(
-                targetState = viewState.uiState,
-                transitionSpec = {
-                    (fadeIn(tween(400)) + scaleIn(initialScale = 0.96f, animationSpec = spring(stiffness = Spring.StiffnessMediumLow))).togetherWith(
-                        fadeOut(tween(400)) + scaleOut(targetScale = 0.98f, animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
-                    )
-                },
-                contentKey = { if (!viewState.isNetworkAvailable) "no_internet" else it::class },
-                label = "uiStateTransition",
-                modifier = Modifier.fillMaxSize()
-            ) { state ->
-                if (!viewState.isNetworkAvailable) {
-                    StatusContainer(
-                        message = stringResource(R.string.error_no_internet),
-                        isError = true,
-                        modifier = Modifier.padding(paddingValues),
-                        onRetry = { viewModel.refresh() },
-                    )
-                } else {
-                    when (state) {
-                        is RadioUiState.Loading -> {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(paddingValues),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                            }
-                        }
-                        is RadioUiState.Success -> {
-                            if (state.stations.isEmpty()) {
-                                StatusContainer(
-                                    message = stringResource(R.string.no_stations_message),
-                                    modifier = Modifier.padding(paddingValues)
-                                )
-                            } else {
-                                val gridState = rememberLazyGridState()
-                                val density = LocalDensity.current
+        ) mainColumn@ {
+            // Content Offset for Top Bar
+            Spacer(modifier = Modifier.statusBarsPadding())
+            Spacer(modifier = Modifier.height(72.dp))
+            
+            if (viewState.settings.showLocationHeader && !isLandscape && !viewState.isSearchActive) {
+                LocationHeader(viewState.locationInfo)
+            }
 
-                                LaunchedEffect(Unit) {
-                                    viewModel.events.collect { event ->
-                                        when (event) {
-                                            is RadioUiEvent.ScrollToTop -> {
-                                                // Auto-scroll disabled per user request
+            Box(modifier = Modifier.weight(1f)) {
+                AnimatedContent(
+                    targetState = viewState.uiState,
+                    transitionSpec = {
+                        (fadeIn(AnimationSystem.vividTween()) + scaleIn(initialScale = 0.96f, animationSpec = AnimationSystem.VividSpring)).togetherWith(
+                            fadeOut(AnimationSystem.vividTween()) + scaleOut(targetScale = 0.98f, animationSpec = AnimationSystem.VividSpring)
+                        )
+                    },
+                    contentKey = { if (!viewState.isNetworkAvailable) "no_internet" else it::class },
+                    label = "uiStateTransition",
+                    modifier = Modifier.fillMaxSize()
+                ) { state ->
+                    if (!viewState.isNetworkAvailable) {
+                        StatusContainer(
+                            message = stringResource(R.string.error_no_internet),
+                            isError = true,
+                            modifier = Modifier.fillMaxSize(),
+                            onRetry = { viewModel.refresh() },
+                        )
+                    } else {
+                        when (state) {
+                            is RadioUiState.Loading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                            is RadioUiState.Success -> {
+                                if (state.stations.isEmpty()) {
+                                    StatusContainer(
+                                        message = stringResource(R.string.no_stations_message),
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
+                                    val gridState = rememberLazyGridState()
+                                    val density = LocalDensity.current
+
+                                    LaunchedEffect(Unit) {
+                                        viewModel.events.collect { event ->
+                                            when (event) {
+                                                is RadioUiEvent.ScrollToTop -> { }
                                             }
                                         }
                                     }
-                                }
 
-                                var wasMiniPlayerVisible by remember { mutableStateOf(viewState.selectedUrl != null) }
-                                LaunchedEffect(viewState.selectedUrl) {
-                                    val selectedUrl = viewState.selectedUrl
-                                    if (selectedUrl != null) {
-                                        val layoutInfo = gridState.layoutInfo
-                                        val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
+                                    var wasMiniPlayerVisible by remember { mutableStateOf(viewState.selectedUrl != null) }
+                                    LaunchedEffect(viewState.selectedUrl) {
+                                        val selectedUrl = viewState.selectedUrl
+                                        if (selectedUrl != null) {
+                                            val layoutInfo = gridState.layoutInfo
+                                            val isLastItemVisible = layoutInfo.visibleItemsInfo.any { it.index == (layoutInfo.totalItemsCount - 1) }
 
-                                        if (isLastItemVisible && !wasMiniPlayerVisible) {
-                                            val scrollAmount = with(density) { 100.dp.toPx() }
-                                            gridState.animateScrollBy(scrollAmount)
+                                            if (isLastItemVisible && !wasMiniPlayerVisible) {
+                                                val scrollAmount = with(density) { 
+                                                    (if (isLandscape) 84.dp else 100.dp).toPx() 
+                                                }
+                                                gridState.animateScrollBy(scrollAmount)
+                                            }
                                         }
+                                        wasMiniPlayerVisible = selectedUrl != null
                                     }
-                                    wasMiniPlayerVisible = selectedUrl != null
-                                }
 
-                                val bottomNavPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                                val configuration = LocalConfiguration.current
-                                val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                                
-                                val showShadow by remember {
-                                    derivedStateOf { viewState.selectedUrl != null }
-                                }
-                                
-                                val bottomPadding by remember(viewState.selectedUrl, isLandscape, bottomNavPadding) {
-                                    derivedStateOf {
+                                    val bottomNavPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                                    
+                                    val showShadow = viewState.selectedUrl != null
+                                    
+                                    val bottomPadding = remember(viewState.selectedUrl, isLandscape, bottomNavPadding) {
                                         if (viewState.selectedUrl != null) {
-                                            (if (isLandscape) 96.dp else 112.dp) + bottomNavPadding
+                                            (if (isLandscape) 100.dp else 116.dp) + bottomNavPadding
                                         } else {
                                             16.dp + bottomNavPadding
                                         }
                                     }
-                                }
 
-                                LaunchedEffect(gridState.canScrollForward, gridState.canScrollBackward) {
-                                    viewModel.setScrollable(gridState.canScrollForward || gridState.canScrollBackward)
-                                }
-
-                                Box(modifier = Modifier.fillMaxSize()) {
-                                    LazyVerticalGrid(
-                                        columns = GridCells.Adaptive(minSize = 340.dp),
-                                        state = gridState,
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentPadding = PaddingValues(
-                                            top = paddingValues.calculateTopPadding() + 8.dp,
-                                            bottom = bottomPadding,
-                                            start = 20.dp,
-                                            end = 20.dp
-                                        ),
-                                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                                    ) {
-                                        item(
-                                            key = "scroll_anchor",
-                                            span = { GridItemSpan(maxLineSpan) }
-                                        ) {
-                                            Spacer(modifier = Modifier.height(0.5.dp))
-                                        }
-
-                                        items(
-                                            items = state.stations,
-                                            key = { "${it.streamUrl ?: it.name}|${it.network}" }
-                                        ) { station ->
-                                            StationCard(
-                                                station = station,
-                                                isActive = station.matchesUrl(viewState.selectedUrl),
-                                                isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
-                                                showHqIcon = !station.streamUrlHq.isNullOrBlank(),
-                                                modifier = Modifier.animateItem(
-                                                    fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                                    fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                                    placementSpec = if (viewState.isSearchActive) null else spring(
-                                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                                        stiffness = Spring.StiffnessMediumLow
-                                                    )
-                                                ),
-                                                onClick = {
-                                                    focusManager.clearFocus()
-                                                    val url = station.streamUrl ?: station.streamUrlHq
-                                                    url?.let { viewModel.toggleStation(it) }
-                                                },
-                                                onLongClick = { viewModel.toggleFavorite(station) }
-                                            )
-                                        }
+                                    LaunchedEffect(gridState.canScrollForward, gridState.canScrollBackward) {
+                                        viewModel.setScrollable(gridState.canScrollForward || gridState.canScrollBackward)
                                     }
 
-                                    AnimatedVisibility(
-                                        visible = showShadow,
-                                        enter = fadeIn(),
-                                        exit = fadeOut(),
-                                        modifier = Modifier.align(Alignment.BottomCenter)
-                                    ) {
-                                        val bgColor = MaterialTheme.colorScheme.background
-                                        val shadowBrush = remember(bgColor) {
-                                            Brush.verticalGradient(
-                                                colors = listOf(
-                                                    Color.Transparent,
-                                                    bgColor.copy(alpha = 0.4f),
-                                                    bgColor.copy(alpha = 0.8f),
-                                                    bgColor
+                                    Box(modifier = Modifier.fillMaxSize()) {
+                                        LazyVerticalGrid(
+                                            columns = GridCells.Adaptive(minSize = 340.dp),
+                                            state = gridState,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentPadding = PaddingValues(
+                                                top = 8.dp,
+                                                bottom = bottomPadding,
+                                                start = 20.dp,
+                                                end = 20.dp
+                                            ),
+                                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                        ) {
+                                            item(
+                                                key = "scroll_anchor",
+                                                span = { GridItemSpan(maxLineSpan) }
+                                            ) {
+                                                Spacer(modifier = Modifier.height(0.5.dp))
+                                            }
+
+                                            items(
+                                                items = state.stations,
+                                                key = { "${it.streamUrl ?: it.name}|${it.network}" }
+                                            ) { station ->
+                                                StationCard(
+                                                    station = station,
+                                                    isActive = station.matchesUrl(viewState.selectedUrl),
+                                                    isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
+                                                    showHqIcon = !station.streamUrlHq.isNullOrBlank(),
+                                                    modifier = Modifier.animateItem(
+                                                        fadeInSpec = AnimationSystem.VividSpring,
+                                                        fadeOutSpec = AnimationSystem.VividSpring,
+                                                        placementSpec = if (viewState.isSearchActive) null else AnimationSystem.VividSpringIntOffset
+                                                    ),
+                                                    onClick = {
+                                                        focusManager.clearFocus()
+                                                        val url = station.streamUrl ?: station.streamUrlHq
+                                                        url?.let { viewModel.toggleStation(it) }
+                                                    },
+                                                    onLongClick = { viewModel.toggleFavorite(station) }
                                                 )
+                                            }
+                                        }
+
+                                        this@mainColumn.AnimatedVisibility(
+                                            visible = showShadow,
+                                            enter = fadeIn(),
+                                            exit = fadeOut(),
+                                            modifier = Modifier.align(Alignment.BottomCenter)
+                                        ) {
+                                            val bgColor = MaterialTheme.colorScheme.background
+                                            val shadowBrush = remember(bgColor) {
+                                                Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color.Transparent,
+                                                        bgColor.copy(alpha = 0.4f),
+                                                        bgColor.copy(alpha = 0.8f),
+                                                        bgColor
+                                                    )
+                                                )
+                                            }
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(if (isLandscape) 100.dp else 140.dp)
+                                                    .background(shadowBrush)
                                             )
                                         }
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(if (isLandscape) 100.dp else 140.dp)
-                                                .background(shadowBrush)
-                                        )
                                     }
                                 }
                             }
-                        }
-                        is RadioUiState.Error -> {
-                            if (state.isServerError) {
-                                ServerNapContainer(
-                                    modifier = Modifier.padding(paddingValues),
-                                    onRetry = { viewModel.refresh() }
-                                )
-                            } else {
-                                StatusContainer(
-                                    message = stringResource(R.string.error_no_internet),
-                                    isError = true,
-                                    modifier = Modifier.padding(paddingValues),
-                                    onRetry = { viewModel.refresh() },
-                                )
+                            is RadioUiState.Error -> {
+                                if (state.isServerError) {
+                                    ServerNapContainer(
+                                        modifier = Modifier.fillMaxSize(),
+                                        onRetry = { viewModel.refresh() }
+                                    )
+                                } else {
+                                    StatusContainer(
+                                        message = stringResource(R.string.error_no_internet),
+                                        isError = true,
+                                        modifier = Modifier.fillMaxSize(),
+                                        onRetry = { viewModel.refresh() },
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
+        // Top Bar
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+                .statusBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    AnimatedContent(
+                        targetState = viewState.isSearchActive,
+                        transitionSpec = {
+                            if (targetState) {
+                                (slideInHorizontally { it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
+                                    slideOutHorizontally { -it } + fadeOut() + scaleOut(targetScale = 0.95f)
+                                )
+                            } else {
+                                (slideInHorizontally { -it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
+                                    slideOutHorizontally { it } + fadeOut() + scaleOut(targetScale = 0.95f)
+                                )
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        label = "TopBarSearchTransition",
+                    ) { isSearchActive ->
+                        if (isSearchActive) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IconButton(
+                                    onClick = { viewModel.setSearchActive(false) },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Rounded.ArrowBack,
+                                        contentDescription = stringResource(R.string.back),
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+
+                                TextField(
+                                    value = viewState.searchQuery,
+                                    onValueChange = { viewModel.setSearchQuery(it) },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .focusRequester(searchFocusRequester)
+                                        .onFocusChanged { isSearchFocused = it.isFocused },
+                                    placeholder = {
+                                        Text(
+                                            stringResource(R.string.search_stations_hint),
+                                            style = MaterialTheme.typography.headlineSmall,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                        )
+                                    },
+                                    colors = TextFieldDefaults.colors(
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent,
+                                        disabledContainerColor = Color.Transparent,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        cursorColor = MaterialTheme.colorScheme.primary
+                                    ),
+                                    textStyle = MaterialTheme.typography.headlineSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    ),
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                                    keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+                                    trailingIcon = {
+                                        if (viewState.searchQuery.isNotEmpty()) {
+                                            IconButton(
+                                                onClick = { viewModel.setSearchQuery("") },
+                                                modifier = Modifier.size(48.dp)
+                                            ) {
+                                                Icon(
+                                                    Icons.Rounded.Close,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.onBackground,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        } else {
+                            Text(
+                                stringResource(R.string.app_name),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = (-0.5).sp,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (!viewState.isSearchActive) {
+                            IconButton(
+                                onClick = { viewModel.setSearchActive(true) },
+                                modifier = Modifier.size(48.dp),
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Search,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                            }
+                        }
+
+                        IconButton(
+                            onClick = {
+                                if (!viewState.isSearchActive) {
+                                    onSettingsClick()
+                                }
+                            },
+                            modifier = Modifier.size(48.dp),
+                        ) {
+                            Icon(
+                                Icons.Rounded.Settings,
+                                contentDescription = stringResource(R.string.settings_title),
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                    }
+                }
+
+                if (isLandscape && viewState.settings.showLocationHeader && !viewState.isSearchActive) {
+                    CompactLocationHeader(viewState.locationInfo)
+                }
+            }
+        }
     }
 }
-

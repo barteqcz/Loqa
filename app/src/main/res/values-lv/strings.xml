@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Ir pieejama jauna versija</string>
     <string name="update_action_download">Lejupielādēt</string>
     <string name="disclaimer_title">Pārklājuma dati</string>
-    <string name="disclaimer_message">Staciju pārklājuma datus nodrošina fmscan.org, un tie jāuzskata par aptuveniem.\n\nLietotne atspoguļo vai nu FM, vai DAB+ pārklājumu atkarībā no tā, kā stacija pārraida. Ja stacija izmanto abus, to pārklājums tiek apvienots.\n\nPārbaudiet pārklājuma tīklu vietnē onqa.barteq.cz</string>
+    <string name="disclaimer_message">Staciju pārklājuma datus nodrošina fmscan.org, un tie jāuzskata par aptuveniem.\n\nLietotne atspoguļo vai nu FM, vai DAB+ pārklājumu atkarībā no tā, kā stacija pārraida. Ja stacija izmanto abus, to pārklājums tiek apvienots.\n\nPārbaudiet pārklājuma tīklu vietnē onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Meklēt stacijas…</string>
     <string name="search_location_placeholder">Meklēt atrašanās vietu…</string>
     <string name="category_general">Vispārīgi</string>

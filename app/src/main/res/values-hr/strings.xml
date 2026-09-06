@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">Dostupna je nova verzija</string>
     <string name="update_action_download">Preuzmi</string>
     <string name="disclaimer_title">Podaci o pokrivenosti</string>
-    <string name="disclaimer_message">Podatke o pokrivenosti postaja pruža fmscan.org i treba ih smatrati približnima.\n\nAplikacija odražava ili FM ili DAB+ pokrivenost, ovisno o tome kako postaja emitira. Ako postaja koristi oboje, njihova pokrivenost se kombinira.\n\nProvjerite mrežu pokrivenosti na onqa.barteq.cz</string>
+    <string name="disclaimer_message">Podatke o pokrivenosti postaja pruža fmscan.org i treba ih smatrati približnima.\n\nAplikacija odražava ili FM ili DAB+ pokrivenost, ovisno o tome kako postaja emitira. Ako postaja koristi oboje, njihova pokrivenost se kombinira.\n\nProvjerite mrežu pokrivenosti na onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Traži postaje…</string>
     <string name="search_location_placeholder">Traži lokaciju…</string>
     <string name="category_general">Općenito</string>

@@ -67,7 +67,7 @@ fun DataDisclaimer(
 
                     val links = listOf(
                         "fmscan.org" to "https://fmscan.org",
-                        "onqa.barteq.cz" to "https://onqa.barteq.cz"
+                        "onqa.barteq.cz/db" to "https://onqa.barteq.cz/db"
                     )
 
                     links.forEach { (linkText, url) ->

@@ -56,7 +56,7 @@
     <string name="update_available_message_simple">A new version is available</string>
     <string name="update_action_download">Download</string>
     <string name="disclaimer_title">Coverage data</string>
-    <string name="disclaimer_message">Station coverage data is provided by fmscan.org and should be considered approximate.\n\nThe app reflects either FM or DAB+ coverage, depending on how the station broadcasts. If a station uses both, their coverage is combined.\n\nCheck the coverage network at onqa.barteq.cz</string>
+    <string name="disclaimer_message">Station coverage data is provided by fmscan.org and should be considered approximate.\n\nThe app reflects either FM or DAB+ coverage, depending on how the station broadcasts. If a station uses both, their coverage is combined.\n\nCheck the coverage network at onqa.barteq.cz/db</string>
     <string name="search_stations_hint">Search stations…</string>
     <string name="search_location_placeholder">Search location…</string>
     <string name="category_general">General</string>

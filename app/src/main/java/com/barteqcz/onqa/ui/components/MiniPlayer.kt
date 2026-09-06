@@ -1,11 +1,7 @@
 package com.barteqcz.onqa.ui.components
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.MarqueeAnimationMode
@@ -52,6 +48,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.barteqcz.onqa.R
 import com.barteqcz.onqa.data.model.RadioStation
+import com.barteqcz.onqa.ui.theme.AnimationSystem
 import kotlin.math.roundToInt
 
 @Composable
@@ -70,7 +67,7 @@ fun MiniPlayer(
     var offsetX by remember { mutableFloatStateOf(0f) }
     val animatedOffsetX by animateFloatAsState(
         targetValue = offsetX,
-        animationSpec = spring(dampingRatio = 0.8f, stiffness = 400f),
+        animationSpec = AnimationSystem.VividSpring,
         label = "swipeOffset"
     )
     
@@ -95,7 +92,7 @@ fun MiniPlayer(
 
     val borderAlpha by animateFloatAsState(
         targetValue = if (isPlaying || isBuffering || kotlin.math.abs(animatedOffsetX) > 0.5f) 0.5f else 0f,
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = AnimationSystem.vividTween(300),
         label = "miniPlayerBorderAlpha"
     )
     val borderColor = (if (station.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
@@ -103,7 +100,7 @@ fun MiniPlayer(
 
     val elevation by animateDpAsState(
         targetValue = if (isScrollable) 16.dp else 12.dp,
-        animationSpec = tween(durationMillis = 500),
+        animationSpec = AnimationSystem.vividTween(300),
         label = "miniPlayerElevation"
     )
 
@@ -119,7 +116,7 @@ fun MiniPlayer(
 
     Surface(
         modifier = Modifier
-            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp)
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 12.dp)
             .navigationBarsPadding()
             .fillMaxWidth()
             .height(playerHeight)
@@ -197,7 +194,7 @@ fun MiniPlayer(
 
                 if (initialStation.name == targetStation.name && initialStation.network == targetStation.network) {
                     if (initialHq != targetHq) {
-                        (fadeIn(tween(400)) + scaleIn(initialScale = 0.95f) togetherWith fadeOut(tween(400)) + scaleOut(targetScale = 0.95f))
+                        (fadeIn(tween(300)) + scaleIn(initialScale = 0.95f) togetherWith fadeOut(tween(300)) + scaleOut(targetScale = 0.95f))
                     } else {
                         EnterTransition.None togetherWith ExitTransition.None
                     }
@@ -220,11 +217,11 @@ fun MiniPlayer(
                     }
 
                     if (isNext) {
-                        (slideInHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(tween(400)) + scaleIn(initialScale = 0.95f))
-                            .togetherWith(slideOutHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { -it } + fadeOut(tween(400)) + scaleOut(targetScale = 0.95f))
+                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween(300)) + scaleIn(initialScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeOut(AnimationSystem.vividTween(300)) + scaleOut(targetScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
                     } else {
-                        (slideInHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { -it } + fadeIn(tween(400)) + scaleIn(initialScale = 0.95f))
-                            .togetherWith(slideOutHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(400)) + scaleOut(targetScale = 0.95f))
+                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeIn(AnimationSystem.vividTween(300)) + scaleIn(initialScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween(300)) + scaleOut(targetScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
                     }
                 }
             },
@@ -308,8 +305,8 @@ fun MiniPlayer(
                     AnimatedContent(
                         targetState = metadataState,
                         transitionSpec = {
-                            (fadeIn(tween(400)) + slideInVertically(spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMediumLow)) { it / 2 } + scaleIn(initialScale = 0.95f))
-                                .togetherWith(fadeOut(tween(400)) + slideOutVertically(spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMediumLow)) { -it / 2 } + scaleOut(targetScale = 0.95f))
+                            (fadeIn(AnimationSystem.vividTween(300)) + slideInVertically(AnimationSystem.VividSpringIntOffset) { it / 2 } + scaleIn(initialScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
+                                .togetherWith(fadeOut(AnimationSystem.vividTween(300)) + slideOutVertically(AnimationSystem.VividSpringIntOffset) { -it / 2 } + scaleOut(targetScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
                         },
                         label = "metadataTransition"
                     ) { state ->
