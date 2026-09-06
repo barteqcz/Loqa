@@ -1,6 +1,7 @@
 package com.barteqcz.onqa.ui.components
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -110,7 +111,6 @@ fun MiniPlayer(
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     
     val playerHeight = if (isLandscape) 72.dp else 88.dp
-    val playerPadding = if (isLandscape) 8.dp else 12.dp
     val playerCorner = if (isLandscape) 22.dp else 28.dp
     val logoSize = if (isLandscape) 48.dp else 60.dp
     val logoIconSize = if (isLandscape) 28.dp else 36.dp
@@ -119,7 +119,7 @@ fun MiniPlayer(
 
     Surface(
         modifier = Modifier
-            .padding(playerPadding)
+            .padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 0.dp)
             .navigationBarsPadding()
             .fillMaxWidth()
             .height(playerHeight)
@@ -197,7 +197,7 @@ fun MiniPlayer(
 
                 if (initialStation.name == targetStation.name && initialStation.network == targetStation.network) {
                     if (initialHq != targetHq) {
-                        (fadeIn(tween(400)) togetherWith fadeOut(tween(400)))
+                        (fadeIn(tween(400)) + scaleIn(initialScale = 0.95f) togetherWith fadeOut(tween(400)) + scaleOut(targetScale = 0.95f))
                     } else {
                         EnterTransition.None togetherWith ExitTransition.None
                     }
@@ -220,11 +220,11 @@ fun MiniPlayer(
                     }
 
                     if (isNext) {
-                        (slideInHorizontally(tween(400)) { it } + fadeIn(tween(400)))
-                            .togetherWith(slideOutHorizontally(tween(400)) { -it } + fadeOut(tween(400)))
+                        (slideInHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(tween(400)) + scaleIn(initialScale = 0.95f))
+                            .togetherWith(slideOutHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { -it } + fadeOut(tween(400)) + scaleOut(targetScale = 0.95f))
                     } else {
-                        (slideInHorizontally(tween(400)) { -it } + fadeIn(tween(400)))
-                            .togetherWith(slideOutHorizontally(tween(400)) { it } + fadeOut(tween(400)))
+                        (slideInHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { -it } + fadeIn(tween(400)) + scaleIn(initialScale = 0.95f))
+                            .togetherWith(slideOutHorizontally(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(400)) + scaleOut(targetScale = 0.95f))
                     }
                 }
             },
@@ -234,7 +234,11 @@ fun MiniPlayer(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val scale by animateFloatAsState(if (isPlaying) 1.05f else 1f, label = "logoScale")
+                val scale by animateFloatAsState(
+                    targetValue = if (isPlaying) 1.05f else 1f,
+                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+                    label = "logoScale"
+                )
                 var isImageLoaded by remember(targetStation.logo) { mutableStateOf(false) }
 
                 Box(
@@ -304,8 +308,8 @@ fun MiniPlayer(
                     AnimatedContent(
                         targetState = metadataState,
                         transitionSpec = {
-                            (fadeIn(tween(400)) + slideInVertically { it / 2 })
-                                .togetherWith(fadeOut(tween(400)) + slideOutVertically { -it / 2 })
+                            (fadeIn(tween(400)) + slideInVertically(spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMediumLow)) { it / 2 } + scaleIn(initialScale = 0.95f))
+                                .togetherWith(fadeOut(tween(400)) + slideOutVertically(spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMediumLow)) { -it / 2 } + scaleOut(targetScale = 0.95f))
                         },
                         label = "metadataTransition"
                     ) { state ->
@@ -340,7 +344,9 @@ fun MiniPlayer(
                     AnimatedContent(
                         targetState = isBuffering to isPlaying,
                         transitionSpec = {
-                            fadeIn(tween(200)).togetherWith(fadeOut(tween(200)))
+                            (fadeIn(tween(200)) + scaleIn(initialScale = 0.8f)).togetherWith(
+                                fadeOut(tween(200)) + scaleOut(targetScale = 0.8f)
+                            )
                         },
                         label = "playPauseIcon"
                     ) { (buffering, playing) ->

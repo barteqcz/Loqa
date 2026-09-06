@@ -103,9 +103,13 @@ fun RadioScreen(
                             targetState = viewState.isSearchActive,
                             transitionSpec = {
                                 if (targetState) {
-                                    (slideInHorizontally { it } + fadeIn()).togetherWith(slideOutHorizontally { -it } + fadeOut())
+                                    (slideInHorizontally { it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
+                                        slideOutHorizontally { -it } + fadeOut() + scaleOut(targetScale = 0.95f)
+                                    )
                                 } else {
-                                    (slideInHorizontally { -it } + fadeIn()).togetherWith(slideOutHorizontally { it } + fadeOut())
+                                    (slideInHorizontally { -it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
+                                        slideOutHorizontally { it } + fadeOut() + scaleOut(targetScale = 0.95f)
+                                    )
                                 }
                             },
                             modifier = Modifier.weight(1f),
@@ -244,7 +248,9 @@ fun RadioScreen(
             AnimatedContent(
                 targetState = viewState.uiState,
                 transitionSpec = {
-                    fadeIn(tween(500)).togetherWith(fadeOut(tween(500)))
+                    (fadeIn(tween(400)) + scaleIn(initialScale = 0.96f, animationSpec = spring(stiffness = Spring.StiffnessMediumLow))).togetherWith(
+                        fadeOut(tween(400)) + scaleOut(targetScale = 0.98f, animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
+                    )
                 },
                 contentKey = { if (!viewState.isNetworkAvailable) "no_internet" else it::class },
                 label = "uiStateTransition",
@@ -315,7 +321,7 @@ fun RadioScreen(
                                 val bottomPadding by remember(viewState.selectedUrl, isLandscape, bottomNavPadding) {
                                     derivedStateOf {
                                         if (viewState.selectedUrl != null) {
-                                            (if (isLandscape) 96.dp else 116.dp) + bottomNavPadding
+                                            (if (isLandscape) 96.dp else 112.dp) + bottomNavPadding
                                         } else {
                                             16.dp + bottomNavPadding
                                         }
@@ -357,9 +363,12 @@ fun RadioScreen(
                                                 isPlaying = station.matchesUrl(viewState.selectedUrl) && viewState.isPlaying && !viewState.isBuffering,
                                                 showHqIcon = !station.streamUrlHq.isNullOrBlank(),
                                                 modifier = Modifier.animateItem(
-                                                    fadeInSpec = tween(durationMillis = 300),
-                                                    fadeOutSpec = tween(durationMillis = 300),
-                                                    placementSpec = if (viewState.isSearchActive) null else spring()
+                                                    fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                                    fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                                    placementSpec = if (viewState.isSearchActive) null else spring(
+                                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                        stiffness = Spring.StiffnessMediumLow
+                                                    )
                                                 ),
                                                 onClick = {
                                                     focusManager.clearFocus()

@@ -41,7 +41,9 @@ fun LocationHeader(info: LocationInfo) {
         AnimatedContent(
             targetState = cityText,
             transitionSpec = {
-                fadeIn(tween(1000)).togetherWith(fadeOut(tween(1000)))
+                (fadeIn(tween(600)) + scaleIn(initialScale = 0.92f)).togetherWith(
+                    fadeOut(tween(600)) + scaleOut(targetScale = 0.92f)
+                )
             },
             label = "locationTransition"
         ) { targetCity ->

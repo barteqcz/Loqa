@@ -15,12 +15,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
 import com.barteqcz.onqa.R
 
 @Composable
 fun OnboardingScreen(
     onGrantClick: () -> Unit,
 ) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val alignment = if (isLandscape) Alignment.Start else Alignment.CenterHorizontally
+    val textAlign = if (isLandscape) TextAlign.Start else TextAlign.Center
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -30,14 +37,28 @@ fun OnboardingScreen(
                 .fillMaxSize()
                 .padding(32.dp)
                 .systemBarsPadding(),
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = alignment,
         ) {
+            if (!isLandscape) {
+                Spacer(modifier = Modifier.height(128.dp))
+            }
+
             Text(
                 text = stringResource(R.string.welcome_title),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start
+                textAlign = textAlign
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.welcome_desc),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = textAlign,
+                lineHeight = 24.sp
             )
 
             Column(
@@ -45,18 +66,8 @@ fun OnboardingScreen(
                     .weight(1f)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = alignment
             ) {
-                Text(
-                    text = stringResource(R.string.welcome_desc),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Start,
-                    lineHeight = 24.sp
-                )
-
-                Spacer(modifier = Modifier.height(48.dp))
-
                 PermissionItem(
                     icon = Icons.Rounded.LocationOn,
                     title = stringResource(R.string.permission_location_title),
@@ -101,7 +112,8 @@ private fun PermissionItem(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.Start
     ) {
         Icon(
             imageVector = icon,
@@ -114,18 +126,20 @@ private fun PermissionItem(
         
         Spacer(modifier = Modifier.width(16.dp))
         
-        Column {
+        Column(horizontalAlignment = Alignment.Start) {
             Text(
                 text = title,
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start
             )
             Text(
                 text = desc,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
-                lineHeight = 18.sp
+                lineHeight = 18.sp,
+                textAlign = TextAlign.Start
             )
         }
     }

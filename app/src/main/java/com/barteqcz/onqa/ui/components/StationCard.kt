@@ -54,7 +54,7 @@ fun FavoriteHeart(
 ) {
     AnimatedVisibility(
         visible = visible,
-        enter = scaleIn() + fadeIn(),
+        enter = scaleIn(animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow)) + fadeIn(),
         exit = fadeOut(animationSpec = snap())
     ) {
         Icon(
@@ -80,8 +80,8 @@ fun StationCard(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.96f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        targetValue = if (isPressed) 0.94f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMediumLow),
         label = "cardScale"
     )
 

@@ -16,12 +16,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
 import com.barteqcz.onqa.R
 
 @Composable
 fun DataDisclaimer(
     onConfirm: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val alignment = if (isLandscape) Alignment.Start else Alignment.CenterHorizontally
+    val textAlign = if (isLandscape) TextAlign.Start else TextAlign.Center
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -31,22 +38,28 @@ fun DataDisclaimer(
                 .fillMaxSize()
                 .padding(32.dp)
                 .systemBarsPadding(),
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = alignment,
         ) {
+            if (!isLandscape) {
+                Spacer(modifier = Modifier.height(128.dp))
+            }
+
             Text(
                 text = stringResource(R.string.disclaimer_title),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Start
+                textAlign = textAlign
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = alignment
             ) {
                 val fullText = stringResource(R.string.disclaimer_message)
                 val annotatedString = buildAnnotatedString {
@@ -82,10 +95,11 @@ fun DataDisclaimer(
                     text = annotatedString,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Start,
+                        textAlign = textAlign,
                         lineHeight = 24.sp
                     )
                 )
+
             }
 
             Button(

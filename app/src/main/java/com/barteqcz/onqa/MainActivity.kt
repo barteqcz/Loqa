@@ -10,11 +10,10 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -188,7 +187,22 @@ class MainActivity : AppCompatActivity() {
                                 navController = navController,
                                 startDestination = RadioRoute,
                             ) {
-                                composable<RadioRoute> {
+                                composable<RadioRoute>(
+                                    exitTransition = {
+                                        if (targetState.destination.hasRoute<SettingsRoute>()) {
+                                            slideOutHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeOut(tween(300))
+                                        } else {
+                                            slideOutVertically(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeOut(tween(300))
+                                        }
+                                    },
+                                    popEnterTransition = {
+                                        if (initialState.destination.hasRoute<SettingsRoute>()) {
+                                            slideInHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeIn(tween(300))
+                                        } else {
+                                            slideInVertically(spring(stiffness = Spring.StiffnessMediumLow)) { -it / 3 } + fadeIn(tween(300))
+                                        }
+                                    }
+                                ) {
                                     RadioScreen(
                                         viewModel = viewModel,
                                         onSettingsClick = { 
@@ -198,7 +212,20 @@ class MainActivity : AppCompatActivity() {
                                         }
                                     )
                                 }
-                                composable<SettingsRoute> {
+                                composable<SettingsRoute>(
+                                    enterTransition = {
+                                        slideInHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(tween(300)) + scaleIn(initialScale = 0.92f)
+                                    },
+                                    exitTransition = {
+                                        fadeOut(tween(300)) + scaleOut(targetScale = 0.95f)
+                                    },
+                                    popEnterTransition = {
+                                        fadeIn(tween(300)) + scaleIn(initialScale = 0.95f)
+                                    },
+                                    popExitTransition = {
+                                        slideOutHorizontally(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(300)) + scaleOut(targetScale = 0.92f)
+                                    }
+                                ) {
                                     SettingsScreen(
                                         viewModel = viewModel,
                                         onBack = { 
@@ -213,7 +240,20 @@ class MainActivity : AppCompatActivity() {
                                         }
                                     )
                                 }
-                                composable<MapPickerRoute> {
+                                composable<MapPickerRoute>(
+                                    enterTransition = {
+                                        slideInVertically(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeIn(tween(300)) + scaleIn(initialScale = 0.92f)
+                                    },
+                                    exitTransition = {
+                                        fadeOut(tween(300)) + scaleOut(targetScale = 0.95f)
+                                    },
+                                    popEnterTransition = {
+                                        fadeIn(tween(300)) + scaleIn(initialScale = 0.95f)
+                                    },
+                                    popExitTransition = {
+                                        slideOutVertically(spring(stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(300)) + scaleOut(targetScale = 0.92f)
+                                    }
+                                ) {
                                     val mapViewModel: MapViewModel = hiltViewModel()
                                     MapPickerScreen(
                                         radioViewModel = viewModel,
