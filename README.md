@@ -15,14 +15,6 @@ The name is inspired by the Spanish words *onda* (“wave”) and *cerca* (“ne
 
 Due to the recent policies changes from Google, .apk sideloading is about to be limited and not recommended. I decided to start the process of putting the app on Google Play Store. The app is currently in its closed testing phase. If you want access, please contact me. After the app goes to the production phase, the link will be shared in this repository, but you'll also be able to find the app via search bar in the google play store.
 
-## Screenshots
-
-<img width="200" alt="Screenshot_20260731_020632_Onqa" src="https://github.com/user-attachments/assets/014494d4-9eba-408f-8a46-355a31698646" />
-&nbsp;
-<img width="200" alt="Screenshot_20260731_020638_Onqa" src="https://github.com/user-attachments/assets/7eed6d4f-9259-4237-aaca-f6835ae9c4ee" />
-&nbsp;
-<img width="200" alt="Screenshot_20260731_020715_Onqa" src="https://github.com/user-attachments/assets/b6119c8a-bbb6-471d-b0d1-a5a05f6b9233" />
-
 ## Features
 
 - **Location-Based Discovery**: Automatically finds and prioritizes radio stations near your current location using background location services.
