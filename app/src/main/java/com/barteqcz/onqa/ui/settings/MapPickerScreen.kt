@@ -35,6 +35,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.barteqcz.onqa.R
+import com.barteqcz.onqa.ui.components.SwipeBackWrapper
 import com.barteqcz.onqa.ui.main.RadioViewModel
 import com.barteqcz.onqa.ui.theme.AnimationSystem
 import org.osmdroid.events.MapEventsReceiver
@@ -107,11 +108,12 @@ fun MapPickerScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
+    SwipeBackWrapper(onBack = onBack) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -396,4 +398,5 @@ fun MapPickerScreen(
             }
         }
     }
+}
 }

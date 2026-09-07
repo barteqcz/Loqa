@@ -189,10 +189,10 @@ class MainActivity : AppCompatActivity() {
                             ) {
                                 composable<RadioRoute>(
                                     exitTransition = {
-                                        slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
                                     },
                                     popEnterTransition = {
-                                        slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
+                                        slideInHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
                                     }
                                 ) {
                                     RadioScreen(
@@ -208,16 +208,16 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 composable<SettingsRoute>(
                                     enterTransition = {
-                                        slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween())
+                                        slideInHorizontally(AnimationSystem.vividTween()) { it } + fadeIn(AnimationSystem.vividTween())
                                     },
                                     exitTransition = {
-                                        slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
                                     },
                                     popEnterTransition = {
-                                        slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
+                                        slideInHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
                                     },
                                     popExitTransition = {
-                                        slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween())
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { it } + fadeOut(AnimationSystem.vividTween())
                                     }
                                 ) {
                                     SettingsScreen(
@@ -238,16 +238,16 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 composable<MapPickerRoute>(
                                     enterTransition = {
-                                        slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        slideInHorizontally(AnimationSystem.vividTween()) { it } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
                                     },
                                     exitTransition = {
-                                        slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
                                     },
                                     popEnterTransition = {
-                                        slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it / 4 } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        slideInHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
                                     },
                                     popExitTransition = {
-                                        slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.Long))
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { it } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
                                     }
                                 ) {
                                     val mapViewModel: MapViewModel = hiltViewModel()

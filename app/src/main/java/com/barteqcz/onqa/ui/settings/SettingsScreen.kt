@@ -43,6 +43,7 @@ import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
+import com.barteqcz.onqa.ui.components.SwipeBackWrapper
 import com.barteqcz.onqa.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -81,32 +82,33 @@ fun SettingsScreen(
         animateColorAsState(target, AnimationSystem.vividTween(500), label = "paletteColor").value
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Column(
+    SwipeBackWrapper(onBack = onBack) {
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                ) {
-                    focusManager.clearFocus()
-                }
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            // Stable Offset for Top Bar
-            Spacer(modifier = Modifier.statusBarsPadding())
-            Spacer(modifier = Modifier.height(80.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ) {
+                        focusManager.clearFocus()
+                    }
+            ) {
+                // Stable Offset for Top Bar
+                Spacer(modifier = Modifier.statusBarsPadding())
+                Spacer(modifier = Modifier.height(80.dp))
 
-            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                SettingCategory(title = stringResource(R.string.category_general))
+                Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    SettingCategory(title = stringResource(R.string.category_general))
 
-                LanguageSettings(
-                    currentLanguage = settings.language
-                ) { viewModel.updateLanguage(it) }
+                    LanguageSettings(
+                        currentLanguage = settings.language
+                    ) { viewModel.updateLanguage(it) }
 
                 Spacer(modifier = Modifier.height(48.dp))
 
@@ -419,6 +421,7 @@ fun SettingsScreen(
             }
         }
     }
+}
 }
 
 @Composable
