@@ -6,8 +6,8 @@ import androidx.compose.ui.unit.IntSize
 
 object AnimationSystem {
     object Duration {
-        const val MEDIUM = 350
-        const val LONG = 500
+        const val MEDIUM = 180
+        const val LONG = 280
     }
 
     // Specyficzne dla LinearEasing zgodnie z prośbą użytkownika
@@ -23,16 +23,16 @@ object AnimationSystem {
 
     val VividSpring: SpringSpec<Float> = spring(
         dampingRatio = Spring.DampingRatioLowBouncy,
-        stiffness = Spring.StiffnessLow
+        stiffness = Spring.StiffnessMedium
     )
 
     val VividSpringIntOffset: SpringSpec<IntOffset> = spring(
         dampingRatio = Spring.DampingRatioLowBouncy,
-        stiffness = Spring.StiffnessLow
+        stiffness = Spring.StiffnessMedium
     )
 
     val VividSpringIntSize: SpringSpec<IntSize> = spring(
         dampingRatio = Spring.DampingRatioLowBouncy,
-        stiffness = Spring.StiffnessLow
+        stiffness = Spring.StiffnessMedium
     )
 }
