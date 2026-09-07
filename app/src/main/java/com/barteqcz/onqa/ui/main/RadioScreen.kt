@@ -90,7 +90,11 @@ fun RadioScreen(
             Spacer(modifier = Modifier.statusBarsPadding())
             Spacer(modifier = Modifier.height(72.dp))
             
-            if (viewState.settings.showLocationHeader && !isLandscape && !viewState.isSearchActive) {
+            AnimatedVisibility(
+                visible = viewState.settings.showLocationHeader && !isLandscape && !viewState.isSearchActive,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
                 LocationHeader(viewState.locationInfo)
             }
 
@@ -393,26 +397,32 @@ fun RadioScreen(
                             }
                         }
 
-                        IconButton(
-                            onClick = {
-                                if (!viewState.isSearchActive) {
-                                    onSettingsClick()
-                                }
-                            },
-                            modifier = Modifier.size(48.dp),
-                        ) {
-                            Icon(
-                                Icons.Rounded.Settings,
-                                contentDescription = stringResource(R.string.settings_title),
-                                tint = MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.size(24.dp),
-                            )
+                        if (!viewState.isSearchActive) {
+                            IconButton(
+                                onClick = { onSettingsClick() },
+                                modifier = Modifier.size(48.dp),
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Settings,
+                                    contentDescription = stringResource(R.string.settings_title),
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                            }
                         }
                     }
                 }
 
-                if (isLandscape && viewState.settings.showLocationHeader && !viewState.isSearchActive) {
-                    CompactLocationHeader(viewState.locationInfo)
+                AnimatedContent(
+                    targetState = isLandscape && viewState.settings.showLocationHeader && !viewState.isSearchActive,
+                    transitionSpec = {
+                        fadeIn().togetherWith(fadeOut())
+                    },
+                    label = "LandscapeLocationHeader"
+                ) { visible ->
+                    if (visible) {
+                        CompactLocationHeader(viewState.locationInfo)
+                    }
                 }
             }
         }

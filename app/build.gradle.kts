@@ -25,8 +25,8 @@ android {
         applicationId = "com.barteqcz.onqa"
         minSdk = 24
         targetSdk = 37
-        versionCode = 30605
-        versionName = "3.6.5"
+        versionCode = 30606
+        versionName = "3.6.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
