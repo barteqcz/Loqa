@@ -194,7 +194,7 @@ fun MiniPlayer(
 
                 if (initialStation.name == targetStation.name && initialStation.network == targetStation.network) {
                     if (initialHq != targetHq) {
-                        (fadeIn(tween(300)) + scaleIn(initialScale = 0.95f) togetherWith fadeOut(tween(300)) + scaleOut(targetScale = 0.95f))
+                        (fadeIn(tween(300)) togetherWith fadeOut(tween(300)))
                     } else {
                         EnterTransition.None togetherWith ExitTransition.None
                     }
@@ -217,11 +217,11 @@ fun MiniPlayer(
                     }
 
                     if (isNext) {
-                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween(300)) + scaleIn(initialScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
-                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeOut(AnimationSystem.vividTween(300)) + scaleOut(targetScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
+                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeIn(AnimationSystem.vividTween(300)))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeOut(AnimationSystem.vividTween(300)))
                     } else {
-                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeIn(AnimationSystem.vividTween(300)) + scaleIn(initialScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
-                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween(300)) + scaleOut(targetScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
+                        (slideInHorizontally(AnimationSystem.VividSpringIntOffset) { -it } + fadeIn(AnimationSystem.vividTween(300)))
+                            .togetherWith(slideOutHorizontally(AnimationSystem.VividSpringIntOffset) { it } + fadeOut(AnimationSystem.vividTween(300)))
                     }
                 }
             },
@@ -305,8 +305,8 @@ fun MiniPlayer(
                     AnimatedContent(
                         targetState = metadataState,
                         transitionSpec = {
-                            (fadeIn(AnimationSystem.vividTween(300)) + slideInVertically(AnimationSystem.VividSpringIntOffset) { it / 2 } + scaleIn(initialScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
-                                .togetherWith(fadeOut(AnimationSystem.vividTween(300)) + slideOutVertically(AnimationSystem.VividSpringIntOffset) { -it / 2 } + scaleOut(targetScale = 0.95f, animationSpec = AnimationSystem.VividSpring))
+                            (fadeIn(AnimationSystem.vividTween(300)) + slideInVertically(AnimationSystem.VividSpringIntOffset) { it / 2 })
+                                .togetherWith(fadeOut(AnimationSystem.vividTween(300)) + slideOutVertically(AnimationSystem.VividSpringIntOffset) { -it / 2 })
                         },
                         label = "metadataTransition"
                     ) { state ->
@@ -341,8 +341,8 @@ fun MiniPlayer(
                     AnimatedContent(
                         targetState = isBuffering to isPlaying,
                         transitionSpec = {
-                            (fadeIn(tween(200)) + scaleIn(initialScale = 0.8f)).togetherWith(
-                                fadeOut(tween(200)) + scaleOut(targetScale = 0.8f)
+                            fadeIn(tween(200)).togetherWith(
+                                fadeOut(tween(200))
                             )
                         },
                         label = "playPauseIcon"

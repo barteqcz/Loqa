@@ -98,8 +98,8 @@ fun RadioScreen(
                 AnimatedContent(
                     targetState = viewState.uiState,
                     transitionSpec = {
-                        (fadeIn(AnimationSystem.vividTween()) + scaleIn(initialScale = 0.96f, animationSpec = AnimationSystem.VividSpring)).togetherWith(
-                            fadeOut(AnimationSystem.vividTween()) + scaleOut(targetScale = 0.98f, animationSpec = AnimationSystem.VividSpring)
+                        fadeIn(AnimationSystem.vividTween()).togetherWith(
+                            fadeOut(AnimationSystem.vividTween())
                         )
                     },
                     contentKey = { if (!viewState.isNetworkAvailable) "no_internet" else it::class },
@@ -293,12 +293,12 @@ fun RadioScreen(
                         targetState = viewState.isSearchActive,
                         transitionSpec = {
                             if (targetState) {
-                                (slideInHorizontally { it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
-                                    slideOutHorizontally { -it } + fadeOut() + scaleOut(targetScale = 0.95f)
+                                (slideInHorizontally { it } + fadeIn()).togetherWith(
+                                    slideOutHorizontally { -it } + fadeOut()
                                 )
                             } else {
-                                (slideInHorizontally { -it } + fadeIn() + scaleIn(initialScale = 0.92f)).togetherWith(
-                                    slideOutHorizontally { it } + fadeOut() + scaleOut(targetScale = 0.95f)
+                                (slideInHorizontally { -it } + fadeIn()).togetherWith(
+                                    slideOutHorizontally { it } + fadeOut()
                                 )
                             }
                         },

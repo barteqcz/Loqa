@@ -377,8 +377,8 @@ fun MapPickerScreen(
 
                     AnimatedVisibility(
                         visible = state.selectedLocation != null && !state.isGeocoding,
-                        enter = scaleIn(AnimationSystem.VividSpring) + fadeIn(),
-                        exit = scaleOut(AnimationSystem.VividSpring) + fadeOut()
+                        enter = fadeIn() + slideInHorizontally { it / 2 },
+                        exit = fadeOut() + slideOutHorizontally { it / 2 }
                     ) {
                         Button(
                             onClick = {
