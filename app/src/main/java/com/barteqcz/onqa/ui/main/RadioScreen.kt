@@ -288,7 +288,7 @@ fun RadioScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 12.dp)
                         .padding(top = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -377,7 +377,7 @@ fun RadioScreen(
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = (-0.5).sp,
-                                modifier = Modifier.padding(start = 8.dp)
+                                modifier = Modifier.padding(start = 12.dp)
                             )
                         }
                     }

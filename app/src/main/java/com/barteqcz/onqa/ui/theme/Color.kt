@@ -15,6 +15,13 @@ val OnqaCyan = Color(0xFF03DAC5)
 val OnqaOrange = Color(0xFFFFB74D)
 val OnqaBlue = Color(0xFF64B5F6)
 
+// Base Palette (Light Mode explicit variants)
+val OnqaGreenLight = Color(0xFF388E3C)
+val OnqaPurpleLight = Color(0xFF6750A4)
+val OnqaCyanLight = Color(0xFF006A60)
+val OnqaOrangeLight = Color(0xFF8B5000)
+val OnqaBlueLight = Color(0xFF0061A4)
+
 val TextWhite = Color(0xFFFFFFFF)
 val TextBlack = Color(0xFF1C1B21)
 val TextGrey = Color(0xFF8E8E93)

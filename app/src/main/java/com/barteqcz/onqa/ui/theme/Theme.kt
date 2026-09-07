@@ -40,11 +40,11 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = OnqaGreen,
+    primary = OnqaGreenLight,
     onPrimary = Color.White,
-    secondary = OnqaGreen,
+    secondary = OnqaGreenLight,
     onSecondary = Color.White,
-    tertiary = OnqaGreen,
+    tertiary = OnqaGreenLight,
     onTertiary = Color.White,
     background = LightBackground,
     onBackground = TextBlack,
@@ -140,7 +140,17 @@ fun OnqaTheme(
             surface = if (isAmoledMode) Color.Black else DarkBackground,
             surfaceVariant = if (isAmoledMode) Color(0xFF0A0A0A) else CardBackground,
         )
-        else -> LightColorScheme.copy(primary = accentColor.applyLightVariant())
+        else -> {
+            val lightAccent = when (accentColor) {
+                OnqaGreen -> OnqaGreenLight
+                OnqaPurple -> OnqaPurpleLight
+                OnqaCyan -> OnqaCyanLight
+                OnqaOrange -> OnqaOrangeLight
+                OnqaBlue -> OnqaBlueLight
+                else -> accentColor.applyLightVariant()
+            }
+            LightColorScheme.copy(primary = lightAccent)
+        }
     }
 
     val colorScheme = animateColorScheme(targetColorScheme)
