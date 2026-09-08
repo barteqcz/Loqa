@@ -74,4 +74,6 @@
     <string name="language_desc">Wähle deine bevorzugte Sprache</string>
     <string name="language_system">Systemsprache</string>
     <string name="language_system_desc">Sprache aus den Geräteeinstellungen verwenden</string>
+    <string name="location_validation_title">Standort erforderlich</string>
+    <string name="location_validation_message">Sie haben den manuellen Standortmodus ausgewählt, aber noch keinen Standort gewählt. Bitte wählen Sie einen Standort auf der Karte aus, um fortzufahren.</string>
 </resources>

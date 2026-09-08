@@ -74,4 +74,6 @@
     <string name="language_desc">Kies uw voorkeurstaal</string>
     <string name="language_system">Systeemtaal</string>
     <string name="language_system_desc">Gebruik taal uit apparaatinstellingen</string>
+    <string name="location_validation_title">Locatie vereist</string>
+    <string name="location_validation_message">U hebt de handmatige locatiemodus geselecteerd, maar nog geen locatie gekozen. Kies een locatie op de kaart om door te gaan.</string>
 </resources>

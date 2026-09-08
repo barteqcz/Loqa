@@ -74,4 +74,6 @@
     <string name="language_desc">Vælg dit foretrukne sprog</string>
     <string name="language_system">Systemsprog</string>
     <string name="language_system_desc">Brug sprog fra enhedens indstillinger</string>
+    <string name="location_validation_title">Placering påkrævet</string>
+    <string name="location_validation_message">Du har valgt manuel placeringstilstand, men har ikke valgt en placering endnu. Vælg venligst en placering på kortet for at fortsætte.</string>
 </resources>

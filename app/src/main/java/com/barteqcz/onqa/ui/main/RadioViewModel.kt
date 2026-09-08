@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -253,11 +254,22 @@ class RadioViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(FLOW_STOP_TIMEOUT_MS), RadioViewState())
 
     init {
+        validateLocationSettings()
         observeSettings()
         observeConnectivity()
         setupLocationTracking()
         setupPlayerListeners()
         setupLocationAwarePlayback()
+    }
+
+    private fun validateLocationSettings() {
+        viewModelScope.launch {
+            val currentSettings = settingsRepository.settingsFlow.first()
+            if (currentSettings.locationSource == LocationSource.MANUAL && currentSettings.manualLatitude == null) {
+                Timber.w("Manual location selected but coordinates are missing. Falling back to GPS.")
+                settingsRepository.updateLocationSource(LocationSource.GPS)
+            }
+        }
     }
 
     private fun observeSettings() {

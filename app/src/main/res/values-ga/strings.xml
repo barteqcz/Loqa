@@ -74,4 +74,6 @@
     <string name="language_desc">Roghnaigh do rogha teanga</string>
     <string name="language_system">Teanga an chórais</string>
     <string name="language_system_desc">Úsáid teanga ó shocruithe an ghléis</string>
+    <string name="location_validation_title">Suíomh ag teastáil</string>
+    <string name="location_validation_message">Roghnaigh tú mód suímh láimhe ach níor roghnaigh tú suíomh fós. Roghnaigh suíomh ar an léarscáil le do thoil chun leanúint ar aghaidh.</string>
 </resources>

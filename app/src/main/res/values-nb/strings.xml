@@ -74,4 +74,6 @@
     <string name="language_desc">Velg ditt foretrukne språk</string>
     <string name="language_system">Systemspråk</string>
     <string name="language_system_desc">Bruk språk fra enhetsinnstillingene</string>
+    <string name="location_validation_title">Posisjon påkrevd</string>
+    <string name="location_validation_message">Du har valgt manuell posisjonsmodus, men har ikke valgt en posisjon ennå. Vennligst velg en posisjon på kartet for å fortsette.</string>
 </resources>

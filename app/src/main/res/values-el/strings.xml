@@ -74,4 +74,6 @@
     <string name="language_desc">Επιλέξτε τη γλώσσα που προτιμάτε</string>
     <string name="language_system">Γλώσσα συστήματος</string>
     <string name="language_system_desc">Χρήση γλώσσας από τις ρυθμίσεις της συσκευής</string>
+    <string name="location_validation_title">Απαιτείται τοποθεσία</string>
+    <string name="location_validation_message">Έχετε επιλέξει τη χειροκίνητη λειτουργία τοποθεσίας, αλλά δεν έχετε επιλέξει ακόμα τοποθεσία. Παρακαλούμε επιλέξτε μια τοποθεσία στον χάρτη για να συνεχίσετε.</string>
 </resources>

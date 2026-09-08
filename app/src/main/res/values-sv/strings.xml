@@ -74,4 +74,6 @@
     <string name="language_desc">Välj ditt föredragna språk</string>
     <string name="language_system">Systemspråk</string>
     <string name="language_system_desc">Använd språk från enhetsinställningarna</string>
+    <string name="location_validation_title">Plats krävs</string>
+    <string name="location_validation_message">Du har valt manuellt platsläge men har inte valt en plats än. Vänligen välj en plats på kartan för att fortsätta.</string>
 </resources>

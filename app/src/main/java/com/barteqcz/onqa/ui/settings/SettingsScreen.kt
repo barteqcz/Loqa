@@ -1,5 +1,6 @@
 package com.barteqcz.onqa.ui.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
@@ -43,7 +44,6 @@ import com.barteqcz.onqa.data.model.AppLanguage
 import com.barteqcz.onqa.data.model.LocationSource
 import com.barteqcz.onqa.data.model.ThemeMode
 import com.barteqcz.onqa.ui.main.RadioViewModel
-import com.barteqcz.onqa.ui.components.SwipeBackWrapper
 import com.barteqcz.onqa.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -65,6 +65,13 @@ fun SettingsScreen(
 
     val showShadow = selectedUrl != null
 
+    var showLocationValidationError by remember { mutableStateOf(false) }
+    val isManualWithoutLocation = settings.locationSource == LocationSource.MANUAL && settings.manualLatitude == null
+
+    BackHandler(enabled = isManualWithoutLocation) {
+        showLocationValidationError = true
+    }
+
     LaunchedEffect(scrollState.canScrollForward, scrollState.canScrollBackward) {
         viewModel.setScrollable(scrollState.canScrollForward || scrollState.canScrollBackward)
     }
@@ -82,33 +89,33 @@ fun SettingsScreen(
         animateColorAsState(target, AnimationSystem.vividTween(500), label = "paletteColor").value
     }
 
-    SwipeBackWrapper(onBack = onBack) {
-        Box(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(scrollState)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) {
+                    focusManager.clearFocus()
+                }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                    ) {
-                        focusManager.clearFocus()
-                    }
-            ) {
-                // Stable Offset for Top Bar
-                Spacer(modifier = Modifier.statusBarsPadding())
-                Spacer(modifier = Modifier.height(80.dp))
+            // Stable Offset for Top Bar
+            Spacer(modifier = Modifier.statusBarsPadding())
+            Spacer(modifier = Modifier.height(80.dp))
 
-                Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                    SettingCategory(title = stringResource(R.string.category_general))
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                SettingCategory(title = stringResource(R.string.category_general))
 
-                    LanguageSettings(
-                        currentLanguage = settings.language
-                    ) { viewModel.updateLanguage(it) }
+                LanguageSettings(
+                    currentLanguage = settings.language,
+                    onLanguageSelect = { viewModel.updateLanguage(it) }
+                )
 
                 Spacer(modifier = Modifier.height(48.dp))
 
@@ -120,8 +127,9 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LocationSourceSwitcher(
-                    currentSource = settings.locationSource
-                ) { viewModel.updateLocationSource(it) }
+                    currentSource = settings.locationSource,
+                    onSourceSelect = { viewModel.updateLocationSource(it) }
+                )
 
                 AnimatedVisibility(
                     visible = settings.locationSource == LocationSource.MANUAL,
@@ -135,7 +143,7 @@ fun SettingsScreen(
                             onClick = onNavigateToMapPicker,
                             shape = RoundedCornerShape(16.dp),
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -244,8 +252,9 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ThemeSwitcher(
-                    currentMode = settings.themeMode
-                ) { viewModel.updateThemeMode(it) }
+                    currentMode = settings.themeMode,
+                    onModeSelect = { viewModel.updateThemeMode(it) }
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -398,7 +407,13 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconButton(
-                        onClick = onBack,
+                        onClick = {
+                            if (isManualWithoutLocation) {
+                                showLocationValidationError = true
+                            } else {
+                                onBack()
+                            }
+                        },
                         modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
@@ -421,7 +436,42 @@ fun SettingsScreen(
             }
         }
     }
-}
+
+    if (showLocationValidationError) {
+        AlertDialog(
+            onDismissRequest = { showLocationValidationError = false },
+            confirmButton = {
+                Button(
+                    onClick = { showLocationValidationError = false },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.alright))
+                }
+            },
+            title = {
+                Text(
+                    stringResource(R.string.location_validation_title),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineSmall
+                    )
+            },
+            text = {
+                Text(
+                    stringResource(R.string.location_validation_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            shape = RoundedCornerShape(28.dp),
+            containerColor = MaterialTheme.colorScheme.surface,
+            modifier = Modifier
+                .fillMaxWidth(0.92f)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(28.dp)
+                )
+        )
+    }
 }
 
 @Composable

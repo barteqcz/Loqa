@@ -74,4 +74,6 @@
     <string name="language_desc">Odaberite željeni jezik</string>
     <string name="language_system">Sistemski jezik</string>
     <string name="language_system_desc">Koristi jezik iz postavki uređaja</string>
+    <string name="location_validation_title">Potrebna lokacija</string>
+    <string name="location_validation_message">Odabrali ste ručni način lokacije, ali još niste odabrali lokaciju. Za nastavak odaberite lokaciju na karti.</string>
 </resources>

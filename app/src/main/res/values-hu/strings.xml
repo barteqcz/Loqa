@@ -74,4 +74,6 @@
     <string name="language_desc">Válassza ki a kívánt nyelvet</string>
     <string name="language_system">Rendszernyelv</string>
     <string name="language_system_desc">Az eszköz beállításaiban szereplő nyelv használata</string>
+    <string name="location_validation_title">Helymeghatározás szükséges</string>
+    <string name="location_validation_message">Manuális helymeghatározási módot választott, de még nem jelölt ki helyet. A folytatáshoz kérjük, válasszon egy helyet a térképen.</string>
 </resources>

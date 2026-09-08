@@ -74,4 +74,6 @@
     <string name="language_desc">Choisissez votre langue préférée</string>
     <string name="language_system">Langue du système</string>
     <string name="language_system_desc">Utiliser la langue des paramètres de l\'appareil</string>
+    <string name="location_validation_title">Localisation requise</string>
+    <string name="location_validation_message">Vous avez sélectionné le mode de localisation manuel mais n\'avez pas encore choisi d\'emplacement. Veuillez choisir un emplacement sur la carte pour continuer.</string>
 </resources>

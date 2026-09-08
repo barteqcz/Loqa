@@ -74,4 +74,6 @@
     <string name="language_desc">Alegeți limba preferată</string>
     <string name="language_system">Limba sistemului</string>
     <string name="language_system_desc">Folosiți limba din setările dispozitivului</string>
+    <string name="location_validation_title">Locație necesară</string>
+    <string name="location_validation_message">Ați selectat modul de locație manuală, dar nu ați ales încă o locație. Vă rugăm să alegeți o locație pe hartă pentru a continua.</string>
 </resources>

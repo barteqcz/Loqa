@@ -74,4 +74,6 @@
     <string name="language_desc">Выберыце пажаданую мову</string>
     <string name="language_system">Сістэмная мова</string>
     <string name="language_system_desc">Выкарыстоўваць мову з налад прылады</string>
+    <string name="location_validation_title">Патрабуецца месцазнаходжанне</string>
+    <string name="location_validation_message">Вы выбралі ручны рэжым месцазнаходжання, але яшчэ не выбралі месца. Калі ласка, выберыце месца на карце, каб працягнуць.</string>
 </resources>

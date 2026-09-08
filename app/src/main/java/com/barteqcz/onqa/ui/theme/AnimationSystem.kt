@@ -6,15 +6,14 @@ import androidx.compose.ui.unit.IntSize
 
 object AnimationSystem {
     object Duration {
-        const val MEDIUM = 180
-        const val LONG = 280
+        const val MEDIUM = 300
     }
 
-    // Specyficzne dla LinearEasing zgodnie z prośbą użytkownika
+    // Natural FastOutSlowInEasing for consistent UI transitions
     fun <T> vividTween(
         duration: Int = Duration.MEDIUM,
         delay: Int = 0,
-        easing: Easing = LinearEasing,
+        easing: Easing = FastOutSlowInEasing,
     ): TweenSpec<T> = tween(
         durationMillis = duration,
         delayMillis = delay,
@@ -22,17 +21,17 @@ object AnimationSystem {
     )
 
     val VividSpring: SpringSpec<Float> = spring(
-        dampingRatio = Spring.DampingRatioLowBouncy,
+        dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMedium
     )
 
     val VividSpringIntOffset: SpringSpec<IntOffset> = spring(
-        dampingRatio = Spring.DampingRatioLowBouncy,
+        dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMedium
     )
 
     val VividSpringIntSize: SpringSpec<IntSize> = spring(
-        dampingRatio = Spring.DampingRatioLowBouncy,
+        dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMedium
     )
 }

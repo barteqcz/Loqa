@@ -74,4 +74,6 @@
     <string name="language_desc">Izvēlieties vēlamo valodu</string>
     <string name="language_system">Sistēmas valoda</string>
     <string name="language_system_desc">Izmantot valodu no ierīces iestatījumiem</string>
+    <string name="location_validation_title">Nepieciešama atrašanās vieta</string>
+    <string name="location_validation_message">Esat izvēlējies manuālo atrašanās vietas režīmu, taču vēl neesat izvēlējies atrašanās vietu. Lūdzu, izvēlieties atrašanās vietu kartē, lai turpinātu.</string>
 </resources>

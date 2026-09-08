@@ -74,4 +74,6 @@
     <string name="language_desc">Изберете го вашиот омилен јазик</string>
     <string name="language_system">Системски јазик</string>
     <string name="language_system_desc">Користи јазик од поставките на уредот</string>
+    <string name="location_validation_title">Потребна е локација</string>
+    <string name="location_validation_message">Избравте рачен режим за локација, но сè уште не сте избрале локација. Ве молиме изберете локација на мапата за да продолжите.</string>
 </resources>

@@ -74,4 +74,6 @@
     <string name="language_desc">Wielt Är bevorzugt Sprooch</string>
     <string name="language_system">Systemsprooch</string>
     <string name="language_system_desc">Sprooch aus den Apparatsastellunge benotzen</string>
+    <string name="location_validation_title">Standuert erfuerderlech</string>
+    <string name="location_validation_message">Dir hutt de manuelle Standuertmodus gewielt, awer nach kee Standuert gewielt. Wielt w.e.g. e Standuert op der Kaart fir weiderzemaachen.</string>
 </resources>

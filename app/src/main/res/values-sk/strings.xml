@@ -74,4 +74,6 @@
     <string name="language_desc">Vyberte si preferovaný jazyk</string>
     <string name="language_system">Systémový jazyk</string>
     <string name="language_system_desc">Použiť jazyk z nastavení zariadenia</string>
+    <string name="location_validation_title">Vyžaduje sa poloha</string>
+    <string name="location_validation_message">Vybrali ste manuálny režim polohy, ale ešte ste nevybrali žiadne miesto. Ak chcete pokračovať, vyberte polohu na mape.</string>
 </resources>

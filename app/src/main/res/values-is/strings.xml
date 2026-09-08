@@ -74,4 +74,6 @@
     <string name="language_desc">Veldu tungumál</string>
     <string name="language_system">Tungumál kerfis</string>
     <string name="language_system_desc">Nota tungumál úr stillingum tækis</string>
+    <string name="location_validation_title">Staðsetning nauðsynleg</string>
+    <string name="location_validation_message">Þú hefur valið handvirkan staðsetningarham en hefur ekki valið staðsetningu ennþá. Vinsamlegast veldu staðsetningu á kortinu til að halda áfram.</string>
 </resources>

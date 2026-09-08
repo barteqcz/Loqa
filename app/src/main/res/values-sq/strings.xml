@@ -74,4 +74,6 @@
     <string name="language_desc">Zgjidhni gjuhën tuaj të preferuar</string>
     <string name="language_system">Gjuha e sistemit</string>
     <string name="language_system_desc">Përdor gjuhën nga cilësimet e pajisjes</string>
+    <string name="location_validation_title">Kërkohet vendndodhja</string>
+    <string name="location_validation_message">Keni zgjedhur modalitetin manual të vendndodhjes, por nuk keni zgjedhur ende një vendndodhje. Ju lutemi zgjidhni një vendndodhje në hartë për të vazhduar.</string>
 </resources>

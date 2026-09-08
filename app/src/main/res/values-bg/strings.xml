@@ -74,4 +74,6 @@
     <string name="language_desc">Изберете предпочитания от вас език</string>
     <string name="language_system">Системен език</string>
     <string name="language_system_desc">Използване на език от настройките на устройството</string>
+    <string name="location_validation_title">Изисква се местоположение</string>
+    <string name="location_validation_message">Избрали сте ръчен режим за местоположение, но все още не сте избрали такова. Моля, изберете местоположение на картата, за да продължите.</string>
 </resources>

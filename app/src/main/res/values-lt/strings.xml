@@ -74,4 +74,6 @@
     <string name="language_desc">Pasirinkite norimą kalbą</string>
     <string name="language_system">Sistemos kalba</string>
     <string name="language_system_desc">Naudoti kalbą iš įrenginio nustatymų</string>
+    <string name="location_validation_title">Reikalinga vieta</string>
+    <string name="location_validation_message">Pasirinkote rankinį vietos nustatymo režimą, bet dar nepasirinkote vietos. Norėdami tęsti, žemėlapyje pasirinkite vietą.</string>
 </resources>

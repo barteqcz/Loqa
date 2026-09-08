@@ -74,4 +74,6 @@
     <string name="language_desc">Agħżel il-lingwa preferuta tiegħek</string>
     <string name="language_system">Lingwa tas-sistema</string>
     <string name="language_system_desc">Uża l-lingwa mis-settings tal-apparat</string>
+    <string name="location_validation_title">Post meħtieġ</string>
+    <string name="location_validation_message">Għażilt il-modalità tal-post manwali imma għadek ma għażiltx post. Jekk jogħġbok agħżel post fuq il-mappa biex tkompli.</string>
 </resources>

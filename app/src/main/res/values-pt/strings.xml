@@ -74,4 +74,6 @@
     <string name="language_desc">Escolha o seu idioma preferido</string>
     <string name="language_system">Idioma do sistema</string>
     <string name="language_system_desc">Usar o idioma das definições do dispositivo</string>
+    <string name="location_validation_title">Localização necessária</string>
+    <string name="location_validation_message">Selecionou o modo de localização manual, mas ainda não escolheu uma localização. Escolha uma localização no mapa para continuar.</string>
 </resources>

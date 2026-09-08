@@ -74,4 +74,6 @@
     <string name="language_desc">Tscherni vossa lingua preferida</string>
     <string name="language_system">Lingua dal sistem</string>
     <string name="language_system_desc">Utilisar la lingua tenor las preselecziuns dal recurs</string>
+    <string name="location_validation_title">Posiziun necessaria</string>
+    <string name="location_validation_message">Vus avais tschernì il modus da posiziun manual, ma n\'avais anc betg tschernì ina posiziun. Per plaschair tschernì ina posiziun sin la carta per cuntinuar.</string>
 </resources>

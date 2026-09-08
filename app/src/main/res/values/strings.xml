@@ -109,4 +109,6 @@
     <string name="language_turkish" translatable="false">Türkçe</string>
     <string name="language_luxembourgish" translatable="false">Lëtzebuergesch</string>
     <string name="language_romansh" translatable="false">Rumantsch</string>
+    <string name="location_validation_title">Location required</string>
+    <string name="location_validation_message">You have selected manual location mode but haven\'t picked a location yet. Please pick a location on the map to continue.</string>
 </resources>

@@ -74,4 +74,6 @@
     <string name="language_desc">Vali eelistatud keel</string>
     <string name="language_system">Süsteemi keel</string>
     <string name="language_system_desc">Kasuta seadme seadete keelt</string>
+    <string name="location_validation_title">Asukoht on vajalik</string>
+    <string name="location_validation_message">Olete valinud manuaalse asukoharežiimi, kuid pole veel asukohta valinud. Jätkamiseks valige palun asukoht kaardil.</string>
 </resources>

@@ -16,10 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -144,6 +141,26 @@ class MainActivity : AppCompatActivity() {
 
                 Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
+                    var lastNavigationTime by remember { mutableLongStateOf(0L) }
+                    val navigationDebounce = 500L
+
+                    fun safeNavigate(route: Any) {
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastNavigationTime > navigationDebounce) {
+                            lastNavigationTime = currentTime
+                            navController.navigate(route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+
+                    fun safePopBack() {
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastNavigationTime > navigationDebounce) {
+                            lastNavigationTime = currentTime
+                            navController.popBackStack()
+                        }
+                    }
                     
                     if (showBackgroundLocationDisclosure) {
                         BackgroundLocationDisclosure(
@@ -188,20 +205,24 @@ class MainActivity : AppCompatActivity() {
                                 startDestination = RadioRoute,
                             ) {
                                 composable<RadioRoute>(
+                                    enterTransition = {
+                                        slideInHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
+                                    },
                                     exitTransition = {
                                         slideOutHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
                                     },
                                     popEnterTransition = {
                                         slideInHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
+                                    },
+                                    popExitTransition = {
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
                                     }
                                 ) {
                                     RadioScreen(
                                         viewModel = viewModel,
                                         onSettingsClick = { 
                                             if (navController.currentDestination?.hasRoute<SettingsRoute>() != true) {
-                                                navController.navigate(SettingsRoute) {
-                                                    launchSingleTop = true
-                                                }
+                                                safeNavigate(SettingsRoute)
                                             }
                                         }
                                     )
@@ -224,30 +245,28 @@ class MainActivity : AppCompatActivity() {
                                         viewModel = viewModel,
                                         onBack = { 
                                             if (navController.currentDestination?.hasRoute<SettingsRoute>() == true) {
-                                                navController.popBackStack()
+                                                safePopBack()
                                             }
                                         },
                                         onNavigateToMapPicker = {
                                             if (navController.currentDestination?.hasRoute<MapPickerRoute>() != true) {
-                                                navController.navigate(MapPickerRoute) {
-                                                    launchSingleTop = true
-                                                }
+                                                safeNavigate(MapPickerRoute)
                                             }
                                         }
                                     )
                                 }
                                 composable<MapPickerRoute>(
                                     enterTransition = {
-                                        slideInHorizontally(AnimationSystem.vividTween()) { it } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
+                                        slideInHorizontally(AnimationSystem.vividTween()) { it } + fadeIn(AnimationSystem.vividTween())
                                     },
                                     exitTransition = {
-                                        slideOutHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeOut(AnimationSystem.vividTween())
                                     },
                                     popEnterTransition = {
-                                        slideInHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeIn(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
+                                        slideInHorizontally(AnimationSystem.vividTween()) { -it / 4 } + fadeIn(AnimationSystem.vividTween())
                                     },
                                     popExitTransition = {
-                                        slideOutHorizontally(AnimationSystem.vividTween()) { it } + fadeOut(AnimationSystem.vividTween(AnimationSystem.Duration.LONG))
+                                        slideOutHorizontally(AnimationSystem.vividTween()) { it } + fadeOut(AnimationSystem.vividTween())
                                     }
                                 ) {
                                     val mapViewModel: MapViewModel = hiltViewModel()
@@ -256,7 +275,7 @@ class MainActivity : AppCompatActivity() {
                                         mapViewModel = mapViewModel,
                                         onBack = { 
                                             if (navController.currentDestination?.hasRoute<MapPickerRoute>() == true) {
-                                                navController.popBackStack()
+                                                safePopBack()
                                             }
                                         }
                                     )
